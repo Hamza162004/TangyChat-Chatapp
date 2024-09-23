@@ -8,13 +8,16 @@ const GroupList = ({w='100%',chats=[],chatId}) => {
   const gsearch = useInputValidation("")
   return (
     <>
-        <Searchbar search={gsearch} placeholder={'Search a conversation'}/>
+        <div className='flex items-center py-8 px-5 text-orange-500 '>
+          <h1 className='text-xl font-bold'>Manage Groups</h1>
+
+        </div>
         <Stack width={w} direction={'column'} borderTop={'black 1px solid'}>
           {
               chats?.map((data , index)=>{
                 const {avatar , _id , groupChat,members,userName} = data
                 if (groupChat){
-                  return <GroupListItem sameSender={chatId===_id} index={index} avatar={avatar} name={userName} _id={_id} key={_id} groupChat={groupChat} />
+                  return <GroupListItem chatId={chatId} sameSender={chatId===_id} index={index} avatar={avatar} name={userName} _id={_id} key={_id} groupChat={groupChat} />
                 }
                 return <></>
               })

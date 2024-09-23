@@ -1,4 +1,4 @@
-import React from 'react'
+import React,{memo} from 'react'
 import { Stack } from '@mui/material'
 import ChatItem from '../shared/ChatItem'
 import Searchbar from '../shared/Searchbar'
@@ -9,7 +9,7 @@ const ChatList = ({w='100%', chats = [] , chatId , onlineUsers = [] , newMessage
   return (
       <>
       <Searchbar search={csearch} placeholder={'Search a conversation'}/>
-      <Stack width={w} direction={'column'} borderTop={'black 1px solid'}>
+      <Stack width={w} direction={'column'} borderTop={'black 1px solid'} overflow={'auto'} height={'80vh'}>
           {
               chats?.map((data , index)=>{
                 const {avatar , _id , groupChat,members,userName} = data
@@ -28,4 +28,4 @@ const ChatList = ({w='100%', chats = [] , chatId , onlineUsers = [] , newMessage
     )
   }
 
-export default ChatList
+export default memo(ChatList)

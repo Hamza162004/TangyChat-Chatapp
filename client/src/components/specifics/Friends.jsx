@@ -1,4 +1,4 @@
-import React  from 'react'
+import React from 'react'
 import Searchbar from '../shared/Searchbar'
 import { List } from '@mui/material'
 import UserItem from '../shared/UserItem'
@@ -11,7 +11,7 @@ const Friends = () => {
   let requests = SampleRequests
   let isLoadingSendFriendRequest = false;
   const fsearch = useInputValidation("")
-  const addFriendHandler =(_id)=>{
+  const addFriendHandler = (_id) => {
     console.log(_id)
   }
 
@@ -19,18 +19,21 @@ const Friends = () => {
     <>
       <Searchbar search={fsearch} placeholder={"Find People"} />
       {
-        requests.length>0 && <div className='border-t-[1px] border-t-black'>
-        <Notifications requests={requests}/>
-      </div>
+        requests.length > 0 && <>
+          <h1 className='border-t-[1px] py-2 border-t-black mx-2'>Friend Requests</h1>
+          <div className=' max-h-[25%] overflow-auto'>
+            <Notifications requests={requests} />
+          </div>
+        </>
       }
-      
-      
-      <div className='border-t-[1px] border-black'>
-      <h1 className='mx-2 mt-2'>Add Friends</h1>
 
-        <List sx={{width:'100%',padding:'0px',margin:'0px'}}>
+      <h1 className='mx-2 py-2 border-t-[1px] border-black'>Add Friends</h1>
+      <div className='max-h-[40%] overflow-auto'>
+
+
+        <List sx={{ width: '100%', padding: '0px', margin: '0px' }}>
           {
-            users.map((user)=>(
+            users.map((user) => (
               <UserItem addFriends={true} user={user} key={user._id} handler={addFriendHandler} handlerIsLoading={isLoadingSendFriendRequest} />
             ))
           }
