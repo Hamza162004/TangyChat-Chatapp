@@ -10,7 +10,7 @@ const Notifications = ({requests}) => {
 
   return (
     <>
-    <h1 className='mx-2 mt-2'>Friend Requests</h1>
+    
       <List>
         {
           requests.map((request) => (

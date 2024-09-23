@@ -29,19 +29,67 @@ export const SampleChat = [
         groupChat: false,
         members: ["1", "2"]
     },
+    {
+        avatar: [ "https://avatar.iran.liara.run/public/boy?username=Ash"],
+        groupChat: false,
+        userName: 'Saeim',
+        _id: "6",
+        members: ["1", "2"]
+    },
+    {
+        avatar: ['https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=mail@ashallendesign.co.uk', "https://avatar.iran.liara.run/public/boy?username=Ash",'https://avatar.iran.liara.run/public/41','https://avatar.iran.liara.run/public/9'],
+        groupChat: true,
+        userName: 'Inevitables',
+        _id: "7",
+        members: ["1", "2",'3','4']
+    },
+    {
+        avatar: ['https://avatar.iran.liara.run/public/77', "https://avatar.iran.liara.run/public/boy?username=Ash",'https://avatar.iran.liara.run/public/55'],
+        groupChat: true,
+        userName: 'Cousins Forever',
+        _id: "8",
+        members: ["1", "2","3"]
+    },
+    {
+        avatar: ['https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=mail@ashallendesign.co.uk'],
+        userName: 'Muzamil',
+        _id: "2",
+        groupChat: false,
+        members: ["1", "2"]
+    },
 ]
 
 export const SampleRequests = [
     {
-        avatar: ['https://api.dicebear.com/9.x/bottts-neutral/svg?seed=Sasha'],
+        avatar: 'https://api.dicebear.com/9.x/bottts-neutral/svg?seed=Sasha',
         userName: 'Bi gates',
         _id: "1",
     },
     {
-        avatar: ["https://api.dicebear.com/9.x/big-smile/svg?seed=Pepper"],
+        avatar: "https://api.dicebear.com/9.x/big-smile/svg?seed=Pepper",
         userName: 'Bill gates',
         _id: "2",
     },
+    {
+        avatar: 'https://api.dicebear.com/9.x/bottts-neutral/svg?seed=Sasha',
+        userName: 'Bi gates',
+        _id: "3",
+    },
+    {
+        avatar: "https://api.dicebear.com/9.x/big-smile/svg?seed=Pepper",
+        userName: 'Bill gates',
+        _id: "4",
+    },
+    {
+        avatar: 'https://api.dicebear.com/9.x/bottts-neutral/svg?seed=Sasha',
+        userName: 'Bi gates',
+        _id: "5",
+    },
+    {
+        avatar: "https://api.dicebear.com/9.x/big-smile/svg?seed=Pepper",
+        userName: 'Bill gates',
+        _id: "6",
+    }
 ]
 
 export const SampleMessage = [

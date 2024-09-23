@@ -15,7 +15,7 @@ const Chat = () => {
   }
   return (
     <>
-      <Stack ref={containerRef} height={'90%'} sx={{ overflowY: 'auto', overflowX: 'hidden', bgcolor: 'lightgray' }} padding={'1rem'} spacing={'1rem'}>
+      <Stack className='bg-slate-100' ref={containerRef} height={'90%'} sx={{ overflowY: 'auto', overflowX: 'hidden' }} padding={'1rem'} spacing={'1rem'}>
         {
           sampleMessage.map((message)=>(
             <MessageComponent key={message._id} message={message} user={user} />
