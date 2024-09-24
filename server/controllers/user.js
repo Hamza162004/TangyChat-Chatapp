@@ -10,7 +10,7 @@ const signup = async (req, res) => {
             res.status(400).json({message : 'Plz Send an avatar'})
             return
         }
-        const result = await uploadToCloudinary(req.file.buffer)
+        const result = await uploadToCloudinary(req.file.buffer , 'Tangy-avatar')
         
         const { name, username, bio, password } = req.body
         const avatar = {
