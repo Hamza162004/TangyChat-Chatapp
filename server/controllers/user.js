@@ -2,13 +2,20 @@ import { compare } from "bcrypt";
 import { User } from "../models/user.js";
 import { cookieOption, sendToken } from "../utils/features.js";
 import { ErrorHandler } from "../utils/utility.js";
+import { uploadToCloudinary } from "../utils/cloudinary.js";
 
 const signup = async (req, res) => {
     try {
+        if(!req.file){
+            res.status(400).json({message : 'Plz Send an avatar'})
+            return
+        }
+        const result = await uploadToCloudinary(req.file.buffer)
+        
         const { name, username, bio, password } = req.body
         const avatar = {
-            public_id: '123',
-            url: '123'
+            public_id: result.public_id,
+            url: result.url,
         }
         const user = await User.create({
             name,
@@ -18,9 +25,9 @@ const signup = async (req, res) => {
             bio,
         })
 
-        sendToken(res, user, '201', `User ${username} created `)
+        sendToken(res, user, 201, `User ${username} created `)
     } catch (error) {
-        next(error)
+       res.json({error})
     }
 
 }

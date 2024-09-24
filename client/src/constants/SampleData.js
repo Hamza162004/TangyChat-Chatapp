@@ -57,6 +57,34 @@ export const SampleChat = [
         groupChat: false,
         members: ["1", "2"]
     },
+    {
+        avatar: ['https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=mail@ashallendesign.co.uk'],
+        userName: 'Muzamil',
+        _id: "2",
+        groupChat: false,
+        members: ["1", "2"]
+    },
+    {
+        avatar: ['https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=mail@ashallendesign.co.uk'],
+        userName: 'Muzamil',
+        _id: "2",
+        groupChat: false,
+        members: ["1", "2"]
+    },
+    {
+        avatar: ['https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=mail@ashallendesign.co.uk'],
+        userName: 'Muzamil',
+        _id: "2",
+        groupChat: false,
+        members: ["1", "2"]
+    },
+    {
+        avatar: ['https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=mail@ashallendesign.co.uk'],
+        userName: 'Muzamil',
+        _id: "2",
+        groupChat: false,
+        members: ["1", "2"]
+    },
 ]
 
 export const SampleRequests = [

@@ -18,17 +18,17 @@ const Friends = () => {
   return (
     <>
       <Searchbar search={fsearch} placeholder={"Find People"} />
-      {
+      {/* {
         requests.length > 0 && <>
           <h1 className='border-t-[1px] py-2 border-t-black mx-2'>Friend Requests</h1>
           <div className=' max-h-[25%] overflow-auto'>
             <Notifications requests={requests} />
           </div>
         </>
-      }
+      } */}
 
-      <h1 className='mx-2 py-2 border-t-[1px] border-black'>Add Friends</h1>
-      <div className='max-h-[40%] overflow-auto'>
+      <h1 className='py-3 px-2 border-t-[1px] border-black text-xl text-orange-500 '>Add Friends</h1>
+      <div className='overflow-auto' style={{height:'calc(100% - 100px)'}}>
 
 
         <List sx={{ width: '100%', padding: '0px', margin: '0px' }}>
