@@ -7,10 +7,10 @@ cloudinary.config({
     api_secret: process.env.CLOUD_API_SECRET
 });
 
-const uploadToCloudinary = (fileBuffer) => {
+const uploadToCloudinary = (fileBuffer , folder_name) => {
     return new Promise((resolve, reject) => {
       cloudinary.uploader.upload_stream(
-        { resource_type: 'auto' },
+        { resource_type: 'auto' , folder: folder_name},
         (error, result) => {
           if (error) return reject(error);
           resolve(result);
