@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import logo from '../../public/images/logo.png'
 import {useFileHandler, useInputValidation,useStrongPassword} from '6pp'
 import { emailValidator, usernameValidator } from '../utils/validators'
+import {toast} from 'react-hot-toast'
 
 const Login = () => {
 
@@ -37,6 +38,7 @@ const Login = () => {
 
     const handleLogin = (e) =>{
         e.preventDefault();
+        toast.success('Yeah baby')
     }
 
     const handleSignUP = (e) =>{
