@@ -1,20 +1,16 @@
 import express from 'express'
 import { connectMongoDB } from './utils/features.js';
-import dotenv from 'dotenv'
 import { defaultError } from './middlewares/error.js';
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
-
+import config from './config.js';
 import userRoutes from './routes/user.js'
 import chatRoutes from './routes/chat.js'
 
-dotenv.config({
-    path:'./.env'
-})
-
-connectMongoDB(process.env.MONGO_URI)
+connectMongoDB(config.mongoUri)
 const app = express();
-const port = process.env.PORT || 5000
+const port = config.port || 4000
+
 app.use(cors({
   credentials : true
 }))

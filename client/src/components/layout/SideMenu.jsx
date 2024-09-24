@@ -2,7 +2,7 @@ import React from 'react'
 import { Avatar, Grid } from '@mui/material'
 import { orange } from '../../constants/color'
 
-const SideMenu = ({ setIsGroup, isGroup, setIsNewGroup, isNewGroup, setIsChatList, setIsProfile, setIsFriends, isFriends, isProfile, isChatList }) => {
+const SideMenu = ({ isNotification,setIsNotification, setIsGroup, isGroup, setIsNewGroup, isNewGroup, setIsChatList, setIsProfile, setIsFriends, isFriends, isProfile, isChatList }) => {
 
     const openChatList = () => {
         setIsChatList(true)
@@ -10,6 +10,8 @@ const SideMenu = ({ setIsGroup, isGroup, setIsNewGroup, isNewGroup, setIsChatLis
         setIsFriends(false)
         setIsGroup(false)
         setIsNewGroup(false)
+        setIsNotification(false)
+
     }
     const openProfile = () => {
         setIsChatList(false)
@@ -17,6 +19,8 @@ const SideMenu = ({ setIsGroup, isGroup, setIsNewGroup, isNewGroup, setIsChatLis
         setIsFriends(false)
         setIsGroup(false)
         setIsNewGroup(false)
+        setIsNotification(false)
+
     }
     const openFriends = () => {
         setIsChatList(false)
@@ -24,6 +28,8 @@ const SideMenu = ({ setIsGroup, isGroup, setIsNewGroup, isNewGroup, setIsChatLis
         setIsFriends(true)
         setIsGroup(false)
         setIsNewGroup(false)
+        setIsNotification(false)
+
     }
     const openGroup = () => {
         setIsChatList(false)
@@ -31,6 +37,8 @@ const SideMenu = ({ setIsGroup, isGroup, setIsNewGroup, isNewGroup, setIsChatLis
         setIsFriends(false)
         setIsGroup(true)
         setIsNewGroup(false)
+        setIsNotification(false)
+
     }
     const openCreateGroup = () => {
         setIsChatList(false)
@@ -38,6 +46,16 @@ const SideMenu = ({ setIsGroup, isGroup, setIsNewGroup, isNewGroup, setIsChatLis
         setIsFriends(false)
         setIsGroup(false)
         setIsNewGroup(true)
+        setIsNotification(false)
+
+    }
+    const openNotification = () => {
+        setIsChatList(false)
+        setIsProfile(false)
+        setIsFriends(false)
+        setIsGroup(false)
+        setIsNewGroup(false)
+        setIsNotification(true)
     }
 
     return (
@@ -70,9 +88,15 @@ const SideMenu = ({ setIsGroup, isGroup, setIsNewGroup, isNewGroup, setIsChatLis
                                 </svg>
                             </button>
                             <button onClick={openCreateGroup} title='Create Group' className={`w-full h-16 flex justify-center items-center py-3 ${isNewGroup ? 'bg-orange-800 border-l-4 border-l-orange-300' : ""} `}>
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={`size-7 ${isGroup ? 'text-white' : 'text-gray-300'} `}>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={`size-7 ${isNewGroup ? 'text-white' : 'text-gray-300'} `}>
                                     <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 9a.75.75 0 0 0-1.5 0v2.25H9a.75.75 0 0 0 0 1.5h2.25V15a.75.75 0 0 0 1.5 0v-2.25H15a.75.75 0 0 0 0-1.5h-2.25V9Z" clipRule="evenodd" />
                                 </svg>
+                            </button>
+                            <button onClick={openNotification} title='Notifications' className={`w-full h-16 flex justify-center items-center py-3 ${isNotification ? 'bg-orange-800 border-l-4 border-l-orange-300' : ""} `}>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={`size-7 ${isNotification ? 'text-white' : 'text-gray-300'} `}>
+                                    <path fillRule="evenodd" d="M5.25 9a6.75 6.75 0 0 1 13.5 0v.75c0 2.123.8 4.057 2.118 5.52a.75.75 0 0 1-.297 1.206c-1.544.57-3.16.99-4.831 1.243a3.75 3.75 0 1 1-7.48 0 24.585 24.585 0 0 1-4.831-1.244.75.75 0 0 1-.298-1.205A8.217 8.217 0 0 0 5.25 9.75V9Zm4.502 8.9a2.25 2.25 0 1 0 4.496 0 25.057 25.057 0 0 1-4.496 0Z" clipRule="evenodd" />
+                                </svg>
+
                             </button>
                         </div>
                         <div className="w-full">

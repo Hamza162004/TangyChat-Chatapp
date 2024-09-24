@@ -9,7 +9,7 @@ const GroupList = ({w='100%',chats=[],chatId}) => {
   return (
     <>
         <div className='flex items-center py-8 px-5 text-orange-500 '>
-          <h1 className='text-xl font-bold'>Manage Groups</h1>
+          <h1 className='text-2xl font-bold'>Manage Groups</h1>
 
         </div>
         <Stack width={w} direction={'column'} borderTop={'black 1px solid'}>

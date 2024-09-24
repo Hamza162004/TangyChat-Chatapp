@@ -12,7 +12,7 @@ const Group = lazy(()=> import("./pages/Group"))
 const Login = lazy(()=> import("./pages/Login"))
 const Notfound = lazy(()=> import("./pages/Notfound"))
 
-let user = true
+let user = false
 
 function App() {
 

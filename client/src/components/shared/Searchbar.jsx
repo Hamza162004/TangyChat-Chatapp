@@ -3,7 +3,7 @@ import React from 'react'
 
 const Searchbar = ({search,placeholder}) => {
   return (
-    <div className="relative text-gray-600 border-gray-500 border rounded-full my-7 mx-4">
+    <div className="relative text-gray-600 border-gray-500 border rounded-full my-[27px] mx-4">
       <input 
         type="search" 
         name="search" 

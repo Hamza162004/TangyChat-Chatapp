@@ -9,7 +9,7 @@ const ChatList = ({w='100%', chats = [] , chatId , onlineUsers = [] , newMessage
   return (
       <>
       <Searchbar search={csearch} placeholder={'Search a conversation'}/>
-      <Stack width={w} direction={'column'} borderTop={'black 1px solid'} overflow={'auto'} height={'80vh'}>
+      <Stack width={w} direction={'column'} borderTop={'black 1px solid'} overflow={'auto'} style={{height: 'calc(100% - 100px)'}}>
           {
               chats?.map((data , index)=>{
                 const {avatar , _id , groupChat,members,userName} = data

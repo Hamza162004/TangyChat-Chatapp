@@ -10,6 +10,7 @@ import Friends from '../specifics/Friends';
 import NewGroup from '../specifics/NewGroup';
 import GroupList from '../specifics/GroupList'
 import { AppContext } from '../../context/SideMenuStates';
+import Notifications from '../specifics/Notifications';
 
 
 const AppLayout = () => (WrappedComponents)=> {
@@ -22,7 +23,8 @@ const AppLayout = () => (WrappedComponents)=> {
             isChatList, setIsChatList,
             isFriends, setIsFriends,
             isNewGroup, setIsNewGroup,
-            isGroup, setIsGroup
+            isGroup, setIsGroup,
+            isNotification,setIsNotification
           } = useContext(AppContext);
 
         const handleDeleteChat = (e ,_id,groupChat)=>{
@@ -34,7 +36,7 @@ const AppLayout = () => (WrappedComponents)=> {
             <>
                 <Title/>
                 <Grid container height={'100vh'}>
-                    <SideMenu isGroup={isGroup} setIsGroup={setIsGroup} isNewGroup={isNewGroup} setIsNewGroup={setIsNewGroup} isChatList={isChatList} isProfile={isProfile} isFriends={isFriends} setIsFriends={setIsFriends} setIsChatList={setIsChatList} setIsProfile={setIsProfile} />
+                    <SideMenu isNotification={isNotification} setIsNotification={setIsNotification} isGroup={isGroup} setIsGroup={setIsGroup} isNewGroup={isNewGroup} setIsNewGroup={setIsNewGroup} isChatList={isChatList} isProfile={isProfile} isFriends={isFriends} setIsFriends={setIsFriends} setIsChatList={setIsChatList} setIsProfile={setIsProfile} />
                     <Grid item height={'100%'} overflow={'hidden'} sm={3.2} sx={{display:{
                         xs:'none' , sm:'block'
                     },borderRight:'1px solid black'}}>
@@ -63,6 +65,11 @@ const AppLayout = () => (WrappedComponents)=> {
                         {
                             isNewGroup && (
                                 <NewGroup/>
+                            )
+                        }
+                        {
+                            isNotification && (
+                                <Notifications/>
                             )
                         }
                     </Grid>

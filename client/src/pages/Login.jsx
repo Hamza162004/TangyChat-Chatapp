@@ -1,6 +1,6 @@
 import { Paper, Stack, Avatar, IconButton, TextField, Typography } from '@mui/material'
 import React, { useState } from 'react'
-import logo from '../../public/images/logo.jpg'
+import logo from '../../public/images/logo.png'
 import {useFileHandler, useInputValidation,useStrongPassword} from '6pp'
 import { emailValidator, usernameValidator } from '../utils/validators'
 
@@ -45,9 +45,9 @@ const Login = () => {
 
     return (
         <>
-            <div className="container flex justify-center items-center  bg-gradient-to-r from-orange-500 to-amber-300">
-                <Paper elevation={7} className='w-[80vh] my-14' >
-                    <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
+            <div className="container flex justify-center items-center  bg-gradient-to-r from-orange-500 to-amber-300 min-h-[100vh]">
+                <Paper elevation={7} className='my-14' >
+                    <div className="w-full bg-white rounded-lg shadow  md:mt-0 sm:max-w-md xl:p-0">
                         <div className="p-6  space-y-2 md:space-y-2 sm:p-8">
 
                             {isLogin ? (
@@ -55,7 +55,7 @@ const Login = () => {
                                     <div className='flex justify-center w-full'>
                                         <img src={logo} className='w-20' alt="" />
                                     </div>
-                                    <h1 className="text-xl text-center font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
+                                    <h1 className="text-xl text-center font-bold leading-tight tracking-tight text-gray-900 md:text-2xl ">
                                         Sign in to <span className='text-orange-500'>Tangy</span> Talks
                                     </h1>
                                     <form className="space-y-4 md:space-y-6 pt-6" action="#" onSubmit={handleLogin}>
@@ -80,22 +80,22 @@ const Login = () => {
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-start">
                                                 <div className="flex items-center h-5">
-                                                    <input id="remember" onChange={togglePassword} aria-describedby="remember" type="checkbox" className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-orange-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-orange-600 dark:ring-offset-gray-800" required="" />
+                                                    <input id="remember" onChange={togglePassword} aria-describedby="remember" type="checkbox" className="w-4 h-4 bg-white border rounded focus:ring-3 focus:ring-orange-300 " required="" />
                                                 </div>
                                                 <div className="ml-3 text-sm">
-                                                    <label htmlhtmlFor="remember" className="text-gray-500 dark:text-gray-300">See password</label>
+                                                    <label htmlhtmlFor="remember" className="text-gray-500">See password</label>
                                                 </div>
                                             </div>
-                                            <a href="#" className="text-sm font-medium text-orange-600 hover:underline dark:text-orange-500">Forgot password?</a>
+                                            <a href="#" className="text-sm font-medium text-orange-600 hover:underline">Forgot password?</a>
                                         </div>
-                                        <button type="submit" className="w-full text-white bg-orange-500 hover:bg-orange-700 focus:ring-4 focus:outline-none focus:ring-orange-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-orane-600 dark:hover:bg-orange-700 dark:focus:ring-orange-800">Sign in</button>
-                                        <p className="text-sm font-light text-gray-500 dark:text-gray-400">
-                                            Don’t have an account yet? <a href="#" onClick={openSignup} className="font-medium text-orange-600 hover:underline dark:text-orange-500">Sign up</a>
+                                        <button type="submit" className="w-full text-white bg-orange-500 hover:bg-orange-700 focus:ring-4 focus:outline-none focus:ring-orange-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center ">Sign in</button>
+                                        <p className="text-sm font-light text-gray-500">
+                                            Don’t have an account yet? <a href="#" onClick={openSignup} className="font-medium text-orange-600 hover:underline">Sign up</a>
                                         </p>
                                     </form>
                                 </>) :
                                 (<>
-                                    <h1 className="text-xl text-center font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
+                                    <h1 className="text-xl text-center font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
                                         Create an <span className='text-orange-500'>Tangy</span> Talks acoount
                                     </h1>
                                     <div className='flex flex-col w-fit relative m-auto items-center' >
@@ -193,15 +193,15 @@ const Login = () => {
                                         }
                                         <div className="flex items-start">
                                             <div className="flex items-center h-5">
-                                                <input id="remember" onChange={togglePassword} aria-describedby="remember" type="checkbox" className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-orange-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-orange-600 dark:ring-offset-gray-800" required="" />
+                                                <input id="remember" onChange={togglePassword} aria-describedby="remember" type="checkbox" className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-orange-300" required="" />
                                             </div>
                                             <div className="ml-3 text-sm">
-                                                <label htmlhtmlFor="remember" className="text-gray-500 dark:text-gray-300">See password</label>
+                                                <label htmlhtmlFor="remember" className="text-gray-500">See password</label>
                                             </div>
                                         </div>
-                                        <button type="submit" className="w-full text-white bg-orange-500 hover:bg-orange-700 focus:ring-4 focus:outline-none focus:ring-orange-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-orange-600 dark:hover:bg-orange-700 dark:focus:ring-orange-800">Create an account</button>
-                                        <p className="text-sm font-light text-gray-500 dark:text-gray-400">
-                                            Already have an account? <a href="#" onClick={openSignup} className="font-medium text-orange-600 hover:underline dark:text-orange-500">Login here</a>
+                                        <button type="submit" className="w-full text-white bg-orange-500 hover:bg-orange-700 focus:ring-4 focus:outline-none focus:ring-orange-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Create an account</button>
+                                        <p className="text-sm font-light text-gray-500">
+                                            Already have an account? <a href="#" onClick={openSignup} className="font-medium text-orange-600 hover:underline ">Login here</a>
                                         </p>
                                     </form>
                                 </>)

@@ -1,11 +1,8 @@
 import multer from 'multer'
 
-const multerUplaod = multer({
-    limits:{
-        fileSize: 1024 * 1024 * 5
-    }
-})
+const storage = multer.memoryStorage()  // store image in memory
+const upload = multer({storage:storage})
 
-const SingleAvatar = multerUplaod.single('avatar')
+const SingleAvatar = upload.single('avatar')
 
 export {SingleAvatar}
