@@ -4,8 +4,8 @@ import { defaultError } from './middlewares/error.js';
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
 import config from './config.js';
-import userRoutes from './routes/user.js'
-import chatRoutes from './routes/chat.js'
+import routes from './routes/route.js'
+
 
 connectMongoDB(config.mongoUri)
 const app = express();
@@ -22,8 +22,7 @@ app.get('/', (req, res) => {
   res.send('Hello World!')
 })
 
-app.use('/user', userRoutes)
-app.use('/chat', chatRoutes)
+app.use('/',routes)
 
 
 app.use(defaultError)
