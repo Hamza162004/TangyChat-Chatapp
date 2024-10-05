@@ -10,7 +10,6 @@ app.post('/login', login)
 
 // can only be accessed if loggedin
 app.use(isLoggedIn)
-
 app.get('/profile', getMyProfile)
 app.get('/logout',logout)
 app.get('/search', searchUser)
