@@ -25,4 +25,8 @@ const sendToken = (res,user,code,message)=>{
     })
 }
 
-export {connectMongoDB , sendToken , cookieOption};
+const emitEvent = (req,event,members,message)=>{
+    console.log("Emitting event ", event)
+}
+
+export {connectMongoDB , sendToken , cookieOption , emitEvent};
