@@ -6,7 +6,6 @@ const schema = new Schema({
     username: {
         type: String,
         required: true,
-        unique: true
     },
     email: {
         type: String,
@@ -21,11 +20,9 @@ const schema = new Schema({
     avatar: {
         public_id: {
             type: String,
-            required: true
         },
         url: {
             type: String,
-            required: true
         }
     },
     bio:{

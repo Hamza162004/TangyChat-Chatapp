@@ -1,42 +1,62 @@
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import React, { Suspense, lazy } from "react";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
+import { LayoutLoader } from "./components/layout/Loaders";
+import { AppProvider } from "./context/SideMenuStates";
+import storageService from "./service/storageService";
 
-import {BrowserRouter,Routes,Route} from 'react-router-dom'
-import React , {Suspense, lazy} from 'react'
-import ProtectedRoute from './components/auth/ProtectedRoute'
-import { LayoutLoader } from './components/layout/Loaders'
-import { AppProvider } from './context/SideMenuStates'
-
-
-const Home = lazy(()=> import("./pages/Home"))
-const Chat = lazy(()=> import("./pages/Chat"))
-const Group = lazy(()=> import("./pages/Group"))
-const Login = lazy(()=> import("./pages/Login"))
-const Notfound = lazy(()=> import("./pages/Notfound"))
-
-let user = false
+const Home = lazy(() => import("./pages/Home"));
+const Chat = lazy(() => import("./pages/Chat"));
+const Group = lazy(() => import("./pages/Group"));
+const Login = lazy(() => import("./pages/Login"));
+const Notfound = lazy(() => import("./pages/Notfound"));
 
 function App() {
 
+  const user = storageService.getToken();
+
   return (
-    <>
-      <BrowserRouter>
+    <BrowserRouter>
       <AppProvider>
-        <Suspense fallback={<LayoutLoader/>}>
-        <Routes>
-          <Route element={<ProtectedRoute user={user}/>}>
-            <Route exact path='/' element={<Home/>}/>   
-            <Route exact path='/chat/:chatId' element={<Chat/>}/>   
-            <Route path='/group' element={<Group/>}/>   
-          </Route>
-          <Route exact path='/login' element={<ProtectedRoute user={!user} redirect='/'><Login/></ProtectedRoute>}/>
+        <Suspense fallback={<LayoutLoader />}>
+          <Routes>
+            {/* Public route: Login */}
+            <Route exact path="/" element={<Login />} />
 
+            {/* Protected routes */}
+            <Route 
+              exact 
+              path="/chat/:chatId" 
+              element={
+                <ProtectedRoute user={user}>
+                  <Chat />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/group" 
+              element={
+                <ProtectedRoute user={user}>
+                  <Group />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/home" 
+              element={
+                <ProtectedRoute user={user}>
+                  <Home />
+                </ProtectedRoute>
+              } 
+            />
 
-          <Route path='*' element={<Notfound/>}/>
-        </Routes>
+            {/* 404 Route */}
+            <Route path="*" element={<Notfound />} />
+          </Routes>
         </Suspense>
-        </AppProvider>
-      </BrowserRouter>
-    </>
-  )
+      </AppProvider>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
