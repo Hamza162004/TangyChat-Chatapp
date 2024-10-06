@@ -1,15 +1,28 @@
 import instance from "./interceptor";
 
 const signupAPI = async (formData) => {
-    const response = await instance.post("user/signup", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-  
-    return response.data;
+  const headers = {
+    "Content-Type": "multipart/form-data",
   };
 
-  export default { signupAPI };
+  try {
+    const response = await instance.post("user/signup", formData, {
+      headers,
+      withCredentials: true,
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
 
-  
+const signInAPI = async (email, password) => {
+  try {
+    const response = await instance.post('user/login', { email, password } , {withCredentials: true});
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export default { signupAPI, signInAPI };

@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken'
 
 const isLoggedIn =  (req, res, next) => {
     const token = req.cookies['Tangy-token'];
+    console.log("Hello cookie")
     console.log(token)
     if (!token) {
         return next(new ErrorHandler("Please login", 401));
