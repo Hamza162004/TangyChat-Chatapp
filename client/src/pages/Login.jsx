@@ -102,7 +102,7 @@ const Login = () => {
 
               storageService.addToken(result.token);
 
-              navigate("/");
+              navigate("/home");
 
               toast.success("Signed Up Successfully");
             } catch (error) {
