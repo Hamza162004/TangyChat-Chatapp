@@ -5,6 +5,7 @@ const signupAPI = async (formData) => {
       headers: {
         "Content-Type": "multipart/form-data",
       },
+      withCredentials:true
     });
   
     return response.data;
