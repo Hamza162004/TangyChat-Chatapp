@@ -59,19 +59,17 @@ const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email }).select("+password");
-
     if (!user) {
-      throw Error("User does not exist");
       return next(new ErrorHandler("Invalid Email", 404));
     }
     const isMatch = await compare(password, user.password);
     if (!isMatch) {
-      throw Error("Invalid Password");
+      return next(new ErrorHandler("Invalid Password", 404));
     }
+
     const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "3d",
     });
-
     res.status(200).json({
       message: "Welcome Back!",
       user,
