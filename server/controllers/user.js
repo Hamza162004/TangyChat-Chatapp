@@ -62,6 +62,7 @@ const login = async (req, res, next) => {
 
     if (!user) {
       throw Error("User does not exist");
+      return next(new ErrorHandler("Invalid Email", 404));
     }
     const isMatch = await compare(password, user.password);
     if (!isMatch) {
