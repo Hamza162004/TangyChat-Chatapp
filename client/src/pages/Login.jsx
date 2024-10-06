@@ -6,16 +6,36 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import logo from "../../public/images/logo.png";
 import { useFileHandler, useInputValidation, useStrongPassword } from "6pp";
 import { emailValidator, usernameValidator } from "../utils/validators";
 import { toast } from "react-hot-toast";
 import userService from "../service/userService";
+import { useNavigate } from "react-router-dom";
+import storageService from "../service/storageService";
 
 const Login = () => {
   const [seePassword, setSeePassword] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
+
+  const username = useInputValidation("", usernameValidator);
+  const email = useInputValidation("", emailValidator);
+  const bio = useInputValidation("");
+  const password = useInputValidation("");
+  const cpassword = useInputValidation("");
+  const avatar = useFileHandler("single");
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = storageService.getToken();
+    if (token) {
+      setTimeout(() => {
+        navigate("/home");
+      }, 200);
+    }
+  }, [navigate]);
 
   const togglePassword = () => {
     if (seePassword) {
@@ -35,16 +55,24 @@ const Login = () => {
     }
   };
 
-  const username = useInputValidation("", usernameValidator);
-  const email = useInputValidation("", emailValidator);
-  const bio = useInputValidation("");
-  const password = useStrongPassword();
-  const cpassword = useStrongPassword();
-  const avatar = useFileHandler("single");
-
   const handleLogin = (e) => {
     e.preventDefault();
-    toast.success("Yeah baby");
+    signIn();
+  };
+
+  const signIn = async () => {
+    try {
+      const result = await userService.signInAPI(email.value, password.value);
+
+      storageService.addToken(result.token);
+
+      navigate("/home");
+
+      toast.success("Logged In Successful");
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response.data.error);
+    }
   };
 
   const handleSignUP = (e) => {
@@ -67,15 +95,18 @@ const Login = () => {
               formData.append("bio", bio.value);
               formData.append("email", email.value);
               formData.append("password", password.value);
-              formData.append("avatar", avatar.file);  // Attach the avatar file
-  
+              formData.append("avatar", avatar.file); // Attach the avatar file
+
               // Send FormData using the API
               const result = await userService.signupAPI(formData);
-  
+
+              storageService.addToken(result.token);
+
+              navigate("/");
+
               toast.success("Signed Up Successfully");
             } catch (error) {
-              console.log(error);
-              toast.error("Some error occurred");
+              toast.error(error.response.data.error);
             }
           }
         }
@@ -85,8 +116,6 @@ const Login = () => {
       return;
     }
   };
-  
-  
 
   return (
     <>

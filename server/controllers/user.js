@@ -1,55 +1,83 @@
 import { compare } from "bcrypt";
 import { User } from "../models/user.js";
-import { cookieOption, sendToken } from "../utils/features.js";
 import { ErrorHandler } from "../utils/utility.js";
 import { uploadToCloudinary } from "../utils/cloudinary.js";
+import validator from "validator";
+import jwt from "jsonwebtoken";
 
 const signup = async (req, res) => {
   try {
-    if (!req.file) {
-      res.status(400).json({ message: "Plz Send an avatar" });
-      return;
+    let avatar = {};
+
+    if (req.file) {
+      const result = await uploadToCloudinary(req.file.buffer, "Tangy-avatar");
+      avatar = {
+        public_id: result.public_id,
+        url: result.url,
+      };
     }
-    console.log(req.file)
-    console.log("Body------->" , req.body)
-    const result = await uploadToCloudinary(req.file.buffer, "Tangy-avatar");
 
     const { username, bio, email, password } = req.body;
 
-    const avatar = {
-      public_id: result.public_id,
-      url: result.url,
-    };
+    const userPresent = await User.findOne({ email: email });
+
+    if (userPresent) {
+      throw new Error("User already exists");
+    }
+
+    // validation
+    if (!email || !password) {
+      throw Error("All fields must be filled");
+    }
+    if (!validator.isEmail(email)) {
+      throw Error("Email not valid");
+    }
 
     const user = await User.create({
       username,
       bio,
       email,
       password,
-      avatar
+      avatar,
     });
 
-    sendToken(res, user, 201, `User ${username} created `);
+    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "3d",
+    });
+
+    res.status(200).json({
+      message: "Wohoo User created successfully",
+      user,
+      token,
+    });
   } catch (error) {
-    res.json({ error });
+    res.status(400).json({ error: error.message });
   }
 };
 
 const login = async (req, res, next) => {
   try {
-    const { username, password } = req.body;
-    const user = await User.findOne({ username }).select("+password");
+    const { email, password } = req.body;
+    const user = await User.findOne({ email }).select("+password");
 
     if (!user) {
-      return next(new ErrorHandler("Invalid Username", 404));
+      throw Error("User does not exist");
     }
     const isMatch = await compare(password, user.password);
     if (!isMatch) {
-      return next(new ErrorHandler("Invalid Password", 404));
+      throw Error("Invalid Password");
     }
-    sendToken(res, user, 200, "Welcome back!");
+    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "3d",
+    });
+
+    res.status(200).json({
+      message: "Welcome Back!",
+      user,
+      token,
+    });
   } catch (error) {
-    next(error);
+    res.status(400).json({ error: error.message });
   }
 };
 
