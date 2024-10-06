@@ -8,4 +8,8 @@ const connectMongoDB = (uri)=>{
     })
 }
 
-export {connectMongoDB};
+const emitEvent=(req,event,members,message)=>{
+    console.log(event)
+}
+
+export {connectMongoDB , emitEvent};
