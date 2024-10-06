@@ -37,11 +37,11 @@ const signup = async (req, res) => {
 
 const login = async (req, res, next) => {
   try {
-    const { username, password } = req.body;
-    const user = await User.findOne({ username }).select("+password");
+    const { email, password } = req.body;
+    const user = await User.findOne({ email }).select("+password");
 
     if (!user) {
-      return next(new ErrorHandler("Invalid Username", 404));
+      return next(new ErrorHandler("Invalid Email", 404));
     }
     const isMatch = await compare(password, user.password);
     if (!isMatch) {
