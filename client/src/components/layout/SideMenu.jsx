@@ -53,14 +53,6 @@ const SideMenu = ({
     setIsNewGroup(false);
     setIsNotification(false);
   };
-  const openCreateGroup = () => {
-    setIsChatList(false);
-    setIsProfile(false);
-    setIsFriends(false);
-    setIsGroup(false);
-    setIsNewGroup(true);
-    setIsNotification(false);
-  };
   const openNotification = () => {
     setIsChatList(false);
     setIsProfile(false);
@@ -147,7 +139,7 @@ const SideMenu = ({
                 onClick={openGroup}
                 title="Manage Groups"
                 className={`w-full h-16 flex justify-center items-center py-3 ${
-                  isGroup ? "bg-orange-800 border-l-4 border-l-orange-300" : ""
+                  isGroup || isNewGroup ? "bg-orange-800 border-l-4 border-l-orange-300" : ""
                 } `}
               >
                 <svg
@@ -155,7 +147,7 @@ const SideMenu = ({
                   viewBox="0 0 24 24"
                   fill="currentColor"
                   className={`size-7 ${
-                    isGroup ? "text-white" : "text-gray-300"
+                    isGroup || isNewGroup ? "text-white" : "text-gray-300"
                   } `}
                 >
                   <path
@@ -164,30 +156,6 @@ const SideMenu = ({
                     clipRule="evenodd"
                   />
                   <path d="M5.082 14.254a8.287 8.287 0 0 0-1.308 5.135 9.687 9.687 0 0 1-1.764-.44l-.115-.04a.563.563 0 0 1-.373-.487l-.01-.121a3.75 3.75 0 0 1 3.57-4.047ZM20.226 19.389a8.287 8.287 0 0 0-1.308-5.135 3.75 3.75 0 0 1 3.57 4.047l-.01.121a.563.563 0 0 1-.373.486l-.115.04c-.567.2-1.156.349-1.764.441Z" />
-                </svg>
-              </button>
-              <button
-                onClick={openCreateGroup}
-                title="Create Group"
-                className={`w-full h-16 flex justify-center items-center py-3 ${
-                  isNewGroup
-                    ? "bg-orange-800 border-l-4 border-l-orange-300"
-                    : ""
-                } `}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  className={`size-7 ${
-                    isNewGroup ? "text-white" : "text-gray-300"
-                  } `}
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 9a.75.75 0 0 0-1.5 0v2.25H9a.75.75 0 0 0 0 1.5h2.25V15a.75.75 0 0 0 1.5 0v-2.25H15a.75.75 0 0 0 0-1.5h-2.25V9Z"
-                    clipRule="evenodd"
-                  />
                 </svg>
               </button>
               <button
