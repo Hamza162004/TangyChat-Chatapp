@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { toast } from "react-hot-toast";
+import storageService from './storageService';
 
 const baseURL = import.meta.env.VITE_API_URL;
 
@@ -13,6 +14,10 @@ instance.interceptors.request.use(
       return config;
     }
     config.headers['Content-Type'] = 'application/json';
+    const token = storageService.getToken();
+    if (token) {
+      config.headers['Tangy-token'] = `${token}`;
+    }
 
     return config;
   },
