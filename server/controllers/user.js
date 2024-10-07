@@ -4,6 +4,7 @@ import { ErrorHandler } from "../utils/utility.js";
 import { uploadToCloudinary } from "../utils/cloudinary.js";
 import validator from "validator";
 import jwt from "jsonwebtoken";
+import { Chat } from "../models/chat.js";
 
 const signup = async (req, res) => {
   try {
@@ -59,19 +60,17 @@ const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email }).select("+password");
-
     if (!user) {
-      throw Error("User does not exist");
       return next(new ErrorHandler("Invalid Email", 404));
     }
     const isMatch = await compare(password, user.password);
     if (!isMatch) {
-      throw Error("Invalid Password");
+      return next(new ErrorHandler("Invalid Password", 404));
     }
+
     const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "3d",
     });
-
     res.status(200).json({
       message: "Welcome Back!",
       user,
@@ -105,9 +104,22 @@ const getMyProfile = async (req, res, next) => {
 const searchUser = async (req, res, next) => {
   const { name } = req.query;
 
+  const mychats = await Chat.find({ groupChat: false, members: req.user })
+  const myFriends = mychats.map((i) => i.members).flat()
+  const usersNotFriends = await User.find({
+    _id: { $nin: myFriends },
+    username: { $regex: name || "", $options: "i" }
+  })
+
+  const users = usersNotFriends.map(({_id,avatar,username})=>{
+    return{
+      _id,username,avatar:avatar.url
+    }
+  })
+
   res.status(200).json({
     success: true,
-    message: name,
+    users
   });
 };
 
