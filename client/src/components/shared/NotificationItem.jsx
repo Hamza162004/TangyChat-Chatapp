@@ -6,10 +6,6 @@ const NotificationItem = ({ request, handler }) => {
   const { _id, sender } = request;
   const { avatar, username } = sender || {}; // Assuming sender has these fields
 
-  console.log(_id); // Correct request ID logging
-  console.log(sender); // Log sender object
-  console.log("Hello");
-
   return (
     <ListItem sx={{ width: "100%", padding: "0px", margin: "0px" }}>
       <div className="flex items-center justify-between w-full  px-2 py-2 ">
