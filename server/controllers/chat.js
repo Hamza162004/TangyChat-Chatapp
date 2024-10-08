@@ -230,7 +230,7 @@ const getChatDetails = async (req, res, next) => {
     const { id } = req.params
     if (req.query.populate) {
         const chat = await Chat.findById(id).populate("members", "username avatar").lean()
-        chat.members = chat.members.map((i) => { return { avatar: i.avatar.url, name: i.username } })
+        chat.members = chat.members.map((i) => { return {_id:i._id, avatar: i.avatar.url, username: i.username } })
         return res.status(200).json({ success: true, chat });
 
     } else {
