@@ -70,9 +70,9 @@ const AppLayout = () => (WrappedComponents) => {
           >
             {isChatList && (
               <ChatList
-                chats={SampleChat}
-                chatId={chatId}
-                handleDeleteChat={handleDeleteChat}
+                // chats={SampleChat}
+                // chatId={chatId}
+                // handleDeleteChat={handleDeleteChat}
               />
             )}
             {isProfile && <Profile />}
