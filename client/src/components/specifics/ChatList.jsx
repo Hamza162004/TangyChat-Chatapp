@@ -1,31 +1,51 @@
-import React,{memo} from 'react'
-import { Stack } from '@mui/material'
-import ChatItem from '../shared/ChatItem'
-import Searchbar from '../shared/Searchbar'
-import { useInputValidation } from '6pp'
+import React, { memo, useState, useEffect } from "react";
+import { Stack, Typography } from "@mui/material";
+import ChatItem from "../shared/ChatItem";
+import chatService from "../../service/chatService";
+import Searchbar from "../shared/Searchbar";
+import { useInputValidation } from "6pp";
 
-const ChatList = ({w='100%', chats = [] , chatId , onlineUsers = [] , newMessagesAlert =[{ chatId:"" ,count:0 }],handleDeleteChat}) => {
-    const csearch=useInputValidation("")
+const ChatList = () => {
+  const [chats, setChats] = useState([]);
+
+  const csearch = useInputValidation("");
+
+  useEffect(() => {
+    const fetchChats = async () => {
+      try {
+        const result = await chatService.getChats();
+        setChats(result.groupChats);
+      } catch (error) {
+        console.log("Error fetching chats:", error);
+        setChats([]);
+      }
+    };
+    fetchChats();
+  }, []);
+
   return (
-      <>
-      <Searchbar search={csearch} placeholder={'Search a conversation'}/>
-      <Stack width={w} direction={'column'} borderTop={'black 1px solid'} overflow={'auto'} style={{height: 'calc(100% - 100px)'}}>
-          {
-              chats?.map((data , index)=>{
-                const {avatar , _id , groupChat,members,userName} = data
-
-                const newMessageAlert = newMessagesAlert.find(
-                    ({chatId}) => chatId === _id       
-                )
-
-                const isOnline = members?.some((member)=> onlineUsers.includes(_id))
-
-                  return <ChatItem index={index} newMessageAlert={newMessageAlert} isOnline={isOnline} avatar={avatar} name={userName} _id={_id} key={_id} groupChat={groupChat} sameSender={chatId===_id} handleDeleteChatOpen={handleDeleteChat} />
-              })
-          }
+    <>
+      <Searchbar search={csearch} placeholder={"Search a conversation"} />
+      <Stack
+        width={"100%"}
+        direction={"column"}
+        borderTop={"black 1px solid"}
+        overflow={"auto"}
+        style={{ height: "calc(100% - 100px)" }}
+      >
+        {chats.length > 0 ? (
+          chats.map((data) => {
+            const { _id, name, avatar } = data;
+            return (
+              <ChatItem key={_id} _id={_id} name={name || "Unnamed Chat"} avatar={avatar} />
+            );
+          })
+        ) : (
+          <Typography>No chats found.</Typography>
+        )}
       </Stack>
-      </>
-    )
-  }
+    </>
+  );
+};
 
-export default memo(ChatList)
+export default memo(ChatList);
