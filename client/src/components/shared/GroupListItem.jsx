@@ -6,7 +6,6 @@ import AvatarCard from './AvatarCard'
 const GroupListItem = ({ avatar = [], _id, name,chatId, groupChat = true, sameSender, index = 0 }) => {
     
     
-console.log("Avatar " , avatar)
     return (
         <>
             <Link to={`/group?group=${_id}`} className='hover:bg-gray-200  border-b-black border-b' onClick={()=>{if(chatId===_id) e.preventdefault()}}>

@@ -25,4 +25,13 @@ const signInAPI = async (email, password) => {
   }
 };
 
-export default { signupAPI, signInAPI };
+const getUsersAPI = async (name , user) => {
+  try {
+    const response = await instance.get(`user/search?name=${name}`, { user });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export default { signupAPI, signInAPI , getUsersAPI };
