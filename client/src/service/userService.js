@@ -34,4 +34,13 @@ const getUsersAPI = async (name , user) => {
   }
 };
 
-export default { signupAPI, signInAPI , getUsersAPI };
+const getMyProfileAPI =async () => {
+  try {
+    const response = await instance.get(`user/profile`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export default { signupAPI, signInAPI , getUsersAPI , getMyProfileAPI };

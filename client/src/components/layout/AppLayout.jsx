@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import Title from "../shared/Title";
 import { Grid } from "@mui/material";
 import SideMenu from "./SideMenu";
@@ -11,6 +11,9 @@ import NewGroup from "../specifics/NewGroup";
 import GroupList from "../specifics/GroupList";
 import { AppContext } from "../../context/SideMenuStates";
 import Notifications from "../specifics/Notifications";
+import userService from "../../service/userService";
+import { useDispatch } from "react-redux";
+import { setUser } from "../../store/Slice/userSlice";
 
 const AppLayout = () => (WrappedComponents) => {
   return (props) => {
@@ -36,6 +39,16 @@ const AppLayout = () => (WrappedComponents) => {
       e.preventDefault();
       console.log("Delete Chat", _id, groupChat);
     };
+
+    const dispatch = useDispatch()
+
+    useEffect(()=>{
+      const getMyProfile = async ()=>{
+        const res = await userService.getMyProfileAPI()
+        dispatch(setUser(res.user))
+      }
+      getMyProfile()
+    },[])
 
     return (
       <>

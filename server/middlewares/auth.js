@@ -1,3 +1,4 @@
+import { User } from "../models/user.js";
 import { ErrorHandler } from "../utils/utility.js";
 import jwt from 'jsonwebtoken'
 
@@ -15,18 +16,22 @@ const isLoggedIn = (req, res, next) => {
     }
 }
 
-const isSocketAuthenticated = (socket, next) => {
+const isSocketAuthenticated = async(socket, next) => {
     try {
       const token = socket.handshake.headers['tangy-token']; 
       if (!token) {
         return next(new ErrorHandler("Socket is not Authenticated",401));
       }
       const data = jwt.verify(token, process.env.JWT_SECRET);
-      socket.user = data._id; 
+      const user = await User.findById(data._id)
+      if(!user){
+        return next(new ErrorHandler("Socket is not Authenticated",401));
+      }
+      socket.user = user; 
       next(); 
     } catch (error) {
       console.error("Token verification failed:", error);
-      return next(new Error("Authentication error"));
+      return next(new ErrorHandler(error.message,400));
     }
   };
 

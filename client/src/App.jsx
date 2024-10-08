@@ -4,6 +4,7 @@ import ProtectedRoute from "./components/auth/ProtectedRoute";
 import { LayoutLoader } from "./components/layout/Loaders";
 import { AppProvider } from "./context/SideMenuStates";
 import storageService from "./service/storageService";
+import { SocketProvider } from "./context/Socket";
 
 const Home = lazy(() => import("./pages/Home"));
 const Chat = lazy(() => import("./pages/Chat"));
@@ -18,6 +19,7 @@ function App() {
   return (
     <BrowserRouter>
       <AppProvider>
+        <SocketProvider>
         <Suspense fallback={<LayoutLoader />}>
           <Routes>
             {/* Public route: Login */}
@@ -49,11 +51,11 @@ function App() {
                 </ProtectedRoute>
               } 
             />
-
             {/* 404 Route */}
             <Route path="*" element={<Notfound />} />
           </Routes>
         </Suspense>
+        </SocketProvider>
       </AppProvider>
     </BrowserRouter>
   );
