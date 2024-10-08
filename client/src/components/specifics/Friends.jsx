@@ -1,19 +1,46 @@
-import React from 'react'
+import React, { useState, useEffect } from "react";
 import Searchbar from '../shared/Searchbar'
 import { List } from '@mui/material'
 import UserItem from '../shared/UserItem'
 import { SampleChat, SampleRequests } from '../../constants/SampleData'
 import Notifications from './Notifications'
 import { useInputValidation } from '6pp'
+import userService from "../../service/userService";
 
 const Friends = () => {
-  const users = SampleRequests
-  let requests = SampleRequests
-  let isLoadingSendFriendRequest = false;
-  const fsearch = useInputValidation("")
-  const addFriendHandler = (_id) => {
-    console.log(_id)
-  }
+
+  const [users, setUsers] = useState([]);
+  const fsearch = useInputValidation("");
+  const [searchTimeout, setSearchTimeout] = useState(null);
+  
+  useEffect(() => {
+    const fetchUsers = async (searchTerm = "") => {
+      try {
+        const result = await userService.getUsersAPI(searchTerm);
+        console.log(result.users)
+        setUsers(result.users);
+      } catch (error) {
+        console.log("Error fetching Users:", error);
+        setUsers([]);
+      }
+    };
+
+    // Clear previous timeout if search changes
+    if (searchTimeout) {
+      clearTimeout(searchTimeout);
+    }
+
+    const timeoutId = setTimeout(() => {
+      fetchUsers(fsearch.value);
+    }, 100);
+
+    setSearchTimeout(timeoutId);  // Save timeout ID to state
+
+    // Cleanup function to clear timeout on unmount
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [fsearch.value]);
 
   return (
     <>
@@ -34,7 +61,7 @@ const Friends = () => {
         <List sx={{ width: '100%', padding: '0px', margin: '0px' }}>
           {
             users.map((user) => (
-              <UserItem addFriends={true} user={user} key={user._id} handler={addFriendHandler} handlerIsLoading={isLoadingSendFriendRequest} />
+              <UserItem addFriends={true} user={user} key={user._id} />
             ))
           }
         </List>
