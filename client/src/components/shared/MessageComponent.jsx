@@ -4,7 +4,7 @@ import { Box } from '@mui/material'
 import { fileFormat } from '../../libs/Features'
 import RenderAttachment from './RenderAttachment'
 
-const MessageComponent = ({ message, user }) => {
+const MessageComponent = ({ message,user}) => {
     const { sender, content, attachments = [], createdAt } = message
     const sameSender = sender._id === user._id
 
