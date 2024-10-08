@@ -4,6 +4,8 @@ import { User } from "../models/user.js";
 import { emitEvent } from "../utils/features.js";
 import { getOtherMember } from "../utils/helper.js";
 import { ErrorHandler } from "../utils/utility.js";
+import mongoose from 'mongoose'; // Ensure mongoose is imported if not already
+
 
 const createGroup = async (req, res, next) => {
     try {
@@ -31,20 +33,33 @@ const getMyChats = async (req, res, next) => {
     try {
         const search = req.query.search || "";
 
-        const chats = await Chat.find({ members: req.user })
+        // Ensure req.user is provided
+        if (!req.user) {
+            throw new Error("User ID is missing in the request.");
+        }
+
+        const userId = new mongoose.Types.ObjectId(req.user);
+
+        const chats = await Chat.find({ members: userId })
             .populate('members', 'username avatar');
 
         const myChats = chats.map(({ _id, name, members, groupChat, creator }) => {
-            const filteredMembers = members.filter(member => member._id.toString() !== req.user.toString());
-            const otherMember = getOtherMember(members, req.user);
+            const filteredMembers = members.filter(member => member._id.toString() !== userId.toString());
+            const otherMember = getOtherMember(members, userId);
             
             return {
                 _id,
-                members: filteredMembers.map(member => { return { _id: member._id, name: member.username } }),
+                members: filteredMembers.map(member => { 
+                    return { _id: member._id, name: member.username || "No Name" } 
+                }),
                 groupChat,
                 creator,
-                avatar: groupChat ? filteredMembers.slice(0, 3).map((member) => member.avatar) : otherMember.avatar,
-                name: groupChat ? name : otherMember.username,
+                avatar: groupChat 
+                    ? filteredMembers.slice(0, 3).map(member => member.avatar || '') 
+                    : (otherMember ? otherMember.avatar || '' : ''),
+                name: groupChat 
+                    ? name 
+                    : (otherMember ? otherMember.username || "No Name" : "Unknown User"),
             };
         });
 
@@ -56,9 +71,11 @@ const getMyChats = async (req, res, next) => {
 
         return res.status(200).json({ success: true, groupChats: filteredChats });
     } catch (error) {
-        return res.status(400).json({ success: false, message: error });
+        console.error('Error in getMyChats:', error.message);  // Log the specific error message for debugging
+        return res.status(400).json({ success: false, message: error.message });
     }
 };
+
 
 
 const getGroupChats = async (req, res, next) => {
