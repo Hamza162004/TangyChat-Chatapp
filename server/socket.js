@@ -4,6 +4,7 @@ import { v4 as uuid } from 'uuid'
 import { Message } from "./models/message.js";
 import { isSocketAuthenticated } from "./middlewares/auth.js";
 import { User } from "./models/user.js";
+import config from "./config.js";
 
 const usersocketIDs = new Map()
 
@@ -13,12 +14,12 @@ const getSockets = (users) => {
 }
 
 const initializeSocket = (server) => {
-    const io = new Server(server, {});
+    const io = new Server(server, {cors:config.cors});
 
     io.use(isSocketAuthenticated)
 
     io.on('connection', async (socket) => {
-        const user = await User.findById(socket.user)
+        const user = socket.user
         usersocketIDs.set(user._id.toString(), socket.id)
         console.log(usersocketIDs);
 
@@ -29,7 +30,8 @@ const initializeSocket = (server) => {
                 _id: uuid(), //temp id using uuid
                 sender: {
                     _id: user._id,
-                    username: user.username
+                    username: user.username,
+                    avatar:user.avatar.url
                 },
                 content: message,
                 createdAt: new Date().toISOString()
@@ -48,7 +50,7 @@ const initializeSocket = (server) => {
             })
             io.to(membersSocket).emit(NEW_MESSAGE_ALERT,{chatId})
 
-            // await Message.create(messageForDB)
+            await Message.create(messageForDB)
         })
 
         socket.on('disconnect', () => {
