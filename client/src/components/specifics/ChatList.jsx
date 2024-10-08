@@ -7,25 +7,40 @@ import { useInputValidation } from "6pp";
 
 const ChatList = () => {
   const [chats, setChats] = useState([]);
-
   const csearch = useInputValidation("");
+  const [searchTimeout, setSearchTimeout] = useState(null);
 
   useEffect(() => {
-    const fetchChats = async () => {
+    const fetchChats = async (searchTerm = "") => {
       try {
-        const result = await chatService.getChats();
+        const result = await chatService.getChats(searchTerm);
         setChats(result.groupChats);
       } catch (error) {
         console.log("Error fetching chats:", error);
         setChats([]);
       }
     };
-    fetchChats();
-  }, []);
+
+    // Clear previous timeout if search changes
+    if (searchTimeout) {
+      clearTimeout(searchTimeout);
+    }
+
+    const timeoutId = setTimeout(() => {
+      fetchChats(csearch.value);
+    }, 100);
+
+    setSearchTimeout(timeoutId);  // Save timeout ID to state
+
+    // Cleanup function to clear timeout on unmount
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [csearch.value]);
 
   return (
     <>
-      <Searchbar search={csearch} placeholder={"Search a conversation"} />
+      <Searchbar search={csearch} placeholder={"Search a conversation"} />  {/* Passing csearch */}
       <Stack
         width={"100%"}
         direction={"column"}
