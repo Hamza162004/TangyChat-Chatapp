@@ -42,7 +42,7 @@ const getMyChats = async (req, res, next) => {
                 avatar: groupChat ? filteredMembers.slice(0, 3).map((member) => {
                     return member.avatar
                 }) : otherMember.avatar,
-                name: groupChat ? name : otherMember.name,
+                name: groupChat ? name : otherMember.username,
             }
         })
 
