@@ -25,9 +25,9 @@ const signInAPI = async (email, password) => {
   }
 };
 
-const getUsersAPI = async (name , user) => {
+const getUsersAPI = async (name) => {
   try {
-    const response = await instance.get(`user/search?name=${name}`, { user });
+    const response = await instance.get(`user/search?name=${name}`);
     return response.data;
   } catch (error) {
     throw error;

@@ -53,6 +53,7 @@ const acceptRequest = async(req,res,next)=>{
         return next(new ErrorHandler("Request not found",400))
     }
     if(request.status!=='pending'){
+        console.log("Not pending")
         return next(new ErrorHandler("Request already fulfilled",400))
     }
 
@@ -81,7 +82,7 @@ const acceptRequest = async(req,res,next)=>{
 
 const getNotifications = async(req,res,next)=>{
 
-    const request = await Request.find({receiver:req.user}).populate("sender")
+    const request = await Request.find({receiver:req.user, status: 'pending'}).populate("sender")
 
     const allRequest = request.map(({_id,sender})=>({
         _id,
