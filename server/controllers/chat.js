@@ -29,28 +29,37 @@ const createGroup = async (req, res, next) => {
 
 const getMyChats = async (req, res, next) => {
     try {
-        const chats = await Chat.find({ members: req.user }).populate('members', 'username avatar')
+        const search = req.query.search || "";
+
+        const chats = await Chat.find({ members: req.user })
+            .populate('members', 'username avatar');
 
         const myChats = chats.map(({ _id, name, members, groupChat, creator }) => {
             const filteredMembers = members.filter(member => member._id.toString() !== req.user.toString());
-            const otherMember = getOtherMember(members, req.user)
+            const otherMember = getOtherMember(members, req.user);
+            
             return {
                 _id,
                 members: filteredMembers.map(member => { return { _id: member._id, name: member.username } }),
                 groupChat,
                 creator,
-                avatar: groupChat ? filteredMembers.slice(0, 3).map((member) => {
-                    return member.avatar
-                }) : otherMember.avatar,
+                avatar: groupChat ? filteredMembers.slice(0, 3).map((member) => member.avatar) : otherMember.avatar,
                 name: groupChat ? name : otherMember.username,
-            }
-        })
+            };
+        });
 
-        return res.status(200).json({ success: true, groupChats: myChats })
+        // Filter chats based on search term
+        const filteredChats = myChats.filter(chat => 
+            chat.name.toLowerCase().includes(search.toLowerCase()) ||
+            chat.members.some(member => member.name.toLowerCase().includes(search.toLowerCase()))
+        );
+
+        return res.status(200).json({ success: true, groupChats: filteredChats });
     } catch (error) {
-        return res.status(400).json({ success: false, message: error })
+        return res.status(400).json({ success: false, message: error });
     }
-}
+};
+
 
 const getGroupChats = async (req, res, next) => {
     try {

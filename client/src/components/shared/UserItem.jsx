@@ -3,7 +3,7 @@ import React, { memo } from 'react'
 
 
 const UserItem = ({ user, handler, handlerIsLoading, addFriends=false,addMembers=false, isGroupMember = false }) => {
-    const { userName, _id, avatar } = user
+    const { username, _id, avatar } = user
     return (
         <>
             <ListItem sx={{ width: '100%', padding: '0px', margin: '0px' }}>
@@ -11,7 +11,7 @@ const UserItem = ({ user, handler, handlerIsLoading, addFriends=false,addMembers
                     <div className='flex items-center'>
                         <Avatar sx={{ width: '3rem', height: '3rem', border: '1px solid white', margin: '0px 5px' }} src={avatar} />
                         <Typography sx={{ fontSize: '15px', padding: '0px 3px' }}>
-                            {userName}
+                            {username}
                         </Typography>
                     </div>
 
