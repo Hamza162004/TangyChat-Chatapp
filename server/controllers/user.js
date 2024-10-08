@@ -5,6 +5,8 @@ import { uploadToCloudinary } from "../utils/cloudinary.js";
 import validator from "validator";
 import jwt from "jsonwebtoken";
 import { Chat } from "../models/chat.js";
+import { Request } from "../models/request.js";
+import mongoose from 'mongoose'; // Ensure mongoose is imported if not already
 
 const signup = async (req, res) => {
   try {
@@ -101,21 +103,43 @@ const getMyProfile = async (req, res, next) => {
   }
 };
 
+
 const searchUser = async (req, res, next) => {
   const { name } = req.query;
 
-  const mychats = await Chat.find({ groupChat: false, members: req.user })
-  const myFriends = mychats.map((i) => i.members).flat()
-  const usersNotFriends = await User.find({
-    _id: { $nin: myFriends },
-    username: { $regex: name || "", $options: "i" }
-  })
+  // Convert req.user to an ObjectId using 'new'
+  const userId = new mongoose.Types.ObjectId(req.user);
 
-  const users = usersNotFriends.map(({_id,avatar,username})=>{
-    return{
-      _id,username,avatar:avatar.url
-    }
-  })
+  // Find all chats where the user is a member
+  const mychats = await Chat.find({ groupChat: false, members: userId });
+  const myFriends = mychats.map((i) => i.members).flat();
+
+  // Find all requests where the user is either the sender or receiver
+  const myRequests = await Request.find({
+    $or: [
+      { sender: userId },
+      { receiver: userId }
+    ],
+    status: { $in: ['pending', 'accepted'] }
+
+  });
+
+  // Get all users involved in requests (either sender or receiver)
+  const requestedUsers = myRequests.map(req => 
+    req.sender.equals(userId) ? req.receiver : req.sender
+  );
+
+  // Find users who are not friends and not involved in requests
+  const usersNotFriendsOrRequested = await User.find({
+    _id: { $nin: [...myFriends, ...requestedUsers, userId] },
+    username: { $regex: name || "", $options: "i" }
+  });
+
+  const users = usersNotFriendsOrRequested.map(({ _id, avatar, username }) => ({
+    _id,
+    username,
+    avatar: avatar.url
+  }));
 
   res.status(200).json({
     success: true,

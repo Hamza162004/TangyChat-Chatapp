@@ -5,25 +5,34 @@ import requestService from "../../service/requestService";
 
 const Notifications = () => {
   const [requests, setRequests] = useState([]);
-  const [loading, setLoading] = useState(true); 
+  const [loading, setLoading] = useState(true);
 
-  const friendRequestHandler = (_id, accept) => {
-    console.log(_id + " : " + accept);
+  // Define fetchRequests outside of useEffect so it can be reused
+  const fetchRequests = async () => {
+    setLoading(true); // Set loading to true before fetching requests
+    try {
+      const result = await requestService.requestNotification();
+      setRequests(result.allRequest); // Update the requests state with the fetched data
+      setLoading(false); // Set loading to false after data is fetched
+    } catch (error) {
+      console.log("Error fetching requests:", error);
+      setLoading(false);
+    }
   };
-  useEffect(() => {
-    const fetchRequests = async () => {
-      try {
-        const result = await requestService.requestNotification();
-        setRequests(result.allRequest); 
-        setLoading(false);
-      } catch (error) {
-        console.log("Error fetching requests:", error);
-        setLoading(false);
-      }
-    };
 
-    fetchRequests();
+  useEffect(() => {
+    fetchRequests(); // Call fetchRequests when component mounts
   }, []);
+
+  // Function to handle accept/reject request
+  const handleRequest = async (requestId, state) => {
+    try {
+      await requestService.acceptRequest(requestId, state); // Call API to accept/reject request
+      fetchRequests(); // Refetch the notifications after handling the request
+    } catch (error) {
+      console.error("Error handling request:", error);
+    }
+  };
 
   return (
     <>
@@ -39,7 +48,7 @@ const Notifications = () => {
             requests.map((request) => (
               <NotificationItem
                 request={request}
-                handler={friendRequestHandler}
+                handler={handleRequest}
                 key={request._id}
               />
             ))
