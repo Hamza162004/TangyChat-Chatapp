@@ -11,10 +11,10 @@ const signup = async (req, res) => {
     let avatar = {};
 
     if (req.file) {
-      const result = await uploadToCloudinary(req.file.buffer, "Tangy-avatar");
+      const result = await uploadToCloudinary([req.file], "Tangy-avatar");
       avatar = {
-        public_id: result.public_id,
-        url: result.url,
+        public_id: result[0].public_id,
+        url: result[0].url,
       };
     }
 
