@@ -1,43 +1,93 @@
-import React, { useRef } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import AppLayout from '../components/layout/AppLayout'
 import { IconButton, Stack } from '@mui/material'
 import { AttachFile } from '@mui/icons-material'
 import FileMenu from '../components/dialogues/FileMenu'
 import MessageComponent from '../components/shared/MessageComponent'
 import { SampleMessage } from '../constants/SampleData'
+import { getSocket } from '../context/Socket'
+import { NEW_MESSAGE } from '../constants/event'
+import { useParams } from 'react-router-dom'
+import chatService from '../service/chatService'
+import messageService from '../service/messageService'
+import { useSocketEventHandler } from '../utils/helper'
+import { useSelector } from 'react-redux'
 
-const Chat = () => {
+const Chat = ({}) => {
+  const {chatId} = useParams()
+  const user = useSelector((state) => state.user.user); // 'state.user' is the user slice
+
+  const [chatDetails , setChatDetails] = useState({})
+
+  useEffect(() => {
+    const fetchChatDetails = async () => {
+      try {
+        const [chatData,messageData] = await Promise.all([
+          chatService.getChatDetails(chatId, true),
+          messageService.getMessages(chatId)
+        ])
+        if(chatData.success){
+          setChatDetails(chatData.chat); 
+        }
+        if(messageData.success){
+          setMessages(messageData.messages)
+        }
+      } catch (error) {
+        console.error('Error fetching chat details:', error);
+      }
+    };
+
+    fetchChatDetails();
+  }, [chatId]); // Fetch new data when chatId changes
+
+  
   const containerRef = useRef(null)
-  const sampleMessage = SampleMessage
-  const user={
-    _id:'234567',
-    name:'Hamza Javed'
+  const socket = getSocket()
+
+  const [message, setMessage] = useState('')
+  const [messages, setMessages] = useState([])
+
+  const sendMessageHandler = () => {
+    if(!message.trim()) return
+
+    //emitting event through socket
+    socket.emit(NEW_MESSAGE,{chatId,members:chatDetails.members,message})
+    setMessage("")
   }
+
+  const newMessageHandler = useCallback((data)=>{
+    setMessages(prev=>[...prev,data.message])
+  },[])
+
+  const eventHandler = {[NEW_MESSAGE]: newMessageHandler}
+  useSocketEventHandler(socket,eventHandler)
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      sendMessageHandler();
+    }
+  };
+
+
   return (
     <>
       <Stack className='bg-slate-100' ref={containerRef} height={'90%'} sx={{ overflowY: 'auto', overflowX: 'hidden' }} padding={'1rem'} spacing={'1rem'}>
         {
-          sampleMessage.map((message)=>(
+          messages.length > 0 && messages.map((message) => (
             <MessageComponent key={message._id} message={message} user={user} />
           ))
         }
       </Stack>
       <div className='h-[10%] px-10 w-full flex justify-between space-x-5 items-center flex-row'>
         <IconButton >
-          <AttachFile sx={{width:'1.3rem',height:'1.3rem'}} />
+          <AttachFile sx={{ width: '1.3rem', height: '1.3rem' }} />
         </IconButton>
-
-        <input type="text" placeholder='Send a message...' id="small-input" className="w-full rounded-full px-2 py-1 text-gray-900 border border-gray-300 bg-gray-50 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
-
-      
-
-        <button type="button" className="focus:outline-none text-white bg-orange-500 hover:bg-orange-600 focus:ring-4 focus:ring-orange-300 font-medium rounded-full text-sm px-1.5 py-1.5 me-2 dark:bg-orange-600 dark:hover:bg-orange-700 dark:focus:ring-orange-900">
+        <input onKeyDown={handleKeyDown} value={message} onChange={(e) => setMessage(e.target.value)} type="text" placeholder='Send a message...' id="small-input" className="w-full rounded-full px-2 py-1 text-gray-900 border border-gray-300 bg-gray-50 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+        <button onClick={sendMessageHandler} type="button" className="focus:outline-none text-white bg-orange-500 hover:bg-orange-600 focus:ring-4 focus:ring-orange-300 font-medium rounded-full text-sm px-1.5 py-1.5 me-2 dark:bg-orange-600 dark:hover:bg-orange-700 dark:focus:ring-orange-900">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-4 -rotate-45 text-white">
             <path d="M3.478 2.404a.75.75 0 0 0-.926.941l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.519 60.519 0 0 0 18.445-8.986.75.75 0 0 0 0-1.218A60.517 60.517 0 0 0 3.478 2.404Z" />
           </svg>
         </button>
-
-
       </div>
       <FileMenu />
     </>

@@ -3,7 +3,6 @@ import { isLoggedIn } from '../middlewares/auth.js'
 import { addGroupMember, createGroup, getChatDetails, getGroupChats, getMyChats, getMyFriends, leaveGroup, removeGroupMember, renameChat, sendAttachments } from '../controllers/chat.js';
 import { attachementsMulter } from '../middlewares/multer.js';
 
-
 const app = express.Router()
 
 app.use(isLoggedIn);
