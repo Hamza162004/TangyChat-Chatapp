@@ -18,6 +18,8 @@ const Chat = ({}) => {
   const user = useSelector((state) => state.user.user); // 'state.user' is the user slice
 
   const [chatDetails , setChatDetails] = useState({})
+  const [message, setMessage] = useState('')
+  const [messages, setMessages] = useState([])
 
   useEffect(() => {
     const fetchChatDetails = async () => {
@@ -30,6 +32,7 @@ const Chat = ({}) => {
           setChatDetails(chatData.chat); 
         }
         if(messageData.success){
+          console.log({messageData})
           setMessages(messageData.messages)
         }
       } catch (error) {
@@ -44,12 +47,11 @@ const Chat = ({}) => {
   const containerRef = useRef(null)
   const socket = getSocket()
 
-  const [message, setMessage] = useState('')
-  const [messages, setMessages] = useState([])
+
 
   const sendMessageHandler = () => {
-    if(!message.trim()) return
-
+    if(!message.trim()) returns
+    console.log({message})
     //emitting event through socket
     socket.emit(NEW_MESSAGE,{chatId,members:chatDetails.members,message})
     setMessage("")

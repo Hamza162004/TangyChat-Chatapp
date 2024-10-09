@@ -19,43 +19,30 @@ function App() {
   return (
     <BrowserRouter>
       <AppProvider>
-        <SocketProvider>
         <Suspense fallback={<LayoutLoader />}>
           <Routes>
             {/* Public route: Login */}
             <Route exact path="/" element={<Login />} />
 
             {/* Protected routes */}
-            <Route 
-              exact 
-              path="/chat/:chatId" 
+            <Route
+              path="/*"
               element={
                 <ProtectedRoute user={user}>
-                  <Chat />
+                  <SocketProvider>
+                    <Routes>
+                      <Route path="/chat/:chatId" element={<Chat />} />
+                      <Route path="/group" element={<Group />} />
+                      <Route path="/home" element={<Home />} />
+                    </Routes>
+                  </SocketProvider>
                 </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/group" 
-              element={
-                <ProtectedRoute user={user}>
-                  <Group />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/home" 
-              element={
-                <ProtectedRoute user={user}>
-                  <Home />
-                </ProtectedRoute>
-              } 
+              }
             />
             {/* 404 Route */}
             <Route path="*" element={<Notfound />} />
           </Routes>
         </Suspense>
-        </SocketProvider>
       </AppProvider>
     </BrowserRouter>
   );
