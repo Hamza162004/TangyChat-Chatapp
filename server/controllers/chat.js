@@ -4,8 +4,6 @@ import { User } from "../models/user.js";
 import { emitEvent } from "../utils/features.js";
 import { getOtherMember } from "../utils/helper.js";
 import { ErrorHandler } from "../utils/utility.js";
-import mongoose from 'mongoose'; // Ensure mongoose is imported if not already
-
 
 const createGroup = async (req, res, next) => {
     try {
@@ -38,15 +36,15 @@ const getMyChats = async (req, res, next) => {
             throw new Error("User ID is missing in the request.");
         }
 
-        const userId = new mongoose.Types.ObjectId(req.user);
+        const userId = req.user;
 
         const chats = await Chat.find({ members: userId })
             .populate('members', 'username avatar');
 
         const myChats = chats.map(({ _id, name, members, groupChat, creator }) => {
-            const filteredMembers = members.filter(member => member._id.toString() !== userId.toString());
+            const filteredMembers = members.filter(member => member._id.toString() !== userId);
             const otherMember = getOtherMember(members, userId);
-            
+
             return {
                 _id,
                 members: filteredMembers.map(member => { 
@@ -75,6 +73,7 @@ const getMyChats = async (req, res, next) => {
         return res.status(400).json({ success: false, message: error.message });
     }
 };
+
 
 
 

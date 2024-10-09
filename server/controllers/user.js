@@ -6,7 +6,6 @@ import validator from "validator";
 import jwt from "jsonwebtoken";
 import { Chat } from "../models/chat.js";
 import { Request } from "../models/request.js";
-import mongoose from 'mongoose'; // Ensure mongoose is imported if not already
 
 const signup = async (req, res) => {
   try {
@@ -107,8 +106,7 @@ const getMyProfile = async (req, res, next) => {
 const searchUser = async (req, res, next) => {
   const { name } = req.query;
 
-  // Convert req.user to an ObjectId using 'new'
-  const userId = new mongoose.Types.ObjectId(req.user);
+  const userId = req.user;
 
   // Find all chats where the user is a member
   const mychats = await Chat.find({ groupChat: false, members: userId });
