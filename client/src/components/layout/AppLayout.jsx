@@ -13,7 +13,7 @@ import { AppContext } from "../../context/SideMenuStates";
 import Notifications from "../specifics/Notifications";
 import userService from "../../service/userService";
 import { useDispatch } from "react-redux";
-import { setUser } from "../../store/Slice/userSlice";
+import { setUser } from "../../redux/Slice/userSlice";
 
 const AppLayout = () => (WrappedComponents) => {
   return (props) => {
