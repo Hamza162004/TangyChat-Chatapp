@@ -28,14 +28,15 @@ const Login = () => {
 
   const navigate = useNavigate();
 
+  //To ensure that user stay on home page when trying to access login page
   useEffect(() => {
     const token = storageService.getToken();
     if (token) {
-      setTimeout(() => {
-        navigate("/home");
-      }, 200);
+      navigate("/home")
+    } else {
+      navigate("/")
     }
-  }, [navigate]);
+  }, []);
 
   const togglePassword = () => {
     if (seePassword) {
@@ -64,7 +65,7 @@ const Login = () => {
     try {
       const result = await userService.signInAPI(email.value, password.value);
 
-      storageService.addToken(result.token);
+      storageService.addToken(result.token);      
 
       navigate("/home");
 
@@ -169,7 +170,7 @@ const Login = () => {
                         </div>
                         <div className="ml-3 text-sm">
                           <label
-                            htmlhtmlFor="remember"
+                            htmlFor="remember"
                             className="text-gray-500"
                           >
                             See password
@@ -354,7 +355,7 @@ const Login = () => {
                         />
                       </div>
                       <div className="ml-3 text-sm">
-                        <label htmlhtmlFor="remember" className="text-gray-500">
+                        <label htmlFor="remember" className="text-gray-500">
                           See password
                         </label>
                       </div>
