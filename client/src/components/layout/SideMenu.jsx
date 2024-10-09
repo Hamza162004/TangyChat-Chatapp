@@ -4,6 +4,7 @@ import { orange } from "../../constants/color";
 import { useNavigate } from "react-router-dom";
 import storageService from "../../service/storageService";
 import { toast } from "react-hot-toast";
+import { useSelector } from "react-redux";
 
 const SideMenu = ({
   isNotification,
@@ -19,6 +20,9 @@ const SideMenu = ({
   isProfile,
   isChatList,
 }) => {
+
+  const user = useSelector((state) => state.user);
+
   const navigate = useNavigate();
 
   const openChatList = () => {
@@ -84,7 +88,7 @@ const SideMenu = ({
             <button onClick={openProfile} title="View Profile">
               <Avatar
                 sx={{ width: "4rem", height: "4rem" }}
-                src="https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=mail@ashallendesign.co.uk"
+                src={user.user?.avatar?.url}
               />
             </button>
           </div>
@@ -139,7 +143,9 @@ const SideMenu = ({
                 onClick={openGroup}
                 title="Manage Groups"
                 className={`w-full h-16 flex justify-center items-center py-3 ${
-                  isGroup || isNewGroup ? "bg-orange-800 border-l-4 border-l-orange-300" : ""
+                  isGroup || isNewGroup
+                    ? "bg-orange-800 border-l-4 border-l-orange-300"
+                    : ""
                 } `}
               >
                 <svg

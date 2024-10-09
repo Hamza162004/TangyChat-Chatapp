@@ -1,5 +1,4 @@
 import React from "react";
-import Searchbar from "../shared/Searchbar";
 import { Stack } from "@mui/material";
 import { useInputValidation } from "6pp";
 import GroupListItem from "../shared/GroupListItem";
