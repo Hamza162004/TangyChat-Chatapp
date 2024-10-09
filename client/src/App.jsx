@@ -3,7 +3,6 @@ import React, { Suspense, lazy } from "react";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import { LayoutLoader } from "./components/layout/Loaders";
 import { AppProvider } from "./context/SideMenuStates";
-import storageService from "./service/storageService";
 import { SocketProvider } from "./context/Socket";
 
 const Home = lazy(() => import("./pages/Home"));
@@ -13,48 +12,33 @@ const Login = lazy(() => import("./pages/Login"));
 const Notfound = lazy(() => import("./pages/Notfound"));
 
 function App() {
-
-  const user = storageService.getToken();
-
   return (
     <BrowserRouter>
       <AppProvider>
         <SocketProvider>
-        <Suspense fallback={<LayoutLoader />}>
-          <Routes>
-            {/* Public route: Login */}
-            <Route exact path="/" element={<Login />} />
+          <Suspense fallback={<LayoutLoader />}>
+            <Routes>
+              {/* Public route: Login */}
+              <Route exact path="/" element={<Login />} />
 
-            {/* Protected routes */}
-            <Route 
-              exact 
-              path="/chat/:chatId" 
-              element={
-                <ProtectedRoute user={user}>
-                  <Chat />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/group" 
-              element={
-                <ProtectedRoute user={user}>
-                  <Group />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/home" 
-              element={
-                <ProtectedRoute user={user}>
-                  <Home />
-                </ProtectedRoute>
-              } 
-            />
-            {/* 404 Route */}
-            <Route path="*" element={<Notfound />} />
-          </Routes>
-        </Suspense>
+              {/* Protected routes */}
+              <Route 
+                exact 
+                path="/chat/:chatId" 
+                element={<ProtectedRoute><Chat /></ProtectedRoute>} 
+              />
+              <Route 
+                path="/group" 
+                element={<ProtectedRoute><Group /></ProtectedRoute>} 
+              />
+              <Route 
+                path="/home" 
+                element={<ProtectedRoute><Home /></ProtectedRoute>} 
+              />
+              {/* 404 Route */}
+              <Route path="*" element={<Notfound />} />
+            </Routes>
+          </Suspense>
         </SocketProvider>
       </AppProvider>
     </BrowserRouter>
