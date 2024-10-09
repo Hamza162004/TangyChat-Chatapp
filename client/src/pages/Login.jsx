@@ -14,6 +14,8 @@ import { toast } from "react-hot-toast";
 import userService from "../service/userService";
 import { useNavigate } from "react-router-dom";
 import storageService from "../service/storageService";
+import { setUser } from "../redux/Slice/userSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 const Login = () => {
   const [seePassword, setSeePassword] = useState(false);
@@ -27,6 +29,9 @@ const Login = () => {
   const avatar = useFileHandler("single");
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const user = useSelector((state) => state.user);
 
   //To ensure that user stay on home page when trying to access login page
   useEffect(() => {
@@ -61,11 +66,24 @@ const Login = () => {
     signIn();
   };
 
+  const fetchUserProfile = async () => {
+    try {
+      const res = await userService.getMyProfileAPI();
+      dispatch(setUser(res.user));
+    } catch (error) {
+      console.error("Failed to fetch user profile:", error);
+    }
+  };
+
+
   const signIn = async () => {
     try {
       const result = await userService.signInAPI(email.value, password.value);
 
-      storageService.addToken(result.token);      
+      storageService.addToken(result.token);     
+      
+      await fetchUserProfile();
+
 
       navigate("/home");
 
