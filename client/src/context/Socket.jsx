@@ -1,19 +1,26 @@
-import { createContext, useContext, useMemo } from 'react'
+import { createContext, useContext, useEffect, useMemo } from 'react'
 import {io} from 'socket.io-client'
 import storageService from '../service/storageService'
 
 const SocketContext = createContext()
 const API_URL = import.meta.env.VITE_API_URL;
-const token = storageService.getToken()
 
 const getSocket = ()=> useContext(SocketContext)
 
 const SocketProvider = ({ children }) => {
-    const socket = useMemo(()=> io(API_URL,{
+    const socket = useMemo(()=> 
+      io(API_URL,{
         extraHeaders:{
-            'Tangy-token' : token
+            'Tangy-token' : storageService.getToken()
         }
-    }),[])
+    })
+  ,[storageService.getToken()])
+
+  //   useEffect(() => {
+  //     return () => {
+  //         if (socket) socket.disconnect();
+  //     };
+  // }, [socket]);
 
     return (
       <SocketContext.Provider value={socket}>

@@ -21,9 +21,10 @@ const initializeSocket = (server) => {
     io.on('connection', async (socket) => {
         const user = socket.user
         usersocketIDs.set(user._id.toString(), socket.id)
-        console.log(usersocketIDs);
+        console.log({usersocketIDs})
 
         socket.on(NEW_MESSAGE, async ({ chatId, members, message }) => {
+            console.log({chatId,members,message,user})
 
             const messageRealTime = {
                 chat: chatId,
@@ -56,6 +57,7 @@ const initializeSocket = (server) => {
         socket.on('disconnect', () => {
             usersocketIDs.delete(user._id.toString())
             console.log('User disconnected')
+            console.log({usersocketIDs})
         })
     });
 }
