@@ -1,28 +1,29 @@
 import { List } from "@mui/material";
-import React, { memo, useState, useEffect } from "react";
+import React, { memo, useEffect } from "react";
 import NotificationItem from "../shared/NotificationItem";
 import requestService from "../../service/requestService";
+import { useDispatch, useSelector } from "react-redux";
+import { setNotification } from "../../redux/Slice/notificationSlice";
 
 const Notifications = () => {
-  const [requests, setRequests] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
+  const { notification, fetched } = useSelector((state) => state.notification);
 
-  // Define fetchRequests outside of useEffect so it can be reused
   const fetchRequests = async () => {
-    setLoading(true); // Set loading to true before fetching requests
     try {
       const result = await requestService.requestNotification();
-      setRequests(result.allRequest); // Update the requests state with the fetched data
-      setLoading(false); // Set loading to false after data is fetched
+      dispatch(setNotification(result.allRequest));
     } catch (error) {
       console.log("Error fetching requests:", error);
-      setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchRequests(); // Call fetchRequests when component mounts
-  }, []);
+    if (!fetched) {
+      // Only fetch if data hasn't been fetched before
+      fetchRequests();
+    }
+  }, [fetched, dispatch]);
 
   // Function to handle accept/reject request
   const handleRequest = async (requestId, state) => {
@@ -40,12 +41,12 @@ const Notifications = () => {
         <h1 className="text-2xl font-bold">Notifications</h1>
       </div>
 
-      {loading ? (
+      {!notification ? (
         <p>Loading...</p>
       ) : (
         <List>
-          {requests.length > 0 ? (
-            requests.map((request) => (
+          {notification.length > 0 ? (
+            notification.map((request) => (
               <NotificationItem
                 request={request}
                 handler={handleRequest}
