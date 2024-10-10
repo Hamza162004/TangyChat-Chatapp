@@ -4,6 +4,9 @@ import { orange } from "../../constants/color";
 import { useNavigate } from "react-router-dom";
 import storageService from "../../service/storageService";
 import { toast } from "react-hot-toast";
+import { getSocket } from "../../context/Socket";
+import { useDispatch } from "react-redux";
+import { clearUser } from "../../store/Slice/userSlice";
 import { useSelector } from "react-redux";
 
 const SideMenu = ({
@@ -66,9 +69,16 @@ const SideMenu = ({
     setIsNotification(true);
   };
 
+  const socket = getSocket()
+  const dispatch = useDispatch()
   const logout = async () => {
     try {
-      await storageService.removeToken();
+      if (socket) {
+        console.log({socket})
+        socket.disconnect(); // This will force the socket to close the connection
+      }
+     storageService.removeToken();
+      dispatch(clearUser)
       navigate("/");
       toast.success("Logged Out Successfully");
     } catch (error) {
