@@ -1,8 +1,8 @@
-import React, { useEffect, useState, useParams, lazy, Suspense } from "react";
+import React, { useEffect, useState, lazy, Suspense } from "react";
 import AppLayout from "../components/layout/AppLayout";
 import { Done, Edit } from "@mui/icons-material";
 import { Backdrop, TextField, Typography } from "@mui/material";
-import { useSearchParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { SampleRequests } from "../constants/SampleData";
 import UserItem from "../components/shared/UserItem";
 import { orange } from "../constants/color";
@@ -21,7 +21,7 @@ const Group = () => {
   const [groupMembers, setGroupMembers] = useState([]);
   const [isEdit, setIsEdit] = useState(false);
 
-  const chatId = useSearchParams()[0].get("group");
+  const {chatId} = useParams()
 
   const updateGroupName = async () => {
     try {
@@ -48,7 +48,7 @@ const Group = () => {
 
   useEffect(() => {
     fetchGroupDetail();
-  }, []);
+  }, [chatId]);
 
   const closeConfirmDeleteDialog = () => {
     setIsDeleteDialog(false);
