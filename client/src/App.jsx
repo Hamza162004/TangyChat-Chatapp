@@ -24,11 +24,11 @@ function App() {
             <Route
               path="/*"
               element={
-                <ProtectedRoute user={user}>
+                <ProtectedRoute >
                   <SocketProvider>
                     <Routes>
                       <Route path="/chat/:chatId" element={<Chat />} />
-                      <Route path="/group" element={<Group />} />
+                      <Route path="/group/:chatId" element={<Group />} />
                       <Route path="/home" element={<Home />} />
                     </Routes>
                   </SocketProvider>

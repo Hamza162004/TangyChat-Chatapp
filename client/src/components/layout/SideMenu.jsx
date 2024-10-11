@@ -6,7 +6,7 @@ import storageService from "../../service/storageService";
 import { toast } from "react-hot-toast";
 import { getSocket } from "../../context/Socket";
 import { useDispatch } from "react-redux";
-import { clearUser } from "../../store/Slice/userSlice";
+import { clearUser } from "../../redux/Slice/userSlice";
 import { useSelector } from "react-redux";
 
 const SideMenu = ({

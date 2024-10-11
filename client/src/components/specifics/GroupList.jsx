@@ -1,4 +1,4 @@
-import { React, useState, useEffect } from "react";
+import { React, useState, useEffect, memo } from "react";
 import { Stack } from "@mui/material";
 import GroupListItem from "../shared/GroupListItem";
 import chatService from "../../service/chatService";
@@ -84,4 +84,4 @@ const GroupList = ({
   );
 };
 
-export default GroupList;
+export default memo(GroupList) ;
