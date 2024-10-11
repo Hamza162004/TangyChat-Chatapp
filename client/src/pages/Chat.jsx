@@ -15,6 +15,8 @@ import { useSelector } from 'react-redux'
 
 const Chat = ({}) => {
   const {chatId} = useParams()
+  console.log(chatId)
+
   const user = useSelector((state) => state.user.user); // 'state.user' is the user slice
 
   const [chatDetails , setChatDetails] = useState({})
