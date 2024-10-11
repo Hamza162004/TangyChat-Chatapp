@@ -1,47 +1,95 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack, Typography } from '@mui/material'
-import React,{useState} from 'react'
-import { SampleRequests } from '../../constants/SampleData'
-import UserItem from '../shared/UserItem'
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Stack,
+  Typography,
+} from "@mui/material";
+import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import UserItem from "../shared/UserItem";
+import chatService from "../../service/chatService";
 
-const AddMembersDialogue = ({ open, handleClose, isLoadingAddMember }) => {
-    const [sampleMembers, setSampleMembers] = useState(SampleRequests)
-    const [selectedMembers, setSelectedMembers] = useState([])
-    const selectMemberHandler = (_id) => {
-        setSelectedMembers((prev) => (prev.includes(_id) ? prev.filter((e) => e != _id) : [...prev, _id]))
+const AddMembersDialogue = ({ open, handleClose, isLoadingAddMember, refreshGroupDetails }) => {
+  const [members, setMembers] = useState([]);
+  const [selectedMembers, setSelectedMembers] = useState([]);
+
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const groupId = searchParams.get("group");
+
+  const selectMemberHandler = (_id) => {
+    setSelectedMembers((prev) =>
+      prev.includes(_id) ? prev.filter((e) => e != _id) : [...prev, _id]
+    );
+  };
+
+  const cancelGroup = () => {
+    setSelectedMembers([]);
+    setMembers([]);
+    handleClose();
+  };
+
+  const fetchUsers = async () => {
+    try {
+      const result = await chatService.getMyNonGroupFriends(groupId);
+      setMembers(result.friends);
+    } catch (error) {
+      console.log("Error fetching Members:", error);
+      setMembers([]);
     }
+  };
 
-    const cancelGroup = () => {
-        setSelectedMembers([])
-        setSampleMembers([]);
-        handleClose();
+  useEffect(() => {
+    fetchUsers();
+  }, [selectedMembers]);
+
+  const addMembersSubmitHandler = async () => {
+    try {
+      await chatService.addGroupMember(groupId, selectedMembers);
+      setSelectedMembers([]);
+      setMembers([]);
+      handleClose();
+      refreshGroupDetails();
+    } catch (error) {
+      console.log("Error in adding members to group:", error);
     }
+  };
+  return (
+    <Dialog open={open} onClose={handleClose}>
+      <DialogTitle>Add Members</DialogTitle>
+      <DialogContent sx={{ width: "20rem" }}>
+        <Stack>
+          {members.length > 0 ? (
+            members.map((member) => (
+              <UserItem
+                key={member._id}
+                isGroupMember={selectedMembers.includes(member._id)}
+                user={member}
+                addMembers={true}
+                handler={selectMemberHandler}
+              />
+            ))
+          ) : (
+            <Typography>No Friends to add</Typography>
+          )}
+        </Stack>
+        <DialogActions>
+          <Button color="error" onClick={cancelGroup}>
+            Cancel
+          </Button>
+          <Button
+            disabled={isLoadingAddMember}
+            onClick={addMembersSubmitHandler}
+          >
+            Add
+          </Button>
+        </DialogActions>
+      </DialogContent>
+    </Dialog>
+  );
+};
 
-    const addMemberHandler = () => {
-
-    }
-    const addMembersSubmitHandler = () => {
-
-    }
-    return (
-        <Dialog open={open} onClose={handleClose}>
-            <DialogTitle>
-                Add Members
-            </DialogTitle>
-            <DialogContent sx={{ width: '20rem' }}>
-                <Stack>
-                    {
-                        sampleMembers.length > 0 ? sampleMembers.map((member) => (
-                            <UserItem key={member._id} isGroupMember={selectedMembers.includes(member._id)} user={member} addMembers={true} handler={selectMemberHandler} />
-                        )) : <Typography>No Friends to add</Typography>
-                    }
-                </Stack>
-                <DialogActions>
-                    <Button color='error' onClick={cancelGroup}>Cancel</Button>
-                    <Button disabled={isLoadingAddMember} onClick={addMembersSubmitHandler} >Add</Button>
-                </DialogActions>
-            </DialogContent>
-        </Dialog>
-    )
-}
-
-export default AddMembersDialogue
+export default AddMembersDialogue;
