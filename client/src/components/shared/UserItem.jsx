@@ -1,5 +1,6 @@
 import { Avatar, Button, ListItem, Typography } from "@mui/material";
 import React, { memo } from "react";
+import { useSelector } from "react-redux";
 
 const UserItem = ({
   user,
@@ -9,6 +10,8 @@ const UserItem = ({
   addMembers = false,
   isGroupMember = false,
 }) => {
+  const userNow = useSelector((state) => state.user.user);
+
   const { username, _id, avatar } = user;
   return (
     <>
@@ -49,24 +52,26 @@ const UserItem = ({
           )}
           {addMembers &&
             (isGroupMember ? (
-              <button
-                onClick={() => handler(_id)}
-                type="button"
-                className="text-white bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full text-sm px-1 py-1 text-center me-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  className="size-4 text-white"
+              _id !== userNow._id && ( // Condition to hide button for current user
+                <button
+                  onClick={() => handler(_id)}
+                  type="button"
+                  className="text-white bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full text-sm px-1 py-1 text-center me-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
                 >
-                  <path
-                    fillRule="evenodd"
-                    d="M4.25 12a.75.75 0 0 1 .75-.75h14a.75.75 0 0 1 0 1.5H5a.75.75 0 0 1-.75-.75Z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </button>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    className="size-4 text-white"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M4.25 12a.75.75 0 0 1 .75-.75h14a.75.75 0 0 1 0 1.5H5a.75.75 0 0 1-.75-.75Z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </button>
+              )
             ) : (
               <button
                 onClick={() => handler(_id)}
