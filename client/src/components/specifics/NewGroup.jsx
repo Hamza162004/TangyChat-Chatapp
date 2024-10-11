@@ -1,8 +1,8 @@
-import { React, useState } from "react";
+import { React, useState, useEffect } from "react";
 import { List } from "@mui/material";
 import UserItem from "../shared/UserItem";
-import { SampleRequests } from "../../constants/SampleData";
 import { useInputValidation } from "6pp";
+import chatService from "../../service/chatService";
 
 const NewGroup = ({
   setIsNotification,
@@ -12,8 +12,23 @@ const NewGroup = ({
   setIsProfile,
   setIsFriends,
 }) => {
-  const [members, setMembers] = useState(SampleRequests);
+  const [members, setMembers] = useState([]);
   const [selectedMembers, setSelectedMembers] = useState([]);
+  const groupName = useInputValidation("");
+
+  const fetchUsers = async () => {
+    try {
+      const result = await chatService.getMyFriends();
+      setMembers(result.friends);
+    } catch (error) {
+      console.log("Error fetching Members:", error);
+      setMembers([]);
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, [selectedMembers]);
 
   const selectMemberHandler = (_id) => {
     setSelectedMembers((prev) =>
@@ -25,6 +40,18 @@ const NewGroup = ({
     setSelectedMembers([]);
   };
 
+  const handleGroup = async () => {
+    try {
+      const result = await chatService.createGroup(
+        groupName.value,
+        selectedMembers
+      );
+      console.log("Result is = ", result);
+    } catch (error) {
+      console.log("Error making Group:", error);
+    }
+  };
+
   const openGroup = () => {
     setIsChatList(false);
     setIsProfile(false);
@@ -33,10 +60,6 @@ const NewGroup = ({
     setIsNewGroup(false);
     setIsNotification(false);
   };
-
-  const handleGroup = () => {};
-
-  const groupName = useInputValidation("");
 
   return (
     <div className="w-full h-full flex flex-col">
@@ -108,7 +131,10 @@ const NewGroup = ({
           Cancel
         </button>
         <button
-          onClick={handleGroup}
+          onClick={() => {
+            handleGroup();
+            openGroup();
+          }}
           type="button"
           className="text-white bg-blue-700 mx-3 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
         >
