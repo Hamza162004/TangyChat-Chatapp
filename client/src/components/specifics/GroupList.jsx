@@ -1,11 +1,11 @@
-import React from "react";
+import { React, useState, useEffect } from "react";
 import { Stack } from "@mui/material";
-import { useInputValidation } from "6pp";
 import GroupListItem from "../shared/GroupListItem";
+import chatService from "../../service/chatService";
 
 const GroupList = ({
   w = "100%",
-  chats = [],
+  chats,
   chatId,
   setIsNotification,
   setIsGroup,
@@ -14,7 +14,22 @@ const GroupList = ({
   setIsProfile,
   setIsFriends,
 }) => {
-  const gsearch = useInputValidation("");
+
+  const [groups, setGroups] = useState([]);
+
+  const fetchGroups = async () => {
+    try {
+      const result = await chatService.getGroupChats();
+      setGroups(result.groupChats);
+    } catch (error) {
+      console.log("Error fetching Groups:", error);
+      setGroups([]);
+    }
+  };
+
+  useEffect(() => {
+    fetchGroups();
+  }, []);
 
   const openCreateGroup = () => {
     setIsChatList(false);
@@ -51,23 +66,18 @@ const GroupList = ({
       </div>
 
       <Stack width={w} direction={"column"} borderTop={"black 1px solid"}>
-        {chats?.map((data, index) => {
-          const { avatar, _id, groupChat, members, userName } = data;
-          if (groupChat) {
+        {groups.map((data) => {
+          const { avatar, _id, name } = data;
             return (
               <GroupListItem
-                chatId={chatId}
+                chatId={_id}
                 sameSender={chatId === _id}
-                index={index}
                 avatar={avatar}
-                name={userName}
+                name={name}
                 _id={_id}
                 key={_id}
-                groupChat={groupChat}
               />
             );
-          }
-          return <></>;
         })}
       </Stack>
     </>

@@ -18,4 +18,67 @@ const getChatDetails = async (chatId, populate = false) => {
   }
 };
 
-export default { getChats, getChatDetails };
+const updateChatDetails = async (chatId, name) => {
+  try {
+    const response = await instance.put(`chat/${chatId}`, { name });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const createGroup = async (name , members) => {
+  try {
+    const response = await instance.post('chat/createGroup', { name, members });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const getGroupChats = async () => {
+  try {
+    const response = await instance.get('chat/getGroupChats');
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const getMyFriends = async () => {
+  try {
+    const response = await instance.get('chat/getMyFriends');
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const addGroupMember = async (chatId , members) => {
+  try {
+    const response = await instance.put('chat/addGroupMember', { chatId, members });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const removeGroupMember = async (chatId , userId) => {
+  try {
+    const response = await instance.put('chat/removeGroupMember', { chatId, userId });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const getMyNonGroupFriends = async (groupId) => {
+  try {
+    const response = await instance.get(`chat/getMyNonGroupFriends/${groupId}`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export default { getChats, getChatDetails, createGroup, getGroupChats, getMyFriends, updateChatDetails, addGroupMember, removeGroupMember, getMyNonGroupFriends };
