@@ -1,4 +1,5 @@
 import mongoose, { Schema, Types, model} from 'mongoose';
+import mongoosePaginate from 'mongoose-paginate-v2'
 
 const schema = new Schema({
     sender: {
@@ -28,5 +29,8 @@ const schema = new Schema({
     ]
     
 }, { timestamps: true });
+
+schema.plugin(mongoosePaginate);
+
 
 export const Message = mongoose.models.Message || model('Message', schema);

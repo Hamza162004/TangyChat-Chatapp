@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import AppLayout from '../components/layout/AppLayout'
 import { IconButton, Stack } from '@mui/material'
 import { AttachFile } from '@mui/icons-material'
@@ -12,6 +12,8 @@ import chatService from '../service/chatService'
 import messageService from '../service/messageService'
 import { useSocketEventHandler } from '../utils/helper'
 import { useSelector } from 'react-redux'
+import { useInfiniteScrollTop } from '6pp'
+import { AppContext } from '../context/SideMenuStates'
 
 const Chat = ({}) => {
   const {chatId} = useParams()
@@ -22,6 +24,10 @@ const Chat = ({}) => {
   const [chatDetails , setChatDetails] = useState({})
   const [message, setMessage] = useState('')
   const [messages, setMessages] = useState([])
+  const [messageData,setMessageData] = useState({})
+  const [page,setPage] = useState(1)
+  const [fileMenuAnchor,setFileMenuAnchor] = useState(null)
+  const {setIsFileMenu} = useContext(AppContext)
 
   useEffect(() => {
     const fetchChatDetails = async () => {
@@ -35,20 +41,36 @@ const Chat = ({}) => {
         }
         if(messageData.success){
           console.log({messageData})
-          setMessages(messageData.messages)
+          setPage(messageData.currentPage)
+          setMessageData(messageData)
         }
       } catch (error) {
         console.error('Error fetching chat details:', error);
       }
     };
 
+    setOldMessages([])
+    setPage(1)
     fetchChatDetails();
-  }, [chatId]); // Fetch new data when chatId changes
+  }, [chatId]);
+
+  const fetchChatMessages = async(chatId,page)=>{
+    const response = await messageService.getMessages(chatId,page)
+    console.log({response})
+    setMessageData(response)
+  }
+
+  useEffect(() => {
+    if(page > 1){
+      fetchChatMessages(chatId,page)
+    }
+  }, [page])
+  
 
   
   const containerRef = useRef(null)
   const socket = getSocket()
-
+  const {data:oldMessages,setData:setOldMessages} = useInfiniteScrollTop(containerRef,messageData?.totalPages,page,setPage,messageData?.messages)
 
 
   const sendMessageHandler = () => {
@@ -72,18 +94,23 @@ const Chat = ({}) => {
     }
   };
 
+  const allMessages = [...oldMessages,...messages]
 
+const handleFileMenu = (e)=>{
+  setIsFileMenu(true)
+  setFileMenuAnchor(e.currentTarget)
+}
   return (
     <>
-      <Stack className='bg-slate-100' ref={containerRef} height={'90%'} sx={{ overflowY: 'auto', overflowX: 'hidden' }} padding={'1rem'} spacing={'1rem'}>
+      <Stack className='bg-slate-100 ' ref={containerRef} height={'90%'} sx={{ overflowY: 'auto', overflowX: 'hidden' }} padding={'1rem'} spacing={'1rem'}>
         {
-          messages.length > 0 && messages.map((message) => (
+          allMessages.length > 0 && allMessages.map((message) => (
             <MessageComponent key={message._id} message={message} user={user} />
           ))
         }
       </Stack>
       <div className='h-[10%] px-10 w-full flex justify-between space-x-5 items-center flex-row'>
-        <IconButton >
+        <IconButton onClick={handleFileMenu} style={{cursor:'pointer'}} >
           <AttachFile sx={{ width: '1.3rem', height: '1.3rem' }} />
         </IconButton>
         <input onKeyDown={handleKeyDown} value={message} onChange={(e) => setMessage(e.target.value)} type="text" placeholder='Send a message...' id="small-input" className="w-full rounded-full px-2 py-1 text-gray-900 border border-gray-300 bg-gray-50 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
@@ -93,7 +120,7 @@ const Chat = ({}) => {
           </svg>
         </button>
       </div>
-      <FileMenu />
+      <FileMenu anchor={fileMenuAnchor} />
     </>
   )
 }
