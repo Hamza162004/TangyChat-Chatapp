@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useRef } from 'react'
+import React, { memo} from 'react'
 import moment from 'moment'
 import { Box } from '@mui/material'
 import { fileFormat } from '../../libs/Features'
@@ -9,19 +9,12 @@ const MessageComponent = ({ message,user}) => {
     const sameSender = sender._id === user._id
 
     const timeAgo = moment(createdAt).fromNow()
-    const messageRef = useRef(null)
-
-    useEffect(() => {
-        if (messageRef.current) {
-            messageRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
-        }
-    }, [message])
     
 
     return (
 
 
-        <div ref={messageRef} className={`chat ${sameSender ? 'chat-end' : 'chat-start'}`}>
+        <div className={`chat ${sameSender ? 'chat-end' : 'chat-start'}`}>
             <div className="chat-image avatar">
                 <div className="w-10 rounded-full">
                     <img

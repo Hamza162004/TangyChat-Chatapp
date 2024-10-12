@@ -9,6 +9,7 @@ export const AppProvider = ({ children }) => {
   const [isNewGroup, setIsNewGroup] = useState(false);
   const [isGroup, setIsGroup] = useState(false);
   const [isNotification , setIsNotification] = useState(false);
+  const [isFileMenu,setIsFileMenu] = useState(false)
 
   return (
     <AppContext.Provider value={{
@@ -17,7 +18,8 @@ export const AppProvider = ({ children }) => {
       isFriends, setIsFriends,
       isNewGroup, setIsNewGroup,
       isGroup, setIsGroup,
-      isNotification,setIsNotification
+      isNotification,setIsNotification,
+      isFileMenu,setIsFileMenu
     }}>
       {children}
     </AppContext.Provider>
