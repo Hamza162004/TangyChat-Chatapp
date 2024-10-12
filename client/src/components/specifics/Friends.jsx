@@ -54,9 +54,9 @@ const Friends = () => {
   return (
     <>
       <Searchbar search={fsearch} placeholder={"Find People"} />
-
+      
       <h1 className='py-3 px-2 border-t-[1px] border-black text-xl text-orange-500 '>Add Friends</h1>
-      <div className='overflow-auto' style={{height:'calc(100% - 100px)'}}>
+      <div className='overflow-auto' style={{height:'calc(100% - 150px)'}}>
 
         <List sx={{ width: '100%', padding: '0px', margin: '0px' }}>
           {
