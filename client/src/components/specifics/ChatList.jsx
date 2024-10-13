@@ -4,11 +4,13 @@ import ChatItem from "../shared/ChatItem";
 import chatService from "../../service/chatService";
 import Searchbar from "../shared/Searchbar";
 import { useInputValidation } from "6pp";
+import { useSelector } from "react-redux";
 
 const ChatList = () => {
   const [chats, setChats] = useState([]);
   const csearch = useInputValidation("");
   const [searchTimeout, setSearchTimeout] = useState(null);
+  const {newMessageAlert} = useSelector((state)=>state.chat)
 
   useEffect(() => {
     const fetchChats = async (searchTerm = "") => {
@@ -38,6 +40,10 @@ const ChatList = () => {
     };
   }, [csearch.value]);
 
+  useEffect(()=>{
+    console.log({newMessageAlert})
+  },[newMessageAlert])
+
   return (
     <>
       <Searchbar search={csearch} placeholder={"Search a conversation"} />  {/* Passing csearch */}
@@ -51,8 +57,11 @@ const ChatList = () => {
         {chats.length > 0 ? (
           chats.map((data) => {
             const { _id, name, avatar } = data;
+            const alertForThisChat = newMessageAlert.find(
+              (alert) => alert?.chatId.toString() === _id.toString()
+            );
             return (
-              <ChatItem key={_id} _id={_id} name={name || "Unnamed Chat"} avatar={avatar} />
+              <ChatItem key={_id} _id={_id} name={name || "Unnamed Chat"} avatar={avatar} newMessageAlert={alertForThisChat} />
             );
           })
         ) : (

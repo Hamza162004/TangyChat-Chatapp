@@ -1,3 +1,4 @@
+import { NEW_REQUEST } from '../constants/event.js'
 import { Chat } from '../models/chat.js'
 import { Message } from '../models/message.js'
 import{Request} from '../models/request.js'
@@ -37,7 +38,7 @@ const sendRequest = async(req,res,next)=>{
         receiver : receiverId,
     })
 
-    emitEvent(req,"NEW_REQUEST",receiver)
+    emitEvent(req,NEW_REQUEST,[receiver])
 
     res.status(200).json({success:true, request})
 }
