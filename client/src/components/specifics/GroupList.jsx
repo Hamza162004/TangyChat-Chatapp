@@ -2,6 +2,8 @@ import { React, useState, useEffect, memo } from "react";
 import { Stack } from "@mui/material";
 import GroupListItem from "../shared/GroupListItem";
 import chatService from "../../service/chatService";
+import { useDispatch , useSelector } from "react-redux";
+import { setGroup } from "../../redux/Slice/groupSlice";
 
 const GroupList = ({
   w = "100%",
@@ -15,15 +17,16 @@ const GroupList = ({
   setIsFriends,
 }) => {
 
-  const [groups, setGroups] = useState([]);
+  const dispatch = useDispatch()
+  const groups = useSelector((state) => state.group.group);
 
   const fetchGroups = async () => {
     try {
       const result = await chatService.getGroupChats();
-      setGroups(result.groupChats);
+      dispatch(setGroup(result.groupChats));
     } catch (error) {
       console.log("Error fetching Groups:", error);
-      setGroups([]);
+      dispatch(setGroup([]));
     }
   };
 
