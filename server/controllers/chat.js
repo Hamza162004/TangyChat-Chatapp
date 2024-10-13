@@ -1,6 +1,8 @@
+import { NEW_ATTACHMENT, NEW_MESSAGE, NEW_MESSAGE_ALERT } from "../constants/event.js";
 import { Chat } from "../models/chat.js";
 import { Message } from "../models/message.js";
 import { User } from "../models/user.js";
+import { uploadToCloudinary } from "../utils/cloudinary.js";
 import { emitEvent } from "../utils/features.js";
 import { getOtherMember } from "../utils/helper.js";
 import { ErrorHandler } from "../utils/utility.js";
@@ -256,13 +258,16 @@ const leaveGroup = async (req, res, next) => {
 };
 
 const sendAttachments = async (req, res, next) => {
-  const { chatId } = req.body;
+  const {chatId} = req.body;
   const [chat, user] = await Promise.all([
     Chat.findById(chatId),
     User.findById(req.user),
   ]);
 
+
+
   if (!chat) {
+    console.log({chat})
     return next(new ErrorHandler(`No Chat with Id ${chatId} exists`, 400));
   }
   if (!chat.members.includes(user._id.toString())) {
@@ -275,11 +280,12 @@ const sendAttachments = async (req, res, next) => {
     return next(new ErrorHandler("No files attached", 400));
   }
 
-  const attachments = [];
+  const attachments = await uploadToCloudinary(files, "Tangy-attachments");
+
 
   const messageRealTime = {
     chat: chatId,
-    sender: { name: user.username, avatar: user.avatar, _id: user._id },
+    sender: { name: user.username, avatar: user.avatar.url, _id: user._id },
     content: "",
     attachments,
   };
@@ -290,11 +296,11 @@ const sendAttachments = async (req, res, next) => {
     attachments,
   };
   const message = await Message.create(messageDB);
-  emitEvent(req, "NEW_ATTACHMENTS", chat.members, {
+  emitEvent(req,NEW_MESSAGE, chat.members, {
     message: messageRealTime,
     chatId,
   });
-  emitEvent(req, "NEW_MESSAGE", chat.members, { chatId });
+  emitEvent(req,NEW_MESSAGE_ALERT, chat.members, { chatId });
 
   return res.status(200).json({ success: true, message });
 };
