@@ -81,4 +81,13 @@ const getMyNonGroupFriends = async (groupId) => {
   }
 };
 
-export default { getChats, getChatDetails, createGroup, getGroupChats, getMyFriends, updateChatDetails, addGroupMember, removeGroupMember, getMyNonGroupFriends };
+const leaveGroup = async (groupId) => {
+  try {
+    const response = await instance.delete(`chat/leaveGroup/${groupId}`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export default { getChats, getChatDetails, createGroup, getGroupChats, getMyFriends, updateChatDetails, addGroupMember, removeGroupMember, getMyNonGroupFriends, leaveGroup };
