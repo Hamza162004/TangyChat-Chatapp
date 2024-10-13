@@ -1,14 +1,9 @@
 import instance from "./interceptor";
+import storageService from "./storageService";
 
 const signupAPI = async (formData) => {
-  const headers = {
-    "Content-Type": "multipart/form-data",
-  };
-
   try {
     const response = await instance.post("user/signup", formData, {
-      headers,
-      withCredentials: true,
     });
     return response.data;
   } catch (error) {
