@@ -1,7 +1,7 @@
 import React, { memo} from 'react'
 import moment from 'moment'
 import { Box } from '@mui/material'
-import { fileFormat } from '../../libs/Features'
+import { fileFormat, transformImage } from '../../libs/Features'
 import RenderAttachment from './RenderAttachment'
 
 const MessageComponent = ({ message,user}) => {
@@ -23,7 +23,7 @@ const MessageComponent = ({ message,user}) => {
                 </div>
             </div>
             <div className="chat-header">
-                {!sameSender?sender.name:'You'}
+                {!sameSender?sender.username:'You'}
             </div>
             {
                 content && <div className={`chat-bubble text-white ${sameSender ? 'bg-orange-500 ' : ''} `}>{content}</div>
@@ -36,7 +36,7 @@ const MessageComponent = ({ message,user}) => {
                         return<div key={index} className={`chat-bubble text-white ${sameSender ? 'bg-orange-500 ' : ''} `}>
                             <Box >
                             <a href={url} target='_blank' download className='text-black'>
-                                <RenderAttachment file={file} url={url} />
+                                <RenderAttachment file={file} url={transformImage(url)} />
                             </a>
 
                         </Box>

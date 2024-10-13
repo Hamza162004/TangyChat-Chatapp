@@ -8,14 +8,14 @@ const getMessages = async (req, res, next) => {
         // Paginate messages, 5 per page
         const options = {
             page: parseInt(page, 10),
-            limit: 5,
+            limit: 7,
             populate: { path: 'sender', select: 'username avatar' }, // Populates sender info
             sort: { createdAt: -1 } // Sort by most recent messages first
         };
 
         const messagesResult = await Message.paginate({ chat: id }, options);
 
-        const transformed = messagesResult.docs.map(({ sender, _id, createdAt, content, attachments }) => ({
+        const transformed = messagesResult.docs.reverse().map(({ sender, _id, createdAt, content, attachments }) => ({
             _id,
             createdAt,
             content,
