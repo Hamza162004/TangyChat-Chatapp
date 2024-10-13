@@ -19,13 +19,11 @@ const isLoggedIn = (req, res, next) => {
 const isSocketAuthenticated = async(socket, next) => {
     try {
       const token = socket.handshake.headers['tangy-token']; 
-      console.log({token})
       if (!token) {
         return next(new ErrorHandler("Socket is not Authenticated",401));
       }
       const data = jwt.verify(token, process.env.JWT_SECRET);
       const user = await User.findById(data._id)
-      console.log({userThatisAuthenticated:user})
       if(!user){
         return next(new ErrorHandler("Socket is not Authenticated",401));
       }
