@@ -7,12 +7,15 @@ const UserItem = ({
   handler,
   handlerIsLoading,
   addFriends = false,
-  addMembers = false,
+  addMembers = true,
   isGroupMember = false,
 }) => {
   const userNow = useSelector((state) => state.user.user);
 
   const { username, _id, avatar } = user;
+
+  const creatorId = useSelector((state) => state.creator.creator);
+
   return (
     <>
       <ListItem sx={{ width: "100%", padding: "0px", margin: "0px" }}>
@@ -52,7 +55,8 @@ const UserItem = ({
           )}
           {addMembers &&
             (isGroupMember ? (
-              _id !== userNow._id && ( // Condition to hide button for current user
+              _id !== userNow._id &&
+              creatorId === userNow._id && (
                 <button
                   onClick={() => handler(_id)}
                   type="button"
