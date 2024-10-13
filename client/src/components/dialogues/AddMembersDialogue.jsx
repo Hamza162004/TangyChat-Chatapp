@@ -8,17 +8,21 @@ import {
   Typography,
 } from "@mui/material";
 import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
 import UserItem from "../shared/UserItem";
 import chatService from "../../service/chatService";
+import { useParams } from "react-router-dom";
 
-const AddMembersDialogue = ({ open, handleClose, isLoadingAddMember, refreshGroupDetails }) => {
+const AddMembersDialogue = ({
+  open,
+  handleClose,
+  isLoadingAddMember,
+  refreshGroupDetails,
+}) => {
   const [members, setMembers] = useState([]);
   const [selectedMembers, setSelectedMembers] = useState([]);
 
-  const location = useLocation();
-  const searchParams = new URLSearchParams(location.search);
-  const groupId = searchParams.get("group");
+  const params = useParams();
+  const groupId = params.chatId;
 
   const selectMemberHandler = (_id) => {
     setSelectedMembers((prev) =>

@@ -2,11 +2,13 @@ import React, { useEffect, useState, lazy, Suspense } from "react";
 import AppLayout from "../components/layout/AppLayout";
 import { Done, Edit } from "@mui/icons-material";
 import { Backdrop, TextField, Typography } from "@mui/material";
-import { useParams, useSearchParams } from "react-router-dom";
-import { SampleRequests } from "../constants/SampleData";
+import { useParams } from "react-router-dom";
 import UserItem from "../components/shared/UserItem";
 import { orange } from "../constants/color";
 import chatService from "../service/chatService";
+import { useSelector, useDispatch } from "react-redux";
+import { setGroup } from "../redux/Slice/groupSlice";
+import { setCreator } from "../redux/Slice/creatorSlice";
 
 const Group = () => {
   const ConfirmDeleteDialogue = lazy(() =>
@@ -21,7 +23,12 @@ const Group = () => {
   const [groupMembers, setGroupMembers] = useState([]);
   const [isEdit, setIsEdit] = useState(false);
 
-  const {chatId} = useParams()
+  const dispatch = useDispatch();
+
+  const currentUser = useSelector((state) => state.user.user || {});
+  const creatorId = useSelector((state) => state.creator.creator);
+
+  const { chatId } = useParams();
 
   const updateGroupName = async () => {
     try {
@@ -37,6 +44,7 @@ const Group = () => {
       const result = await chatService.getChatDetails(chatId);
       setGroupNewName(result.chat.name);
       setGroupMembers(result.chat.members);
+      dispatch(setCreator(result.chat.creator));
     } catch (error) {
       console.log("Error fetching Group Details:", error);
     }
@@ -47,16 +55,31 @@ const Group = () => {
   };
 
   useEffect(() => {
-    fetchGroupDetail();
+    const fetchData = async () => {
+      try {
+        await fetchGroupDetail();
+      } catch (error) {
+        console.log("Error fetching Group Details:", error);
+      }
+    };
+
+    fetchData();
   }, [chatId]);
 
   const closeConfirmDeleteDialog = () => {
+    console.log("Please Close naa")
     setIsDeleteDialog(false);
   };
 
-  const deleteHandler = () => {
-    console.log("del");
-    closeConfirmDeleteDialog();
+  const deleteHandler = async () => {
+    try {
+      await chatService.leaveGroup(chatId);
+      const result = await chatService.getGroupChats();
+      dispatch(setGroup(result.groupChats));
+      closeConfirmDeleteDialog();
+    } catch (error) {
+      console.log("Error leaving Group :", error);
+    }
   };
 
   const removeMemberHandler = async (_id) => {
@@ -90,12 +113,14 @@ const Group = () => {
           ) : (
             <>
               <h1 className="text-2xl mx-3">{groupNewName}</h1>
-              <button
-                className="text-gray-500 hover:text-gray-400"
-                onClick={() => setIsEdit(true)}
-              >
-                <Edit />
-              </button>
+              {currentUser && creatorId === currentUser._id && (
+                <button
+                  className="text-gray-500 hover:text-gray-400"
+                  onClick={() => setIsEdit(true)}
+                >
+                  <Edit />
+                </button>
+              )}
             </>
           )}
         </div>
@@ -117,32 +142,36 @@ const Group = () => {
                   key={i._id}
                   user={i}
                   handler={removeMemberHandler}
-                  addMembers={true}
                   isGroupMember={true}
+                  addMembers={true}
                 />
               </div>
             ))}
           </div>
+
           <div className="flex flex-col pt-10 items-center">
-            <button
-              onClick={() => setIsAddMembers(true)}
-              type="button"
-              className="text-white flex items-center bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                className="size-4 mr-2"
+            {creatorId === currentUser._id && (
+              <button
+                onClick={() => setIsAddMembers(true)}
+                type="button"
+                className="text-white flex items-center bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
               >
-                <path
-                  fillRule="evenodd"
-                  d="M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              Add Members
-            </button>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  className="size-4 mr-2"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                Add Members
+              </button>
+            )}
+
             <button
               onClick={() => setIsDeleteDialog(true)}
               type="button"
@@ -160,7 +189,7 @@ const Group = () => {
                   clipRule="evenodd"
                 />
               </svg>
-              Delete Group
+              Exit Group
             </button>
           </div>
         </div>

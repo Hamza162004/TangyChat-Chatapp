@@ -1,5 +1,4 @@
 import instance from "./interceptor";
-import storageService from "./storageService";
 
 const signupAPI = async (formData) => {
   try {

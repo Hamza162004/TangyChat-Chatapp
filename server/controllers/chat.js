@@ -231,7 +231,7 @@ const leaveGroup = async (req, res, next) => {
   if (!chat.groupChat) {
     return next(new ErrorHandler(`Not a group chat`, 400));
   }
-  if (chat.members.includes(user._id.toString())) {
+  if (!chat.members.includes(user._id)) {
     return next(new ErrorHandler(`User does not belong to the group`, 403));
   }
   if (chat.members.length <= 3) {
@@ -241,7 +241,6 @@ const leaveGroup = async (req, res, next) => {
   const remaimingMem = chat.members.filter(
     (i) => i._id.toString() !== user._id.toString()
   );
-  console.log({ remaimingMem });
 
   if (chat.creator.toString() === user._id.toString()) {
     chat.creator = remaimingMem[0];
