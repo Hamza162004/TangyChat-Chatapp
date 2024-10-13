@@ -11,12 +11,15 @@ import { useParams } from 'react-router-dom'
 import chatService from '../service/chatService'
 import messageService from '../service/messageService'
 import { useSocketEventHandler } from '../utils/helper'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useInfiniteScrollTop } from '6pp'
 import { AppContext } from '../context/SideMenuStates'
+import toast from 'react-hot-toast'
+import { removeMessageAlert } from '../redux/Slice/chatSlice'
 
 const Chat = ({}) => {
   const {chatId} = useParams()
+  const dispatch = useDispatch()
   console.log(chatId)
 
   const user = useSelector((state) => state.user.user); 
@@ -48,10 +51,14 @@ const Chat = ({}) => {
         console.error('Error fetching chat details:', error);
       }
     };
-    setMessages([])
-    setOldMessages([])
-    setPage(1)
+    dispatch(removeMessageAlert(chatId))
     fetchChatDetails();
+    return(()=>{
+      setMessages([])
+      setOldMessages([])
+      setPage(1)
+    })
+    
   }, [chatId]);
 
   const fetchChatMessages = async(chatId,page)=>{
