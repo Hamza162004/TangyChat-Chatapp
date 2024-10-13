@@ -14,8 +14,9 @@ const fileFormat = (url="")=>{
     return 'file'
 }
 
-const transformImage = (url='',size)=>{
-    return url
+const transformImage = (url='',width = 200)=>{
+    const newURL = url.replace('upload/',`upload/dpr_auto/w_${width}/`)
+    return newURL
 }
 
 export {fileFormat,transformImage}

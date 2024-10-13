@@ -19,7 +19,7 @@ const Chat = ({}) => {
   const {chatId} = useParams()
   console.log(chatId)
 
-  const user = useSelector((state) => state.user.user); // 'state.user' is the user slice
+  const user = useSelector((state) => state.user.user); 
 
   const [chatDetails , setChatDetails] = useState({})
   const [message, setMessage] = useState('')
@@ -48,7 +48,7 @@ const Chat = ({}) => {
         console.error('Error fetching chat details:', error);
       }
     };
-
+    setMessages([])
     setOldMessages([])
     setPage(1)
     fetchChatDetails();
@@ -70,7 +70,7 @@ const Chat = ({}) => {
   
   const containerRef = useRef(null)
   const socket = getSocket()
-  const {data:oldMessages,setData:setOldMessages} = useInfiniteScrollTop(containerRef,messageData?.totalPages,page,setPage,messageData?.messages)
+  const { data:oldMessages, setData:setOldMessages} = useInfiniteScrollTop(containerRef,messageData?.totalPages,page,setPage,messageData?.messages)
 
 
   const sendMessageHandler = () => {
