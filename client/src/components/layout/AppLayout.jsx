@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, useCallback } from "react";
 import Title from "../shared/Title";
 import { Grid } from "@mui/material";
 import SideMenu from "./SideMenu";
@@ -14,6 +14,11 @@ import Notifications from "../specifics/Notifications";
 import userService from "../../service/userService";
 import { useDispatch } from "react-redux";
 import { setUser } from "../../redux/Slice/userSlice";
+import { NEW_MESSAGE_ALERT, NEW_REQUEST } from "../../constants/event";
+import { incrementNotificationCount } from "../../redux/Slice/notificationSlice";
+import { useSocketEventHandler } from "../../utils/helper";
+import { getSocket } from "../../context/Socket";
+import { setNewMessageAlert } from "../../redux/Slice/chatSlice";
 
 const AppLayout = () => (WrappedComponents) => {
   return (props) => {
@@ -49,6 +54,23 @@ const AppLayout = () => (WrappedComponents) => {
       }
       getMyProfile()
     },[])
+
+    const socket = getSocket()
+
+    const newMessageAlertHandler = useCallback((data)=>{
+      if(data.chatId === chatId) return
+      dispatch(setNewMessageAlert(data))
+    },[chatId])
+
+    const newRequestHandler = useCallback(()=>{
+      dispatch(incrementNotificationCount())
+    },[])
+  
+    const eventHandler = {
+      [NEW_MESSAGE_ALERT]: newMessageAlertHandler,
+      [NEW_REQUEST]: newRequestHandler,
+    }
+    useSocketEventHandler(socket,eventHandler)
 
     return (
       <>
