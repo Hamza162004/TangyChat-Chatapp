@@ -1,5 +1,5 @@
 import React from "react";
-import { Avatar, Grid } from "@mui/material";
+import { Avatar, Badge, Grid } from "@mui/material";
 import { orange } from "../../constants/color";
 import { useNavigate } from "react-router-dom";
 import storageService from "../../service/storageService";
@@ -25,7 +25,7 @@ const SideMenu = ({
 }) => {
 
   const user = useSelector((state) => state.user);
-
+  const {notificationCount} = useSelector((state) => state.notification);
   const navigate = useNavigate();
 
   const openChatList = () => {
@@ -183,6 +183,7 @@ const SideMenu = ({
                     : ""
                 } `}
               >
+                <Badge badgeContent={notificationCount} color="secondary">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
@@ -197,6 +198,8 @@ const SideMenu = ({
                     clipRule="evenodd"
                   />
                 </svg>
+                </Badge>
+                
               </button>
             </div>
             <div className="w-full">

@@ -1,5 +1,5 @@
 import { Typography } from '@mui/material';
-import React, { memo } from 'react';
+import React, { memo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import AvatarCard from './AvatarCard';
 
