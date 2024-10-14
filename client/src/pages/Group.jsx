@@ -9,6 +9,7 @@ import chatService from "../service/chatService";
 import { useSelector, useDispatch } from "react-redux";
 import { setGroup } from "../redux/Slice/groupSlice";
 import { setCreator } from "../redux/Slice/creatorSlice";
+import { toast } from "react-hot-toast";
 
 const Group = () => {
   const ConfirmDeleteDialogue = lazy(() =>
@@ -33,9 +34,11 @@ const Group = () => {
   const updateGroupName = async () => {
     try {
       await chatService.updateChatDetails(chatId, groupNewName);
+      toast.success("Updated Group Name!")
       setIsEdit(false);
     } catch (error) {
       console.log("Error updating Group Name:", error);
+      toast.error("Error updating Group Name")
     }
   };
 
@@ -75,19 +78,23 @@ const Group = () => {
     try {
       await chatService.leaveGroup(chatId);
       const result = await chatService.getGroupChats();
+      toast.success("Group left!")
       dispatch(setGroup(result.groupChats));
       closeConfirmDeleteDialog();
     } catch (error) {
       console.log("Error leaving Group :", error);
+      toast.error("Error leaving Group");
     }
   };
 
   const removeMemberHandler = async (_id) => {
     try {
-      await chatService.removeGroupMember(chatId, _id);
+      const result = await chatService.removeGroupMember(chatId, _id);
+      toast.success(`${result.removedUser} removed from Group`)
       fetchGroupDetail();
     } catch (error) {
       console.log("Error in deleting group member:", error);
+      toast.error("Error in deleting group member")
     }
   };
 

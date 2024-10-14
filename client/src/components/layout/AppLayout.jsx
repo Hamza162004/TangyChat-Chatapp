@@ -12,10 +12,11 @@ import GroupList from "../specifics/GroupList";
 import { AppContext } from "../../context/SideMenuStates";
 import Notifications from "../specifics/Notifications";
 import userService from "../../service/userService";
-import { useDispatch } from "react-redux";
+import requestService from "../../service/requestService";
+import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "../../redux/Slice/userSlice";
 import { NEW_MESSAGE_ALERT, NEW_REQUEST } from "../../constants/event";
-import { incrementNotificationCount } from "../../redux/Slice/notificationSlice";
+import { incrementNotificationCount, setNotification } from "../../redux/Slice/notificationSlice";
 import { useSocketEventHandler } from "../../utils/helper";
 import { getSocket } from "../../context/Socket";
 import { setNewMessageAlert } from "../../redux/Slice/chatSlice";
@@ -53,6 +54,14 @@ const AppLayout = () => (WrappedComponents) => {
         dispatch(setUser(res.user))
       }
       getMyProfile()
+    },[])
+
+    useEffect(()=>{
+      const getNotifications = async ()=>{
+        const result = await requestService.requestNotification();
+        dispatch(setNotification(result.allRequest));
+      }
+      getNotifications()
     },[])
 
     const socket = getSocket()
