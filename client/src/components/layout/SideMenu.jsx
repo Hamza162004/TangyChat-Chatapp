@@ -79,6 +79,7 @@ const SideMenu = ({
       }
      storageService.removeToken();
       dispatch(clearUser)
+      openChatList();
       navigate("/");
       toast.success("Logged Out Successfully");
     } catch (error) {

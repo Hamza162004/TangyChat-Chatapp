@@ -4,9 +4,10 @@ import NotificationItem from "../shared/NotificationItem";
 import requestService from "../../service/requestService";
 import { useDispatch, useSelector } from "react-redux";
 import { setNotification } from "../../redux/Slice/notificationSlice";
+import { toast } from "react-hot-toast";
 
 const Notifications = () => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch()
   const { notification, fetched } = useSelector((state) => state.notification);
 
   const fetchRequests = async () => {
@@ -18,20 +19,18 @@ const Notifications = () => {
     }
   };
 
-  useEffect(() => {
-    if (!fetched) {
-      // Only fetch if data hasn't been fetched before
-      fetchRequests();
-    }
-  }, [fetched, dispatch]);
-
   // Function to handle accept/reject request
   const handleRequest = async (requestId, state) => {
     try {
-      await requestService.acceptRequest(requestId, state); // Call API to accept/reject request
+      const result = await requestService.acceptRequest(requestId, state); // Call API to accept/reject request
+      console.log(result);
+      if(result.status === "accepted"){
+        toast.success(`You and ${result.senderUsername} are now friends` );
+      }
       fetchRequests(); // Refetch the notifications after handling the request
     } catch (error) {
       console.error("Error handling request:", error);
+      toast.error("Error handling request");
     }
   };
 

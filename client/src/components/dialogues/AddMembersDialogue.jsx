@@ -11,6 +11,7 @@ import React, { useState, useEffect } from "react";
 import UserItem from "../shared/UserItem";
 import chatService from "../../service/chatService";
 import { useParams } from "react-router-dom";
+import { toast } from "react-hot-toast";
 
 const AddMembersDialogue = ({
   open,
@@ -53,12 +54,18 @@ const AddMembersDialogue = ({
   const addMembersSubmitHandler = async () => {
     try {
       await chatService.addGroupMember(groupId, selectedMembers);
+      if (selectedMembers.length > 1) {
+        toast.success("Added new members to group");
+      } else {
+        toast.success("Added new member to group");
+      }
       setSelectedMembers([]);
       setMembers([]);
       handleClose();
       refreshGroupDetails();
     } catch (error) {
       console.log("Error in adding members to group:", error);
+      toast.error("Error in adding members to group");
     }
   };
   return (
