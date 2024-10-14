@@ -7,7 +7,7 @@ const UserItem = ({
   handler,
   handlerIsLoading,
   addFriends = false,
-  addMembers = true,
+  addMembers = false,
   isGroupMember = false,
 }) => {
   const userNow = useSelector((state) => state.user.user);

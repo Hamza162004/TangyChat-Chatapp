@@ -3,6 +3,7 @@ import { List } from "@mui/material";
 import UserItem from "../shared/UserItem";
 import { useInputValidation } from "6pp";
 import chatService from "../../service/chatService";
+import { toast } from "react-hot-toast";
 
 const NewGroup = ({
   setIsNotification,
@@ -46,9 +47,10 @@ const NewGroup = ({
         groupName.value,
         selectedMembers
       );
-      console.log("Result is = ", result);
+      toast.success("Group Created Successfully!")
     } catch (error) {
       console.log("Error making Group:", error);
+      toast.error("Error making Group")
     }
   };
 

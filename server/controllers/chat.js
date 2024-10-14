@@ -1,4 +1,8 @@
-import { NEW_ATTACHMENT, NEW_MESSAGE, NEW_MESSAGE_ALERT } from "../constants/event.js";
+import {
+  NEW_ATTACHMENT,
+  NEW_MESSAGE,
+  NEW_MESSAGE_ALERT,
+} from "../constants/event.js";
 import { Chat } from "../models/chat.js";
 import { Message } from "../models/message.js";
 import { User } from "../models/user.js";
@@ -215,7 +219,7 @@ const removeGroupMember = async (req, res, next) => {
 
   return res
     .status(200)
-    .json({ success: true, message: "Member removed from the group" });
+    .json({ success: true, message: "Member removed from the group" , removedUser: userToRemove.username});
 };
 
 const leaveGroup = async (req, res, next) => {
@@ -257,16 +261,14 @@ const leaveGroup = async (req, res, next) => {
 };
 
 const sendAttachments = async (req, res, next) => {
-  const {chatId} = req.body;
+  const { chatId } = req.body;
   const [chat, user] = await Promise.all([
     Chat.findById(chatId),
     User.findById(req.user),
   ]);
 
-
-
   if (!chat) {
-    console.log({chat})
+    console.log({ chat });
     return next(new ErrorHandler(`No Chat with Id ${chatId} exists`, 400));
   }
   if (!chat.members.includes(user._id.toString())) {
@@ -281,7 +283,6 @@ const sendAttachments = async (req, res, next) => {
 
   const attachments = await uploadToCloudinary(files, "Tangy-attachments");
 
-
   const messageRealTime = {
     chat: chatId,
     sender: { name: user.username, avatar: user.avatar.url, _id: user._id },
@@ -295,11 +296,11 @@ const sendAttachments = async (req, res, next) => {
     attachments,
   };
   const message = await Message.create(messageDB);
-  emitEvent(req,NEW_MESSAGE, chat.members, {
+  emitEvent(req, NEW_MESSAGE, chat.members, {
     message: messageRealTime,
     chatId,
   });
-  emitEvent(req,NEW_MESSAGE_ALERT, chat.members, { chatId });
+  emitEvent(req, NEW_MESSAGE_ALERT, chat.members, { chatId });
 
   return res.status(200).json({ success: true, message });
 };
@@ -312,7 +313,13 @@ const getChatDetails = async (req, res, next) => {
       .populate("members", "username avatar")
       .lean();
     chat.members = chat.members.map((i) => {
-      return { _id: i._id, avatar: i.avatar.url, username: i.username };
+      return {
+        _id: i._id,
+        avatar: i.avatar
+          ? i.avatar.url
+          : "https://static.vecteezy.com/system/resources/thumbnails/002/318/271/small_2x/user-profile-icon-free-vector.jpg",
+        username: i.username,
+      };
     });
     return res.status(200).json({ success: true, chat });
   } else {
@@ -399,44 +406,47 @@ const getMyFriends = async (req, res, next) => {
   }
 };
 
-
 const getMyNonGroupFriends = async (req, res, next) => {
-    try {
-        const { id } = req.params;
+  try {
+    const { id } = req.params;
 
-        if (!id) {
-            return next(new ErrorHandler("Invalid group ID format", 400));
-        }
-
-        // Find the group chat and its members
-        const groupChat = await Chat.findById(id);
-        if (!groupChat) {
-            return next(new ErrorHandler("Group not found", 400));
-        }
-
-        // Retrieve non-group friends logic
-        const myChats = await Chat.find({ groupChat: false, members: req.user }).populate("members", "username avatar");
-        const friends = myChats.map(({ members }) => {
-            const otherMember = getOtherMember(members, req.user);
-            return {
-                _id: otherMember._id,
-                username: otherMember.username,
-                avatar: otherMember.avatar.url
-            };
-        });
-
-        // Filter out friends who are in the group
-        const nonGroupFriends = friends.filter(friend => !groupChat.members.includes(friend._id));
-
-        return res.status(200).json({ success: true, friends: nonGroupFriends });
-    } catch (error) {
-        // Debugging: Log the full error details
-        console.error('Error:', error);
-
-        return res.status(500).json({ success: false, message: error.message });
+    if (!id) {
+      return next(new ErrorHandler("Invalid group ID format", 400));
     }
-};
 
+    // Find the group chat and its members
+    const groupChat = await Chat.findById(id);
+    if (!groupChat) {
+      return next(new ErrorHandler("Group not found", 400));
+    }
+
+    // Retrieve non-group friends logic
+    const myChats = await Chat.find({
+      groupChat: false,
+      members: req.user,
+    }).populate("members", "username avatar");
+    const friends = myChats.map(({ members }) => {
+      const otherMember = getOtherMember(members, req.user);
+      return {
+        _id: otherMember._id,
+        username: otherMember.username,
+        avatar: otherMember.avatar.url,
+      };
+    });
+
+    // Filter out friends who are in the group
+    const nonGroupFriends = friends.filter(
+      (friend) => !groupChat.members.includes(friend._id)
+    );
+
+    return res.status(200).json({ success: true, friends: nonGroupFriends });
+  } catch (error) {
+    // Debugging: Log the full error details
+    console.error("Error:", error);
+
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
 
 export {
   createGroup,
