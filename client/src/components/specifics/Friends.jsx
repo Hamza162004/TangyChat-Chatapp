@@ -5,6 +5,7 @@ import UserItem from '../shared/UserItem';
 import requestService from "../../service/requestService";
 import userService from "../../service/userService";
 import { useInputValidation } from '6pp';
+import { toast } from "react-hot-toast";
 
 const Friends = () => {
 
@@ -43,11 +44,13 @@ const Friends = () => {
   // Handle sending friend request and then refresh users
   const handleSendRequest = async (receiverId) => {
     try {
-      await requestService.sendFriendRequestAPI(receiverId);
+      const result = await requestService.sendFriendRequestAPI(receiverId);
+      toast.success(`Friend Request sent to ${result.receiverUsername}` );
       // After sending the friend request, refetch the user list
       fetchUsers(fsearch.value);  // Fetch users with the current search term
     } catch (error) {
       console.error("Error sending friend request:", error);
+      toast.error("Error sending friend request");
     }
   };
 
