@@ -22,9 +22,9 @@ const ChatItem = ({
             className='hover:bg-gray-200 border-b-black border-b'
             onContextMenu={(e) => handleDeleteChatOpen(e, _id, groupChat)}
         >
-            <div className={`flex items-center relative p-4 gap-4 ${sameSender ? 'bg-black text-white' : ''}`}>
+            <div className={`flex items-center relative p-4 ${sameSender ? 'bg-black text-white' : ''}`}>
                 <AvatarCard avatar={avatarData} /> {/* Pass the prepared avatar data */}
-                <div className='flex flex-col mx-2'>
+                <div className='flex flex-col'>
                     <Typography>{name}</Typography>
                     {newMessageAlert && (
                         <Typography>{newMessageAlert.count} New Messages</Typography>

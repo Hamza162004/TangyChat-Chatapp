@@ -71,15 +71,15 @@ const getMyChats = async (req, res, next) => {
         groupChat,
         creator,
         avatar: groupChat
-          ? filteredMembers.slice(0, 3).map((member) => member.avatar || "")
+          ? filteredMembers.slice(0, 3).map((member) => member.avatar || {})
           : otherMember
-          ? otherMember.avatar || ""
-          : "",
+            ? otherMember.avatar || ""
+            : "",
         name: groupChat
           ? name
           : otherMember
-          ? otherMember.username || "No Name"
-          : "Unknown User",
+            ? otherMember.username || "No Name"
+            : "Unknown User",
       };
     });
 
@@ -219,7 +219,7 @@ const removeGroupMember = async (req, res, next) => {
 
   return res
     .status(200)
-    .json({ success: true, message: "Member removed from the group" , removedUser: userToRemove.username});
+    .json({ success: true, message: "Member removed from the group", removedUser: userToRemove.username });
 };
 
 const leaveGroup = async (req, res, next) => {
@@ -309,18 +309,26 @@ const getChatDetails = async (req, res, next) => {
   const { id } = req.params;
   const userId = req.user;
   if (req.query.populate) {
-    const chat = await Chat.findById(id)
-      .populate("members", "username avatar")
-      .lean();
-    chat.members = chat.members.map((i) => {
-      return {
-        _id: i._id,
-        avatar: i.avatar
-          ? i.avatar.url
-          : "https://static.vecteezy.com/system/resources/thumbnails/002/318/271/small_2x/user-profile-icon-free-vector.jpg",
-        username: i.username,
-      };
-    });
+    const chat = await Chat.findById(id).populate("members", "username avatar").lean();
+    // chat.members = chat.members.map((i) => {
+    //   return {
+    //     _id: i._id,
+    //     avatar: i.avatar
+    //       ? i.avatar.url
+    //       : "https://static.vecteezy.com/system/resources/thumbnails/002/318/271/small_2x/user-profile-icon-free-vector.jpg",
+    //     username: i.username,
+    //   };
+    // });
+    const filteredMembers = chat.members.filter(
+      (member) => member._id.toString() !== userId
+    );
+    if(!chat.groupChat){
+      let otherMember = getOtherMember(chat.members,userId)
+      chat.name = otherMember.username
+      chat.avatar = otherMember?.avatar
+    }else{
+      chat.avatar = filteredMembers.slice(0, 3).map((member) => member.avatar || {})
+    }
     return res.status(200).json({ success: true, chat });
   } else {
     const chat = await Chat.findById(id);

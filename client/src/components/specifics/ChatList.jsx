@@ -40,9 +40,6 @@ const ChatList = () => {
     };
   }, [csearch.value]);
 
-  useEffect(()=>{
-    console.log({newMessageAlert})
-  },[newMessageAlert])
 
   return (
     <>
