@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect, useCallback } from "react";
+import React, { useState, useContext, useEffect, useCallback, useRef } from "react";
 import Title from "../shared/Title";
 import { Grid } from "@mui/material";
 import SideMenu from "./SideMenu";
@@ -25,6 +25,12 @@ const AppLayout = () => (WrappedComponents) => {
   return (props) => {
     const params = useParams();
     const chatId = params.chatId;
+    const chatIdRef = useRef(chatId)
+
+    useEffect(() => {
+      chatIdRef.current = chatId;
+    }, [chatId]);
+    
 
     const {
       isProfile,
@@ -67,9 +73,13 @@ const AppLayout = () => (WrappedComponents) => {
     const socket = getSocket()
 
     const newMessageAlertHandler = useCallback((data)=>{
-      if(data.chatId === chatId) return
+      console.log('----Received message Alert-----')
+      if(data.chatId === chatIdRef.current){
+        console.log('ChatId presnt :',chatIdRef.current)
+        return
+      } 
       dispatch(setNewMessageAlert(data))
-    },[chatId])
+    },[])
 
     const newRequestHandler = useCallback(()=>{
       dispatch(incrementNotificationCount())
