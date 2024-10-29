@@ -1,5 +1,5 @@
 import { Server } from "socket.io";
-import { NEW_MESSAGE, NEW_MESSAGE_ALERT } from "./constants/event.js";
+import { NEW_MESSAGE, NEW_MESSAGE_ALERT, TYPING_ENDED, TYPING_STARTED } from "./constants/event.js";
 import { v4 as uuid } from 'uuid'
 import { Message } from "./models/message.js";
 import { isSocketAuthenticated } from "./middlewares/auth.js";
@@ -21,10 +21,9 @@ const initializeSocket = (server) => {
     io.on('connection', async (socket) => {
         const user = socket.user
         usersocketIDs.set(user._id.toString(), socket.id)
+        console.log({usersocketIDs})
 
         socket.on(NEW_MESSAGE, async ({ chatId, members, message }) => {
-            console.log({chatId,members,message,user})
-
             const messageRealTime = {
                 chat: chatId,
                 _id: uuid(), //temp id using uuid
@@ -44,17 +43,33 @@ const initializeSocket = (server) => {
             }
 
             const membersSocket = getSockets(members)
+            const membersExceptUser = members.filter((member)=>member._id.toString() !== user._id.toString())
+            const membersExcludingUserSocket = getSockets(membersExceptUser)
+            console.log('------senDing message and alert-----')
+            console.log({membersSocket})
+            console.log({membersExcludingUserSocket})
             io.to(membersSocket).emit(NEW_MESSAGE, {
                 chatId,
                 message: messageRealTime
             })
-            io.to(membersSocket).emit(NEW_MESSAGE_ALERT,{chatId})
+            io.to(membersExcludingUserSocket).emit(NEW_MESSAGE_ALERT,{chatId})
 
             await Message.create(messageForDB)
         })
 
+        socket.on(TYPING_STARTED,({chatId,members})=>{
+            const membersSocket = getSockets(members)
+            io.to(membersSocket).emit(TYPING_STARTED,{chatId})
+        })
+
+        socket.on(TYPING_ENDED,({chatId,members})=>{
+            const membersSocket = getSockets(members)
+            io.to(membersSocket).emit(TYPING_ENDED,{chatId})
+        })
+
         socket.on('disconnect', () => {
             usersocketIDs.delete(user._id.toString())
+            console.log({usersocketIDs})
         })
     });
     return io
