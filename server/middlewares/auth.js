@@ -12,7 +12,7 @@ const isLoggedIn = (req, res, next) => {
         req.user = data._id;
         next();
     } catch (error) {
-        console.log("Fetch token error")
+      return next(new ErrorHandler("Fetch Token error", 400));
     }
 }
 
