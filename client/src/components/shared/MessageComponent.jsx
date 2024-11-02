@@ -26,14 +26,14 @@ const MessageComponent = ({ message,user}) => {
                 {!sameSender?sender.username:'You'}
             </div>
             {
-                content && <div className={`chat-bubble text-white ${sameSender ? 'bg-orange-500 ' : ''} `}>{content}</div>
+                content && <div className={`chat-bubble text-white ${sameSender ? 'bg-indigo-600 ' : ''} `}>{content}</div>
             }
             {
                 attachments.length>0 && (
                     attachments.map((attachment,index)=>{
                         const url = attachment.url
                         const file = fileFormat(url)
-                        return<div key={index} className={`chat-bubble text-white ${sameSender ? 'bg-orange-500 ' : ''} `}>
+                        return<div key={index} className={`chat-bubble text-white ${sameSender ? 'bg-indigo-600 ' : ''} `}>
                             <Box >
                             <a href={url} target='_blank' download className='text-black'>
                                 <RenderAttachment file={file} url={transformImage(url)} />
