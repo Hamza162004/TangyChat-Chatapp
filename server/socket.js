@@ -1,5 +1,5 @@
 import { Server } from "socket.io";
-import { NEW_MESSAGE, NEW_MESSAGE_ALERT, TYPING_ENDED, TYPING_STARTED } from "./constants/event.js";
+import { CURRENT_ONLINE_USERS, NEW_MESSAGE, NEW_MESSAGE_ALERT, TYPING_ENDED, TYPING_STARTED, USER_CONNECTED, USER_DISCONNECTED } from "./constants/event.js";
 import { v4 as uuid } from 'uuid'
 import { Message } from "./models/message.js";
 import { isSocketAuthenticated } from "./middlewares/auth.js";
@@ -22,6 +22,8 @@ const initializeSocket = (server) => {
         const user = socket.user
         usersocketIDs.set(user._id.toString(), socket.id)
         console.log({usersocketIDs})
+        socket.emit(CURRENT_ONLINE_USERS,Array.from(usersocketIDs.keys()))
+        socket.broadcast.emit(USER_CONNECTED,{ userId: user._id })
 
         socket.on(NEW_MESSAGE, async ({ chatId, members, message }) => {
             const messageRealTime = {
@@ -69,6 +71,7 @@ const initializeSocket = (server) => {
 
         socket.on('disconnect', () => {
             usersocketIDs.delete(user._id.toString())
+            socket.broadcast.emit(USER_DISCONNECTED,{ userId: user._id })
             console.log({usersocketIDs})
         })
     });
