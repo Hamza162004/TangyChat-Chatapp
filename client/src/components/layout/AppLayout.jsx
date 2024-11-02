@@ -15,11 +15,12 @@ import userService from "../../service/userService";
 import requestService from "../../service/requestService";
 import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "../../redux/Slice/userSlice";
-import { NEW_MESSAGE_ALERT, NEW_REQUEST } from "../../constants/event";
+import { CURRENT_ONLINE_USERS, NEW_MESSAGE_ALERT, NEW_REQUEST, USER_CONNECTED, USER_DISCONNECTED } from "../../constants/event";
 import { incrementNotificationCount, setNotification } from "../../redux/Slice/notificationSlice";
 import { useSocketEventHandler } from "../../utils/helper";
 import { getSocket } from "../../context/Socket";
 import { setNewMessageAlert } from "../../redux/Slice/chatSlice";
+import { addOnlineUser, removeOnlineUser, setOnlineUsers } from "../../redux/Slice/onlineUsersSlice";
 
 const AppLayout = () => (WrappedComponents) => {
   return (props) => {
@@ -84,10 +85,28 @@ const AppLayout = () => (WrappedComponents) => {
     const newRequestHandler = useCallback(()=>{
       dispatch(incrementNotificationCount())
     },[])
+
+    const onlineUsersInfoHandler = useCallback((data)=>{
+      console.log('Online Users : ',data)
+      dispatch(setOnlineUsers(data))
+    },[])
+
+    const newUserOnlineHandler = useCallback((data)=>{
+      console.log('New User : ', data.userId)
+      dispatch(addOnlineUser(data.userId))
+    },[])
+
+    const userDisconnectedHandler = useCallback((data)=>{
+      console.log('User Disconnected : ', data.userId)
+      dispatch(removeOnlineUser(data.userId))
+    },[])
   
     const eventHandler = {
       [NEW_MESSAGE_ALERT]: newMessageAlertHandler,
       [NEW_REQUEST]: newRequestHandler,
+      [CURRENT_ONLINE_USERS] : onlineUsersInfoHandler,
+      [USER_CONNECTED]:newUserOnlineHandler,
+      [USER_DISCONNECTED]:userDisconnectedHandler,
     }
     useSocketEventHandler(socket,eventHandler)
 
@@ -119,7 +138,6 @@ const AppLayout = () => (WrappedComponents) => {
                 xs: "none",
                 sm: "block",
               },
-              borderRight: "1px solid black",
             }}
           >
             {isChatList && (
