@@ -8,6 +8,7 @@ import { getSocket } from "../../context/Socket";
 import { useDispatch } from "react-redux";
 import { clearUser } from "../../redux/Slice/userSlice";
 import { useSelector } from "react-redux";
+import { Bell, LogOut, MessageSquare, Settings, User2, UserPlus, Users } from "lucide-react";
 
 const SideMenu = ({
   isNotification,
@@ -89,7 +90,7 @@ const SideMenu = ({
 
   return (
     <>
-      <Grid item xs={2} sm={0.8} sx={{ bgcolor: orange }} height={"100%"}>
+      {/* <Grid item xs={2} sm={0.8} sx={{ bgcolor: orange }} height={"100%"}>
         <div className="flex flex-col items-center w-full h-full">
           <div
             className={`flex flex-col w-full py-4 border-b border-b-black items-center space-y-3 ${
@@ -226,9 +227,79 @@ const SideMenu = ({
             </div>
           </div>
         </div>
-      </Grid>
+      </Grid> */}
+      <div className="w-20 bg-gradient-to-b from-indigo-900 to-indigo-500 h-full flex flex-col items-center py-6">
+      <div className="flex-1 flex flex-col items-center space-y-6">
+        <button 
+          onClick={() => setActiveMenu('profile')}
+          className={`relative p-1 rounded-xl transition-all duration-300 transform hover:scale-110 group `}
+        >
+          <div className="relative">
+            <img
+              src={user.user?.avatar?.url}
+              alt="Profile"
+              className="w-12 h-12 rounded-xl object-cover transition-transform duration-300 group-hover:rounded-full"
+            />
+            <div className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-400 rounded-full border-2 border-gray-900"></div>
+          </div>
+        </button>
+        
+        <div className="space-y-6 w-full px-3">
+          <MenuItem
+            icon={MessageSquare}
+            onClick={() => setActiveMenu('chats')}
+            badge={5}
+          />
+
+
+
+          <MenuItem
+            icon={Bell}
+            onClick={() => setActiveMenu('notifications')}
+            badge={3}
+          />
+
+          <MenuItem
+            icon={UserPlus}
+            onClick={() => {}}
+          />
+          
+          
+        </div>
+      </div>
+
+      <button className="p-3 rounded-xl text-gray-400 hover:text-rose-500 hover:bg-rose-50 transition-all duration-300 transform hover:scale-110">
+        <LogOut size={24} />
+      </button>
+    </div>
     </>
   );
 };
+
+const MenuItem = ({ 
+  icon: Icon, 
+  isActive, 
+  onClick, 
+  badge 
+}) => (
+  <button
+    onClick={onClick}
+    className={`relative p-3 rounded-xl transition-all duration-300 transform hover:scale-110 ${
+      isActive
+        ? 'bg-gradient-to-br from-indigo-500 to-indigo-600 text-white shadow-lg shadow-indigo-500/30'
+        : 'text-gray-400 hover:text-indigo-600 hover:bg-indigo-50'
+    }`}
+  >
+    <Icon size={24} />
+    {badge && (
+      <span className="absolute -top-1 -right-1 w-5 h-5 bg-rose-500 text-white text-xs font-medium rounded-full flex items-center justify-center animate-pulse">
+        {badge}
+      </span>
+    )}
+    <div className={`absolute left-14 px-3 py-1 bg-gray-800 text-white text-sm rounded-md whitespace-nowrap opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform -translate-x-2 group-hover:translate-x-0`}>
+      Menu item
+    </div>
+  </button>
+);
 
 export default SideMenu;
