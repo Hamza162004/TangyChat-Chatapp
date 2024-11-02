@@ -30,8 +30,7 @@ const isSocketAuthenticated = async(socket, next) => {
       socket.user = user; 
       next(); 
     } catch (error) {
-      console.error("Token verification failed:", error);
-      return next(new ErrorHandler(error.message,400));
+      return next(new ErrorHandler(error.message,401));
     }
   };
 
