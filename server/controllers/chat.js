@@ -62,6 +62,7 @@ const getMyChats = async (req, res, next) => {
         (member) => member._id.toString() !== userId
       );
       const otherMember = getOtherMember(members, userId);
+      
 
       return {
         _id,
