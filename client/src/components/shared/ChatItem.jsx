@@ -54,7 +54,7 @@ const ChatItem = ({
                     ) : (
                         <>
                             <img
-                                src={transformImage(avatar.url, 100)}
+                                src={avatar.url?transformImage(avatar.url, 100):"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZw4HYx8PHlE8ZniW1hqck5nZeKaYZSqG56g&s"}
                                 alt={name}
                                 className="w-14 h-14 rounded-full ring-2 ring-purple-100"
                             />
@@ -95,14 +95,14 @@ const GroupAvatar = ({ avatar }) => {
                 <div className="absolute inset-0 flex">
                     <div className="w-1/2 overflow-hidden">
                         <img
-                            src={transformImage(avatar[0].url, 100)}
+                            src={avatar[0].url?transformImage(avatar[0].url, 100):"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZw4HYx8PHlE8ZniW1hqck5nZeKaYZSqG56g&s"}
                             alt="Member 1"
                             className="w-14 h-14 rounded-l-full object-cover border-2 border-white"
                         />
                     </div>
                     <div className="w-1/2 overflow-hidden">
                         <img
-                            src={transformImage(avatar[1].url, 100)}
+                            src={avatar[1].url?transformImage(avatar[1].url, 100):"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZw4HYx8PHlE8ZniW1hqck5nZeKaYZSqG56g&s"}
                             alt="Member 2"
                             className="w-14 h-14 rounded-r-full object-cover border-2 border-white"
                         />
@@ -115,7 +115,7 @@ const GroupAvatar = ({ avatar }) => {
         {avatar?.slice(0, 3).map((a, index) => (
             <img
                 key={a.public_id}
-                src={transformImage(a.url, 50)}
+                src={a.url?transformImage(a.url, 50):"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZw4HYx8PHlE8ZniW1hqck5nZeKaYZSqG56g&s"}
                 alt="Member"
                 className={`absolute w-8 h-8 rounded-full border-2 border-white ${index === 0 ? 'top-0 left-0' :
                     index === 1 ? 'top-0 right-0' :

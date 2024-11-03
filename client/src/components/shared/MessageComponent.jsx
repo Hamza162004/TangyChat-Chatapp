@@ -19,7 +19,7 @@ const MessageComponent = ({ message,user}) => {
                 <div className="w-10 rounded-full">
                     <img
                         alt="Tailwind CSS chat bubble component"
-                        src={transformImage(sender.avatar,100)} />
+                        src={sender?.avatar ?transformImage(sender.avatar,100):"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZw4HYx8PHlE8ZniW1hqck5nZeKaYZSqG56g&s"} />
                 </div>
             </div>
             <div className="chat-header">
