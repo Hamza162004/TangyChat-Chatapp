@@ -96,8 +96,7 @@ const ChatList = () => {
             <Stack
             width={"100%"}
             direction={"column"}
-            overflow-y={"auto"}
-            style={{ height: "calc(100% - 156px)" }}
+            style={{ height: "calc(100% - 156px)", overflowY:"auto" , overflowX:"hidden" }}
           >
             {
               chats.map((data) => {

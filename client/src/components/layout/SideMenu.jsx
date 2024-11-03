@@ -9,6 +9,7 @@ import { useDispatch } from "react-redux";
 import { clearUser } from "../../redux/Slice/userSlice";
 import { useSelector } from "react-redux";
 import { Bell, LogOut, MessageSquare, Settings, User2, UserPlus, Users } from "lucide-react";
+import { transformImage } from "../../libs/Features";
 
 const SideMenu = ({
   isNotification,
@@ -233,11 +234,16 @@ const SideMenu = ({
       <div className="flex-1 flex flex-col items-center space-y-6">
         <button 
           onClick={openProfile}
-          className={`relative p-1 rounded-xl transition-all duration-300 transform hover:scale-110 group `}
+          className={`relative p-1 rounded-xl transition-all duration-300 transform hover:scale-110 group ${
+            isProfile
+              ? 'ring-2 ring-indigo-400 shadow-lg' 
+              : 'hover:ring-2 hover:ring-indigo-400'
+          } `}
         >
           <div className="relative">
+            
             <img
-              src={user.user?.avatar?.url}
+              src={user.user?.avatar? transformImage(user.user?.avatar?.url,200):"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZw4HYx8PHlE8ZniW1hqck5nZeKaYZSqG56g&s" }
               alt="Profile"
               className="w-12 h-12 rounded-xl object-cover transition-transform duration-300 group-hover:rounded-full"
             />
@@ -250,6 +256,7 @@ const SideMenu = ({
             icon={MessageSquare}
             onClick={openChatList}
             badge={totalMessagesAlert}
+            isActive={isChatList}
           />
 
 
@@ -258,11 +265,13 @@ const SideMenu = ({
             icon={Bell}
             onClick={openNotification}
             badge={notificationCount}
+            isActive={isNotification}
           />
 
           <MenuItem
             icon={UserPlus}
             onClick={openFriends}
+            isActive={isFriends}
           />
           
           

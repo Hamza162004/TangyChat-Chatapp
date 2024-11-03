@@ -222,62 +222,69 @@ const Group = () => {
         )}
       </div> */}
       <div className="h-full w-full bg-white flex flex-col">
-      <div className="relative h-64 bg-gradient-to-br from-indigo-600 to-indigo-800 flex items-center justify-center px-6">
-        <Link 
-        to={`/chat/${chatId}`}
-          className="absolute top-4 right-4 p-2 hover:bg-white/10 rounded-full transition-colors"
-        >
-          <X className="text-white"  size={24} />
-        </Link>
-        
-        <div className="text-center">
-          <div className="mb-4 bg-white/10 p-4 rounded-full inline-block backdrop-blur-sm">
-            <Users className="text-white" size={32} />
-          </div>
-          {isEdit ? (
-            <div className="flex flex-row">
-            <input
-              type="text"
-              value={groupNewName}
-              onChange={(e) => setGroupNewName(e.target.value)}
-              className="text-2xl font-bold bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-white/50 text-white text-center w-full max-w-md"
-            />
-            <button
-                onClick={updateGroupName}
-                className="p-1.5 ml-4 hover:bg-white/10 rounded-lg transition-colors"
-              >
-                <Check className="text-white/80" size={20} />
-              </button>
-              </div>
-          ) : (
-            <div className="flex items-center justify-center space-x-2">
-              <h2 className="text-2xl font-bold text-white">{groupNewName}</h2>
-              <button
-                onClick={() => setIsEdit(true)}
-                className="p-1.5 hover:bg-white/10 rounded-lg transition-colors"
-              >
-                <Pencil className="text-white/80" size={16} />
-              </button>
+        <div className="relative h-64 bg-gradient-to-br from-indigo-600 to-indigo-800 flex items-center justify-center px-6">
+          <Link
+            to={`/chat/${chatId}`}
+            className="absolute top-4 right-4 p-2 hover:bg-white/10 rounded-full transition-colors"
+          >
+            <X className="text-white" size={24} />
+          </Link>
+
+          <div className="text-center">
+            <div className="mb-4 bg-white/10 p-4 rounded-full inline-block backdrop-blur-sm">
+              <Users className="text-white" size={32} />
             </div>
-          )}
-          <p className="text-white/80 mt-2">{groupMembers.length} members</p>
-        </div>
-      </div>
+            {isEdit ? (
+              <div className="flex flex-row">
+                <input
+                  type="text"
+                  value={groupNewName}
+                  onChange={(e) => setGroupNewName(e.target.value)}
+                  className="text-2xl font-bold bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-white/50 text-white text-center w-full max-w-md"
+                />
+                <button
+                  onClick={updateGroupName}
+                  className="p-1.5 ml-4 hover:bg-white/10 rounded-lg transition-colors"
+                >
+                  <Check className="text-white/80" size={20} />
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center justify-center space-x-2">
+                <h2 className="text-2xl font-bold text-white">{groupNewName}</h2>
+                {
+                  currentUser?._id === creatorId &&
+                  <button
+                    onClick={() => setIsEdit(true)}
+                    className="p-1.5 hover:bg-white/10 rounded-lg transition-colors">
+                    <Pencil className="text-white/80" size={16} />
+                  </button>
+                }
 
-      <div className="flex-1 overflow-y-auto px-6 py-8">
-        <div className="max-w-2xl mx-auto">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-lg font-semibold text-gray-900">Members</h3>
-            <button
-              onClick={() => setIsAddMembers(true)}
-              className="flex items-center space-x-2 text-indigo-600 hover:text-indigo-700 px-4 py-2 rounded-lg hover:bg-indigo-50 transition-colors"
-            >
-              <Plus size={20} />
-              <span>Add Member</span>
-            </button>
+              </div>
+            )}
+            <p className="text-white/80 mt-2">{groupMembers.length} members</p>
           </div>
+        </div>
 
-          {/* <div className="relative mb-6">
+        <div className="flex-1 overflow-y-auto px-6 py-8">
+          <div className="max-w-2xl mx-auto">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-lg font-semibold text-gray-900">Members</h3>
+              {
+                currentUser?._id === creatorId &&
+                <button
+                onClick={() => setIsAddMembers(true)}
+                className="flex items-center space-x-2 text-indigo-600 hover:text-indigo-700 px-4 py-2 rounded-lg hover:bg-indigo-50 transition-colors"
+              >
+                <Plus size={20} />
+                <span>Add Member</span>
+              </button>
+              }
+              
+            </div>
+
+            {/* <div className="relative mb-6">
             <input
               type="text"
               placeholder="Search members..."
@@ -288,53 +295,52 @@ const Group = () => {
             <Search className="absolute left-3 top-3.5 text-gray-400" size={20} />
           </div> */}
 
-          <div className="space-y-3">
-            {groupMembers.map((member) => (
-              <div 
-                key={member._id} 
-                className="flex items-center justify-between p-3 rounded-xl hover:bg-gray-50 transition-colors"
-              >
-                <div className="flex items-center space-x-3">
-                  <img
-                    src={transformImage(member?.avatar?.url) || 'https://avatar.iran.liara.run/public' }
-                    alt={member.username}
-                    className="w-10 h-10 rounded-full object-cover ring-2 ring-gray-100"
-                  />
-                  <div>
-                    <h4 className="font-medium text-gray-900">{member.username}</h4>
-                    {
-                      member._id === creatorId && <span className={`text-sm ${
-                        member._id === creatorId ? 'text-indigo-600' : 'text-gray-500'
-                      }`}>
-                        Admin
-                      </span>
-                    }
-                    
+            <div className="space-y-3">
+              {groupMembers.map((member) => (
+                <div
+                  key={member._id}
+                  className="flex items-center justify-between p-3 rounded-xl hover:bg-gray-50 transition-colors"
+                >
+                  <div className="flex items-center space-x-3">
+                    <img
+                      src={member?.avatar?.url ? transformImage(member?.avatar?.url) : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZw4HYx8PHlE8ZniW1hqck5nZeKaYZSqG56g&s"}
+                      alt={member.username}
+                      className="w-10 h-10 rounded-full object-cover ring-2 ring-gray-100"
+                    />
+                    <div>
+                      <h4 className="font-medium text-gray-900">{member.username}</h4>
+                      {
+                        member._id === creatorId && <span className={`text-sm ${member._id === creatorId ? 'text-indigo-600' : 'text-gray-500'
+                          }`}>
+                          Admin
+                        </span>
+                      }
+
+                    </div>
                   </div>
+                  {currentUser._id === creatorId && member._id !== creatorId && (
+                    <button
+                      onClick={() => removeMemberHandler(member._id)}
+                      className="p-2 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+                    >
+                      <UserMinus size={20} />
+                    </button>
+                  )}
                 </div>
-                {currentUser._id === creatorId && (
-                  <button
-                    onClick={() => removeMemberHandler(chatId,member.id)}
-                    className="p-2 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
-                  >
-                    <UserMinus size={20} />
-                  </button>
-                )}
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    {isAddMembers && (
-          <Suspense fallback={<Backdrop open />}>
-            <AddMembersDialogue
-              handleClose={() => setIsAddMembers(false)}
-              open={isAddMembers}
-              refreshGroupDetails={refreshGroupDetails}
-            />
-          </Suspense>
-    )}
+      {isAddMembers && (
+        <Suspense fallback={<Backdrop open />}>
+          <AddMembersDialogue
+            handleClose={() => setIsAddMembers(false)}
+            open={isAddMembers}
+            refreshGroupDetails={refreshGroupDetails}
+          />
+        </Suspense>
+      )}
     </>
   );
 };
