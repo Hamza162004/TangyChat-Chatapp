@@ -61,7 +61,7 @@ const initializeSocket = (server) => {
 
         socket.on(TYPING_STARTED,({chatId,members})=>{
             const membersSocket = getSockets(members)
-            io.to(membersSocket).emit(TYPING_STARTED,{chatId})
+            io.to(membersSocket).emit(TYPING_STARTED,{chatId,username : user.username})
         })
 
         socket.on(TYPING_ENDED,({chatId,members})=>{
