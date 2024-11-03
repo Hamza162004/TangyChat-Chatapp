@@ -174,6 +174,7 @@ const addGroupMember = async (req, res, next) => {
 
 const removeGroupMember = async (req, res, next) => {
   const { chatId, userId } = req.body;
+  console.log({chatId,userId})
   const [chat, userToRemove] = await Promise.all([
     Chat.findById(chatId),
     User.findById(userId),
@@ -198,6 +199,10 @@ const removeGroupMember = async (req, res, next) => {
     return next(new ErrorHandler(`Group should have at least 3 members`, 403));
   }
 
+  if(chat.creator.toString()===userId.toString()){
+    return next(new ErrorHandler('Admin cannot be removed',403))
+  }
+
   // Remove the user
   chat.members = chat.members.filter(
     (i) => i.toString() !== userToRemove._id.toString()
@@ -210,13 +215,13 @@ const removeGroupMember = async (req, res, next) => {
 
   await chat.save();
 
-  emitEvent(
-    req,
-    "ALERT",
-    chat.members,
-    `${userToRemove.username} has been removed from the group`
-  );
-  emitEvent(req, "REFRESH_CHATS", chat.members);
+  // emitEvent(
+  //   req,
+  //   "ALERT",
+  //   chat.members,
+  //   `${userToRemove.username} has been removed from the group`
+  // );
+  // emitEvent(req, "REFRESH_CHATS", chat.members);
 
   return res
     .status(200)

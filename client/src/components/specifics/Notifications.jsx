@@ -58,9 +58,9 @@ const Notifications = () => {
           width={"100%"}
           direction={"column"}
           overflow-y={"auto"}
-          style={{ height: "calc(100% - 156px)" }}
-        >
-          {notification.length > 0 && (
+          style={{ height: "calc(100% - 88px)", overflowY:"auto" , overflowX:"hidden" }}
+          >
+          {
             notification.map((request) => (
               <NotificationItem
                 request={request}
@@ -68,7 +68,7 @@ const Notifications = () => {
                 key={request._id}
               />
             ))
-          )}
+          }
         </Stack> :
         <div className="h-96 flex flex-row items-center justify-center">
           <Inbox className="mr-4" size={18}/>
