@@ -27,6 +27,7 @@ const SideMenu = ({
 
   const user = useSelector((state) => state.user);
   const {notificationCount} = useSelector((state) => state.notification);
+  const {newMessageAlert , totalMessagesAlert} = useSelector((state) => state.chat);
   const navigate = useNavigate();
 
   const openChatList = () => {
@@ -75,7 +76,6 @@ const SideMenu = ({
   const logout = async () => {
     try {
       if (socket) {
-        console.log({socket})
         socket.disconnect(); // This will force the socket to close the connection
       }
      storageService.removeToken();
@@ -87,6 +87,7 @@ const SideMenu = ({
       console.log(error);
     }
   };
+
 
   return (
     <>
@@ -231,7 +232,7 @@ const SideMenu = ({
       <div className="w-20 bg-gradient-to-b from-indigo-900 to-indigo-500 h-full flex flex-col items-center py-6">
       <div className="flex-1 flex flex-col items-center space-y-6">
         <button 
-          onClick={() => setActiveMenu('profile')}
+          onClick={openProfile}
           className={`relative p-1 rounded-xl transition-all duration-300 transform hover:scale-110 group `}
         >
           <div className="relative">
@@ -247,28 +248,28 @@ const SideMenu = ({
         <div className="space-y-6 w-full px-3">
           <MenuItem
             icon={MessageSquare}
-            onClick={() => setActiveMenu('chats')}
-            badge={5}
+            onClick={openChatList}
+            badge={totalMessagesAlert}
           />
 
 
 
           <MenuItem
             icon={Bell}
-            onClick={() => setActiveMenu('notifications')}
-            badge={3}
+            onClick={openNotification}
+            badge={notificationCount}
           />
 
           <MenuItem
             icon={UserPlus}
-            onClick={() => {}}
+            onClick={openFriends}
           />
           
           
         </div>
       </div>
 
-      <button className="p-3 rounded-xl text-gray-400 hover:text-rose-500 hover:bg-rose-50 transition-all duration-300 transform hover:scale-110">
+      <button onClick={logout} className="p-3 rounded-xl text-gray-400 hover:text-rose-500 hover:bg-rose-50 transition-all duration-300 transform hover:scale-110">
         <LogOut size={24} />
       </button>
     </div>
@@ -291,7 +292,7 @@ const MenuItem = ({
     }`}
   >
     <Icon size={24} />
-    {badge && (
+    {badge > 0 && (
       <span className="absolute -top-1 -right-1 w-5 h-5 bg-rose-500 text-white text-xs font-medium rounded-full flex items-center justify-center animate-pulse">
         {badge}
       </span>

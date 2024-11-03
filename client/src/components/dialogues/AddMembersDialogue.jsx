@@ -12,6 +12,7 @@ import UserItem from "../shared/UserItem";
 import chatService from "../../service/chatService";
 import { useParams } from "react-router-dom";
 import { toast } from "react-hot-toast";
+import { Info } from "lucide-react";
 
 const AddMembersDialogue = ({
   open,
@@ -84,7 +85,9 @@ const AddMembersDialogue = ({
               />
             ))
           ) : (
-            <Typography>No Friends to add</Typography>
+            <span className="text-sm flex items-center w-full h-10 justify-center">
+              <Info size={12} className="mr-2"/>
+              No Friends to add</span>
           )}
         </Stack>
         <DialogActions>

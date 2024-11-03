@@ -11,6 +11,15 @@ export const AppProvider = ({ children }) => {
   const [isNotification , setIsNotification] = useState(false);
   const [isFileMenu,setIsFileMenu] = useState(false)
 
+  const openNewGroupMenu = ()=>{
+    setIsChatList(false)
+    setIsGroup(false)
+    setIsProfile(false)
+    setIsNotification(false)
+    setIsFriends(false)
+    setIsNewGroup(true)
+  }
+
   return (
     <AppContext.Provider value={{
       isProfile, setIsProfile,
@@ -19,7 +28,7 @@ export const AppProvider = ({ children }) => {
       isNewGroup, setIsNewGroup,
       isGroup, setIsGroup,
       isNotification,setIsNotification,
-      isFileMenu,setIsFileMenu
+      isFileMenu,setIsFileMenu , openNewGroupMenu
     }}>
       {children}
     </AppContext.Provider>
