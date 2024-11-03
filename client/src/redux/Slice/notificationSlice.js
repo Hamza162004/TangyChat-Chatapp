@@ -3,7 +3,8 @@ import { createSlice } from '@reduxjs/toolkit'
 const initialState = {
   notification: [],
   fetched: false,
-  notificationCount:0
+  notificationCount:0,
+  isNotificationLoading : false
 }
 
 export const notificationSlice = createSlice({
@@ -20,10 +21,13 @@ export const notificationSlice = createSlice({
     },
     resetNotificationCount:(state)=>{
       state.notificationCount = 0;
+    },
+    setIsNotificationLoading:(state,action)=>{
+      state.isNotificationLoading = action.payload
     }
   },
 })
 
-export const { setNotification , incrementNotificationCount , resetNotificationCount } = notificationSlice.actions
+export const { setNotification , incrementNotificationCount , resetNotificationCount , setIsNotificationLoading } = notificationSlice.actions
 
 export default notificationSlice.reducer

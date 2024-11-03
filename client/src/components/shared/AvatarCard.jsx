@@ -12,10 +12,10 @@ const AvatarCard = ({ avatar = [], max = 3 }) => {
     <Stack direction={'row'} spacing={0.5}>
       <AvatarGroup max={max}>
         <Box width={boxwidth} height={'3rem'}>
-          {flattenedAvatars.map((item, index) => (
+          {flattenedAvatars.length > 0 && flattenedAvatars.map((item, index) => (
             <Avatar
               src={transformImage(item?.url, 100)} // Use item.url directly
-              key={item?.public_id} // Use a unique identifier
+              key={index} // Use a unique identifier
               alt={`Avatar ${index}`}
               sx={{
                 width: '3rem',
