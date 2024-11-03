@@ -27,6 +27,7 @@ const AppLayout = () => (WrappedComponents) => {
     const params = useParams();
     const chatId = params.chatId;
     const chatIdRef = useRef(chatId)
+    const {notificationCount} = useSelector((state)=>state.notification)
 
     useEffect(() => {
       chatIdRef.current = chatId;
@@ -64,15 +65,15 @@ const AppLayout = () => (WrappedComponents) => {
     },[])
 
     useEffect(()=>{
-      const getNotifications = async ()=>{
-        dispatch(setIsNotificationLoading(true))
-        const result = await requestService.requestNotification();
-        dispatch(setNotification(result.allRequest));
-        dispatch(setIsNotificationLoading(false))
-
-      }
       getNotifications()
     },[])
+
+    const getNotifications = async ()=>{
+      dispatch(setIsNotificationLoading(true))
+      const result = await requestService.requestNotification();
+      dispatch(setNotification(result.allRequest));
+      dispatch(setIsNotificationLoading(false))
+    }
 
     const socket = getSocket()
 
@@ -87,6 +88,8 @@ const AppLayout = () => (WrappedComponents) => {
 
     const newRequestHandler = useCallback(()=>{
       dispatch(incrementNotificationCount())
+      console.log('---New Request---')
+      getNotifications()
     },[])
 
     const onlineUsersInfoHandler = useCallback((data)=>{

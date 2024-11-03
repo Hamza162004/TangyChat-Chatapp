@@ -1,6 +1,7 @@
 import { Avatar, Button, ListItem, Typography } from "@mui/material";
 import React, { memo } from "react";
 import { useSelector } from "react-redux";
+import { transformImage } from "../../libs/Features";
 
 const UserItem = ({
   user,
@@ -28,7 +29,7 @@ const UserItem = ({
                 border: "1px solid white",
                 margin: "0px 5px",
               }}
-              src={avatar}
+              src={avatar?transformImage(avatar,200):"http://placekitten.com/250/250"}
             />
             <Typography sx={{ fontSize: "15px", padding: "0px 3px" }}>
               {username}
