@@ -1,11 +1,13 @@
-import React, { memo, useState, useEffect } from "react";
+import React, { memo, useState, useEffect, useContext } from "react";
 import { Stack, Typography } from "@mui/material";
 import ChatItem from "../shared/ChatItem";
 import chatService from "../../service/chatService";
 import Searchbar from "../shared/Searchbar";
 import { useInputValidation } from "6pp";
 import { useSelector } from "react-redux";
-import { Plus, Search } from "lucide-react";
+import { Frown,Plus} from "lucide-react";
+import { AppContext } from "../../context/SideMenuStates";
+import { ColorRing, MagnifyingGlass, Oval, ThreeDots } from "react-loader-spinner";
 
 const ChatList = () => {
   const [chats, setChats] = useState([]);
@@ -13,9 +15,12 @@ const ChatList = () => {
   const [searchTimeout, setSearchTimeout] = useState(null);
   const { newMessageAlert } = useSelector((state) => state.chat)
   const onlineUsers = useSelector((state) => state.onlineUsers._ids)
+  const {openNewGroupMenu} = useContext(AppContext)
+  const [isChatLoading,setChatIsLoading] = useState(true)
 
   useEffect(() => {
     const fetchChats = async (searchTerm = "") => {
+      setChatIsLoading(true)
       try {
         const result = await chatService.getChats(searchTerm);
         setChats(result.groupChats);
@@ -23,6 +28,7 @@ const ChatList = () => {
         console.log("Error fetching chats:", error);
         setChats([]);
       }
+      setChatIsLoading(false)
     };
 
     // Clear previous timeout if search changes
@@ -74,41 +80,44 @@ const ChatList = () => {
             <h2 className="text-2xl font-bold text-gray-800">
               Chats
             </h2>
-            <button className="p-2 hover:bg-purple-50 rounded-full transition-colors">
+            <button onClick={openNewGroupMenu} className="p-2 hover:bg-purple-50 rounded-full transition-colors">
               <Plus className="text-purple-600" size={24} />
             </button>
           </div>
-
-          <div className="relative mb-6">
-            <input
-              type="text"
-              placeholder="Search"
-              className="w-full pl-10 pr-4 py-2.5 bg-gray-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors"
-            />
-            <Search className="absolute left-3 top-3 text-gray-400" size={20} />
-          </div>
+          <Searchbar search={csearch} placeholder={"Search a conversation"} />
         </div>
-        <Stack
-          width={"100%"}
-          direction={"column"}
-          overflow-Y={"auto"}
-          style={{ height: "calc(100% - 156px)" }}
-        >
-          {chats.length > 0 ? (
-            chats.map((data) => {
-              const { _id, name, avatar, members, groupChat } = data;
-              const alertForThisChat = newMessageAlert.find(
-                (alert) => alert?.chatId.toString() === _id.toString()
-              );
-              const isOnline = groupChat ? false : onlineUsers.includes(members[0]._id)
-              return (
-                <ChatItem key={_id} _id={_id} isOnline={isOnline} groupChat={groupChat} name={name || "Unnamed Chat"} avatar={avatar} newMessageAlert={alertForThisChat} />
-              );
-            })
-          ) : (
-            <Typography>No chats found.</Typography>
-          )}
-        </Stack>
+        
+        {
+          isChatLoading ?
+          <div className="h-96 flex flex-row items-center justify-center">
+            <ThreeDots color={'#4F46E5'} width={100}/> 
+          </div> :
+            chats.length > 0 ?
+            <Stack
+            width={"100%"}
+            direction={"column"}
+            overflow-y={"auto"}
+            style={{ height: "calc(100% - 156px)" }}
+          >
+            {
+              chats.map((data) => {
+                const { _id, name, avatar, members, groupChat } = data;
+                const alertForThisChat = newMessageAlert.find(
+                  (alert) => alert?.chatId.toString() === _id.toString()
+                );
+                const isOnline = groupChat ? false : onlineUsers.includes(members[0]._id)
+                return (
+                  <ChatItem key={_id} _id={_id} isOnline={isOnline} groupChat={groupChat} name={name || "Unnamed Chat"} avatar={avatar} newMessageAlert={alertForThisChat} />
+                );
+              })
+            }
+          </Stack>:
+           <div className="h-96 flex flex-row items-center justify-center">
+           <Frown className="mr-4" size={18}/>
+           No Chat Found
+          </div>
+          }
+        
       </div>
     </>
   );

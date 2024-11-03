@@ -16,7 +16,7 @@ import requestService from "../../service/requestService";
 import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "../../redux/Slice/userSlice";
 import { CURRENT_ONLINE_USERS, NEW_MESSAGE_ALERT, NEW_REQUEST, USER_CONNECTED, USER_DISCONNECTED } from "../../constants/event";
-import { incrementNotificationCount, setNotification } from "../../redux/Slice/notificationSlice";
+import { incrementNotificationCount, setIsNotificationLoading, setNotification } from "../../redux/Slice/notificationSlice";
 import { useSocketEventHandler } from "../../utils/helper";
 import { getSocket } from "../../context/Socket";
 import { setNewMessageAlert } from "../../redux/Slice/chatSlice";
@@ -65,8 +65,11 @@ const AppLayout = () => (WrappedComponents) => {
 
     useEffect(()=>{
       const getNotifications = async ()=>{
+        dispatch(setIsNotificationLoading(true))
         const result = await requestService.requestNotification();
         dispatch(setNotification(result.allRequest));
+        dispatch(setIsNotificationLoading(false))
+
       }
       getNotifications()
     },[])

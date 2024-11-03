@@ -6,7 +6,7 @@ import RenderAttachment from './RenderAttachment'
 
 const MessageComponent = ({ message,user}) => {
     const { sender, content, attachments = [], createdAt } = message
-    const sameSender = sender._id === user._id
+    const sameSender = sender?._id === user?._id
 
     const timeAgo = moment(createdAt).fromNow()
     
@@ -19,7 +19,7 @@ const MessageComponent = ({ message,user}) => {
                 <div className="w-10 rounded-full">
                     <img
                         alt="Tailwind CSS chat bubble component"
-                        src={sender.avatar} />
+                        src={transformImage(sender.avatar,100)} />
                 </div>
             </div>
             <div className="chat-header">
