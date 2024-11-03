@@ -7,7 +7,7 @@ import MessageComponent from '../components/shared/MessageComponent'
 import { SampleMessage } from '../constants/SampleData'
 import { getSocket } from '../context/Socket'
 import { NEW_MESSAGE, TYPING_ENDED, TYPING_STARTED } from '../constants/event'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import chatService from '../service/chatService'
 import messageService from '../service/messageService'
 import { useSocketEventHandler } from '../utils/helper'
@@ -17,6 +17,7 @@ import { AppContext } from '../context/SideMenuStates'
 import toast from 'react-hot-toast'
 import { removeMessageAlert } from '../redux/Slice/chatSlice'
 import AvatarCard from '../components/shared/AvatarCard'
+import { EllipsisVertical } from 'lucide-react'
 
 const Chat = ({ }) => {
   let chatId
@@ -35,6 +36,7 @@ const Chat = ({ }) => {
   const { setIsFileMenu } = useContext(AppContext)
   const [IamTyping, setIamTyping] = useState(false)
   const [userTyping, setUserTyping] = useState(false)
+  const [userTypingName, setUserTypingName] = useState('')
   const typingTimeout = useRef(null)
   const bottomRef = useRef(null)
   const [filteredMembers,setFilteredMembers] = useState([])
@@ -79,7 +81,7 @@ const Chat = ({ }) => {
   }
 
   useEffect(()=>{
-    if(chatDetails.members){
+    if(chatDetails.members && user){
       setFilteredMembers(chatDetails?.members.filter((member)=>member._id.toString() !== user._id.toString()))
     }
 
@@ -119,13 +121,16 @@ const Chat = ({ }) => {
   }, [])
 
   const startTypingHandler = useCallback((data) => {
-    if (data.chatId !== chatId)
+    console.log('Typing-handled')
+    if (data.chatId.toString() !== chatIdRef.current.toString())
       return
     setUserTyping(true)
+    setUserTypingName(data.username)
+    console.log('--Typing--',data.username)
   }, [])
 
   const endTypingHandler = useCallback((data) => {
-    if (data.chatId !== chatId)
+    if (data.chatId.toString() !== chatIdRef.current.toString())
       return
     setUserTyping(false)
   }, [])
@@ -184,12 +189,14 @@ const Chat = ({ }) => {
      <div className="bg-white box-border h-[4rem] border-b border-gray-200 px-3 py-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4 relative">
-            <AvatarCard avatar={chatDetails?.groupchat?chatDetails.avatar:[chatDetails?.avatar]}/>
+            <AvatarCard avatar={chatDetails?.groupChat?chatDetails.avatar:[chatDetails?.avatar]}/>
             <div className='relative flex flex-col h-[2rem]'>
               <h3 className="font-semibold text-gray-800">{chatDetails?.name}</h3>
-              <p className={`text-xs text-green-400 ${userTyping ? 'block':"hidden"}`}>Typing...</p>
+              <p className={`text-xs text-green-400 ${ userTyping ? 'block':"hidden"}`}>{chatDetails?.groupChat ?`${userTypingName} is `:''}Typing...</p>
             </div>
           </div>
+          <Link to={`/group/${chatIdRef.current}`}><EllipsisVertical  size={18}/></Link>
+          
         </div>
       </div>
       <Stack className='bg-slate-100 ' ref={containerRef} height={'calc(100% - 7.5rem)'} sx={{ overflowY: 'auto', overflowX: 'hidden' }} padding={'1rem'} spacing={'1rem'}>
