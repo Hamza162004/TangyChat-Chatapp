@@ -102,6 +102,34 @@ const getMyProfile = async (req, res, next) => {
   }
 };
 
+const updateMyProfile = async (req, res, next) => {
+  try {
+    const userId = req.user;
+    let updateData = {};
+
+    if (req.file) {
+      const result = await uploadToCloudinary([req.file], "Tangy-avatar");
+      updateData.avatar = {
+        public_id: result[0].public_id,
+        url: result[0].url,
+      };
+    }
+
+    const { username, bio } = req.body;
+
+    if (username) updateData.username = username;
+    if (bio) updateData.bio = bio;
+
+    const updatedUser = await User.findByIdAndUpdate(userId, updateData, {
+      new: true,
+    });
+
+    res.json({ success: true });
+  } catch (error) {
+    next(error);
+  }
+};
+
 
 const searchUser = async (req, res, next) => {
   const { name } = req.query;
@@ -145,4 +173,4 @@ const searchUser = async (req, res, next) => {
   });
 };
 
-export { login, signup, getMyProfile, logout, searchUser };
+export { login, signup, getMyProfile, updateMyProfile, logout, searchUser };
