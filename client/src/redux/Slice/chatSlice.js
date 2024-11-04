@@ -4,7 +4,8 @@ const initialState = {
   newMessageAlert : [{
     chatId : "",
     count : 0
-  }]
+  }],
+  totalMessagesAlert : 0
 }
 
 export const chatSlice = createSlice({
@@ -21,9 +22,14 @@ export const chatSlice = createSlice({
       else{
         state.newMessageAlert.push({chatId:action.payload.chatId, count: 1})
       }
+      state.totalMessagesAlert += 1;
     },
     removeMessageAlert:(state,action)=>{
+      const alertItem = state.newMessageAlert.find((item)=>item.chatId === action.payload)
+      if(alertItem){
+        state.totalMessagesAlert -= alertItem.count
         state.newMessageAlert = state.newMessageAlert.filter((item)=>item.chatId !== action.payload)
+      }
     }
   },
 })

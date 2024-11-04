@@ -65,6 +65,7 @@ const addGroupMember = async (chatId , members) => {
 
 const removeGroupMember = async (chatId , userId) => {
   try {
+    console.log({chatId,userId})
     const response = await instance.put('chat/removeGroupMember', { chatId, userId });
     return response.data;
   } catch (error) {

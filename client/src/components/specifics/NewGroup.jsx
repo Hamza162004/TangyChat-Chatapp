@@ -4,6 +4,7 @@ import UserItem from "../shared/UserItem";
 import { useInputValidation } from "6pp";
 import chatService from "../../service/chatService";
 import { toast } from "react-hot-toast";
+import { ArrowLeft, MoveLeft } from "lucide-react";
 
 const NewGroup = ({
   setIsNotification,
@@ -54,11 +55,11 @@ const NewGroup = ({
     }
   };
 
-  const openGroup = () => {
-    setIsChatList(false);
+  const openChat = () => {
+    setIsChatList(true);
     setIsProfile(false);
     setIsFriends(false);
-    setIsGroup(true);
+    setIsGroup(false);
     setIsNewGroup(false);
     setIsNotification(false);
   };
@@ -66,42 +67,31 @@ const NewGroup = ({
   return (
     <div className="w-full h-full flex flex-col">
       <div className="flex items-center mt-6">
-        <a
-          onClick={openGroup}
-          className="flex items-center mr-4 ml-4 px-2 py-1 bg-black text-white hover:bg-gray-800 rounded-lg cursor-pointer"
+        <button
+          onClick={openChat}
+          className="flex items-center mr-4 ml-4 px-2 py-1 rounded-lg cursor-pointer"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="white"
-            className="w-5 h-5 mr-2"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M15 19l-7-7 7-7"
-            />
-          </svg>
-        </a>
+          <MoveLeft size={20}/>
+        </button>
 
-        <h1 className="text-2xl font-bold text-orange-500 ml-4">New Group</h1>
+        <h1 className="text-2xl font-bold text-indigo-500 ml-4">New Group</h1>
       </div>
 
       <div className="w-full h-[82%]">
         <div className="py-4 px-3 w-full ">
-          <div>
-            <input
-              value={groupName.value}
-              onChange={groupName.changeHandler}
-              type="text"
-              id="small-input"
-              className="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            />
-          </div>
+        <div>
+            
+              <input
+                id="groupName"
+                type="text"
+                value={groupName.value}
+                onChange={groupName.changeHandler}
+                placeholder="Enter group name"
+                className="w-full px-4 mt-4 py-2 border border-gray-300 bg-gray-50 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+            </div>
         </div>
-        <span className="px-3 py-2 block mb-2 text-md font-medium text-gray-900 dark:text-white">
+        <span className="px-3 py-2 block mb-2 text-md font-medium text-gray-900 ">
           Add Members
         </span>
         <List
@@ -135,7 +125,7 @@ const NewGroup = ({
         <button
           onClick={() => {
             handleGroup();
-            openGroup();
+            openChat();
           }}
           type="button"
           className="text-white bg-blue-700 mx-3 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"

@@ -7,6 +7,7 @@ import { Camera, X, Check } from 'lucide-react';
 import moment from "moment";
 import { useSelector } from "react-redux";
 import { Mail } from "@mui/icons-material";
+import { transformImage } from "../../libs/Features";
 
 const Profile = () => {
   const user = useSelector((state) => state.user);
@@ -60,7 +61,7 @@ const Profile = () => {
           <div className="text-center mb-6">
             <div className="relative inline-block">
               <img
-                src={user.user?.avatar?.url}
+                src={user.user?.avatar?.url ? transformImage(user.user?.avatar?.url,300):"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZw4HYx8PHlE8ZniW1hqck5nZeKaYZSqG56g&s"}
                 alt={user.user?.username}
                 className="w-24 h-24 rounded-full border-4 border-orange-100"
               />

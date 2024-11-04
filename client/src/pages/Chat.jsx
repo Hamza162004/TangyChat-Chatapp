@@ -7,7 +7,7 @@ import MessageComponent from '../components/shared/MessageComponent'
 import { SampleMessage } from '../constants/SampleData'
 import { getSocket } from '../context/Socket'
 import { NEW_MESSAGE, TYPING_ENDED, TYPING_STARTED } from '../constants/event'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import chatService from '../service/chatService'
 import messageService from '../service/messageService'
 import { useSocketEventHandler } from '../utils/helper'
@@ -17,6 +17,7 @@ import { AppContext } from '../context/SideMenuStates'
 import toast from 'react-hot-toast'
 import { removeMessageAlert } from '../redux/Slice/chatSlice'
 import AvatarCard from '../components/shared/AvatarCard'
+import { EllipsisVertical } from 'lucide-react'
 
 const Chat = ({ }) => {
   let chatId
@@ -35,6 +36,7 @@ const Chat = ({ }) => {
   const { setIsFileMenu } = useContext(AppContext)
   const [IamTyping, setIamTyping] = useState(false)
   const [userTyping, setUserTyping] = useState(false)
+  const [userTypingName, setUserTypingName] = useState('')
   const typingTimeout = useRef(null)
   const bottomRef = useRef(null)
   const [filteredMembers,setFilteredMembers] = useState([])
@@ -79,7 +81,7 @@ const Chat = ({ }) => {
   }
 
   useEffect(()=>{
-    if(chatDetails.members){
+    if(chatDetails.members && user){
       setFilteredMembers(chatDetails?.members.filter((member)=>member._id.toString() !== user._id.toString()))
     }
 
@@ -119,13 +121,16 @@ const Chat = ({ }) => {
   }, [])
 
   const startTypingHandler = useCallback((data) => {
-    if (data.chatId !== chatId)
+    console.log('Typing-handled')
+    if (data.chatId.toString() !== chatIdRef.current.toString())
       return
     setUserTyping(true)
+    setUserTypingName(data.username)
+    console.log('--Typing--',data.username)
   }, [])
 
   const endTypingHandler = useCallback((data) => {
-    if (data.chatId !== chatId)
+    if (data.chatId.toString() !== chatIdRef.current.toString())
       return
     setUserTyping(false)
   }, [])
@@ -184,12 +189,14 @@ const Chat = ({ }) => {
      <div className="bg-white box-border h-[4rem] border-b border-gray-200 px-3 py-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4 relative">
-            <AvatarCard avatar={chatDetails?.groupchat?chatDetails.avatar:[chatDetails?.avatar]}/>
+            <AvatarCard avatar={chatDetails?.groupChat?chatDetails.avatar:[chatDetails?.avatar]}/>
             <div className='relative flex flex-col h-[2rem]'>
               <h3 className="font-semibold text-gray-800">{chatDetails?.name}</h3>
-              <p className={`text-xs text-green-400 ${userTyping ? 'block':"hidden"}`}>Typing...</p>
+              <p className={`text-xs text-green-400 ${ userTyping ? 'block':"hidden"}`}>{chatDetails?.groupChat ?`${userTypingName} is `:''}Typing...</p>
             </div>
           </div>
+          <Link to={`/group/${chatIdRef.current}`}><EllipsisVertical  size={18}/></Link>
+          
         </div>
       </div>
       <Stack className='bg-slate-100 ' ref={containerRef} height={'calc(100% - 7.5rem)'} sx={{ overflowY: 'auto', overflowX: 'hidden' }} padding={'1rem'} spacing={'1rem'}>
@@ -205,7 +212,7 @@ const Chat = ({ }) => {
           <AttachFile sx={{ width: '1.3rem', height: '1.3rem' }} />
         </IconButton>
         <input onKeyDown={handleKeyDown} value={message} onChange={messageChangeHandler} type="text" placeholder='Send a message...' id="small-input" className="w-full rounded-full px-2 py-1 text-gray-900 border border-gray-300 bg-gray-50 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
-        <button onClick={sendMessageHandler} type="button" className="focus:outline-none text-white bg-orange-500 hover:bg-orange-600 focus:ring-4 focus:ring-orange-300 font-medium rounded-full text-sm px-1.5 py-1.5 me-2 dark:bg-orange-600 dark:hover:bg-orange-700 dark:focus:ring-orange-900">
+        <button onClick={sendMessageHandler} type="button" className="focus:outline-none text-white bg-indigo-600 hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-300 font-medium rounded-full text-sm px-1.5 py-1.5 me-2 ">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-4 -rotate-45 text-white">
             <path d="M3.478 2.404a.75.75 0 0 0-.926.941l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.519 60.519 0 0 0 18.445-8.986.75.75 0 0 0 0-1.218A60.517 60.517 0 0 0 3.478 2.404Z" />
           </svg>

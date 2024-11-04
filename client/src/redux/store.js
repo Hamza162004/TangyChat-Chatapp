@@ -4,6 +4,7 @@ import notificationReducer from "./Slice/notificationSlice";
 import groupReducer from "./Slice/groupSlice"
 import creatorReducer from "./Slice/creatorSlice"
 import chatReducer from "./Slice/chatSlice";
+import onlineUsersReducer from "./Slice/onlineUsersSlice";
 
 const store = configureStore({
   reducer: {
@@ -11,7 +12,8 @@ const store = configureStore({
     notification: notificationReducer,
     group: groupReducer,
     creator: creatorReducer,
-    chat: chatReducer
+    chat: chatReducer,
+    onlineUsers : onlineUsersReducer
   },
 });
 
