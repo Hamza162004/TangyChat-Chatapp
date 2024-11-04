@@ -18,21 +18,21 @@ import { setChats, setChatLoading } from "../../redux/Slice/chatSlice";
 const ChatList = () => {
   const csearch = useInputValidation("");
   const [searchTimeout, setSearchTimeout] = useState(null);
-  const { newMessageAlert } = useSelector((state) => state.chat);
-  const { chats } = useSelector((state) => state.chat);
-  const { isChatLoading } = useSelector((state) => state.chat);
+  const { newMessageAlert,isChatLoading,chats } = useSelector((state) => state.chat);
+  const { user } = useSelector((state) => state.user);
   const onlineUsers = useSelector((state) => state.onlineUsers._ids);
   const { openNewGroupMenu } = useContext(AppContext);
 
   const dispatch = useDispatch();
+  const searchChats = async (searchTerm) => {
+    dispatch(setChatLoading(true));
+    const res = await chatService.getChats(searchTerm);
+    dispatch(setChats(res.groupChats));
+    dispatch(setChatLoading(false));
+  };
 
   useEffect(() => {
-    const searchChats = async (searchTerm) => {
-      dispatch(setChatLoading(true));
-      const res = await chatService.getChats(searchTerm);
-      dispatch(setChats(res.groupChats));
-      dispatch(setChatLoading(false));
-    };
+
 
     // Only proceed with fetching if there's a search term
     if (csearch.value) {
@@ -43,7 +43,7 @@ const ChatList = () => {
 
       const timeoutId = setTimeout(() => {
         searchChats(csearch.value);
-      }, 100);
+      }, 1000);
 
       setSearchTimeout(timeoutId); // Save timeout ID to state
 
@@ -51,6 +51,8 @@ const ChatList = () => {
       return () => {
         clearTimeout(timeoutId);
       };
+    } else {
+      searchChats("")
     }
   }, [csearch.value]);
 
@@ -116,13 +118,19 @@ const ChatList = () => {
                 groupChat,
                 lastMessage,
                 lastMessageCreatedAt,
+                lastMessageSender
               } = data;
               const alertForThisChat = newMessageAlert.find(
                 (alert) => alert?.chatId.toString() === _id.toString()
               );
+              let msgSenderName
+              if(lastMessageSender){
+                msgSenderName = members.find((m)=>m._id===lastMessageSender)
+              }
               const isOnline = groupChat
                 ? false
-                : onlineUsers.includes(members[0]._id);
+                : onlineUsers.includes(members.filter((e)=>e?._id != user?._id));
+
               return (
                 <ChatItem
                   key={_id}
@@ -134,6 +142,8 @@ const ChatList = () => {
                   name={name || "Unnamed Chat"}
                   avatar={avatar}
                   newMessageAlert={alertForThisChat}
+                  lastMessageSender={msgSenderName?._id === user?._id?'You':msgSenderName?.name}
+                  members={members}
                 />
               );
             })}

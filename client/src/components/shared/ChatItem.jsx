@@ -1,8 +1,7 @@
-import { Typography } from '@mui/material';
-import React, { memo, useEffect } from 'react';
+import React, { memo} from 'react';
 import { Link } from 'react-router-dom';
-import AvatarCard from './AvatarCard';
 import { transformImage } from '../../libs/Features';
+import { useSelector } from 'react-redux';
 
 const ChatItem = ({
     avatar = [],
@@ -15,7 +14,9 @@ const ChatItem = ({
     index = 0,
     handleDeleteChatOpen,
     lastMessage, 
-    lastMessageCreatedAt
+    lastMessageCreatedAt,
+    lastMessageSender,
+    members
 }) => {
     const avatarData = groupChat ? avatar : [avatar];
 
@@ -23,7 +24,7 @@ const ChatItem = ({
         const messageDate = new Date(timestamp);
         const now = new Date();
 
-        if (!timestamp) return "-";
+        if (!timestamp) return " ";
         
         // Check if the message is from today
         if (messageDate.toDateString() === now.toDateString()) {
@@ -97,7 +98,7 @@ const ChatItem = ({
                     </div>
                     <div className='flex justify-between items-center'>
                         <p className="text-sm text-gray-600 truncate pr-8">
-                            {typeof lastMessage === "string" ? lastMessage : "File"}
+                            {typeof lastMessage === "string" ? lastMessageSender?`${lastMessageSender}: ${lastMessage}`:lastMessage : "File"}
                         </p>
                         {newMessageAlert?.count > 0 && (
                             <span className="flex-shrink-0 inline-flex items-center justify-center px-2 py-1 bg-purple-600 text-white text-xs font-medium rounded-full min-w-[1.25rem] h-5">
@@ -136,9 +137,10 @@ const GroupAvatar = ({ avatar }) => {
                 </div>
             </div>
         );
-    }
-    <div className="relative w-12 h-12">
-        {avatar?.slice(0, 3).map((a, index) => (
+    }else{
+        return(
+            <div className="relative w-14 h-14">
+        {avatar.slice(0, 3).map((a, index) => (
             <img
                 key={a.public_id}
                 src={a.url?transformImage(a.url, 50):"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZw4HYx8PHlE8ZniW1hqck5nZeKaYZSqG56g&s"}
@@ -150,5 +152,8 @@ const GroupAvatar = ({ avatar }) => {
             />
         ))}
     </div>
+        )
+    }
+    
 }
 export default memo(ChatItem);
