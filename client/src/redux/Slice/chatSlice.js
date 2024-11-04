@@ -45,6 +45,22 @@ export const chatSlice = createSlice({
     setNewMessageAlertLoading: (state, action) => {
       state.isNewMessageAlertLoading = action.payload;
     },
+    setChatLastMessage:(state,action)=>{
+        const chat = state.chats.find((chat)=>chat._id === action.payload.chatId)
+        if(chat){
+          state.chats = state.chats.map((chat)=>{
+            if (chat._id === action.payload.chatId) {
+              return {
+                  ...chat,
+                  lastMessage: action.payload.latestMessage,
+                  lastMessageCreatedAt: action.payload.latestMessageCreatedAt,
+                  lastMessageSender: action.payload.latestMessageSender
+              };
+          }
+          return chat;
+          })
+        }
+    }
   },
 });
 
@@ -54,6 +70,7 @@ export const {
   setChats,
   setChatLoading,
   setNewMessageAlertLoading,
+  setChatLastMessage
 } = chatSlice.actions;
 
 export default chatSlice.reducer;

@@ -10,7 +10,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { setGroup } from "../redux/Slice/groupSlice";
 import { setCreator } from "../redux/Slice/creatorSlice";
 import { toast } from "react-hot-toast";
-import { Check, Pencil, Plus, UserMinus, Users, X } from "lucide-react";
+import { Check, LogOut, Pencil, Plus, Trash2, UserMinus, Users, X } from "lucide-react";
 import { transformImage } from "../libs/Features";
 
 const Group = () => {
@@ -202,15 +202,7 @@ const Group = () => {
             </button>
           </div>
         </div>
-        {isDeleteDialog && (
-          <Suspense fallback={<Backdrop open />}>
-            <ConfirmDeleteDialogue
-              handleClose={closeConfirmDeleteDialog}
-              deleteHandler={deleteHandler}
-              open={isDeleteDialog}
-            />
-          </Suspense>
-        )}
+        
         {isAddMembers && (
           <Suspense fallback={<Backdrop open />}>
             <AddMembersDialogue
@@ -267,7 +259,7 @@ const Group = () => {
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-6 py-8">
+        <div className="flex-1 px-6 py-8 justify-between">
           <div className="max-w-2xl mx-auto">
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-lg font-semibold text-gray-900">Members</h3>
@@ -284,18 +276,7 @@ const Group = () => {
               
             </div>
 
-            {/* <div className="relative mb-6">
-            <input
-              type="text"
-              placeholder="Search members..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 bg-gray-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-            <Search className="absolute left-3 top-3.5 text-gray-400" size={20} />
-          </div> */}
-
-            <div className="space-y-3">
+            <div className="space-y-3 overflow-y-auto h-54">
               {groupMembers.map((member) => (
                 <div
                   key={member._id}
@@ -329,8 +310,27 @@ const Group = () => {
                 </div>
               ))}
             </div>
+            
           </div>
         </div>
+        <div className="mb-20 space-y-3 flex items-center justify-center">
+            {currentUser?._id === creatorId && (
+              <button
+                onClick={() => setIsDeleteDialog(true)}
+                className="w-40 py-3 bg-rose-600 text-white rounded-lg font-medium hover:bg-rose-700 transition-colors flex items-center justify-center space-x-2"
+              >
+                <Trash2 size={20} />
+                <span>Delete Group</span>
+              </button>
+            ) }
+              <button
+                className="w-40 py-3 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition-colors flex items-center justify-center space-x-2"
+              >
+                <LogOut size={20} />
+                <span>Leave Group</span>
+              </button>
+            
+          </div>
       </div>
       {isAddMembers && (
         <Suspense fallback={<Backdrop open />}>
@@ -341,6 +341,15 @@ const Group = () => {
           />
         </Suspense>
       )}
+      {isDeleteDialog && (
+          <Suspense fallback={<Backdrop open />}>
+            <ConfirmDeleteDialogue
+              handleClose={closeConfirmDeleteDialog}
+              deleteHandler={deleteHandler}
+              open={isDeleteDialog}
+            />
+          </Suspense>
+        )}
     </>
   );
 };

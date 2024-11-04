@@ -15,7 +15,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useInfiniteScrollTop } from '6pp'
 import { AppContext } from '../context/SideMenuStates'
 import toast from 'react-hot-toast'
-import { removeMessageAlert } from '../redux/Slice/chatSlice'
+import { removeMessageAlert, setChatLastMessage } from '../redux/Slice/chatSlice'
 import AvatarCard from '../components/shared/AvatarCard'
 import { EllipsisVertical } from 'lucide-react'
 
@@ -39,15 +39,15 @@ const Chat = ({ }) => {
   const [userTypingName, setUserTypingName] = useState('')
   const typingTimeout = useRef(null)
   const bottomRef = useRef(null)
-  const [filteredMembers,setFilteredMembers] = useState([])
+  const [filteredMembers, setFilteredMembers] = useState([])
 
   useEffect(() => {
     chatIdRef.current = chatId;
   }, [chatId]);
-  
+
 
   useEffect(() => {
-    console.log('Chat opened with id : ',chatId)
+    console.log('Chat opened with id : ', chatId)
     const fetchChatDetails = async () => {
       try {
         const [chatData, messageData] = await Promise.all([
@@ -80,12 +80,12 @@ const Chat = ({ }) => {
     setMessageData(response)
   }
 
-  useEffect(()=>{
-    if(chatDetails.members && user){
-      setFilteredMembers(chatDetails?.members.filter((member)=>member._id.toString() !== user._id.toString()))
+  useEffect(() => {
+    if (chatDetails.members && user) {
+      setFilteredMembers(chatDetails?.members.filter((member) => member._id.toString() !== user._id.toString()))
     }
 
-  },[chatDetails.members,user])
+  }, [chatDetails.members, user])
 
   useEffect(() => {
     if (page > 1) {
@@ -109,15 +109,21 @@ const Chat = ({ }) => {
     setMessage("")
   }
 
-  const newMessageHandler = useCallback((data) => {
-    console.log("New message received----------")
-    console.log({data})
-    if (data.chatId.toString() !== chatIdRef.current.toString()){
-      console.log('ChatId not same-------')
-      return
-    }
-    console.log({messages})
-    setMessages(prev => [...prev, data.message])
+  const newMessageHandler = useCallback(({ chatId, message }) => {
+    // console.log("New message received----------")
+    // console.log({data})
+    // if (data.chatId.toString() !== chatIdRef.current.toString()){
+    //   console.log('ChatId not same-------')
+    //   return
+    // }
+    // console.log({messages})
+    dispatch(setChatLastMessage({
+      chatId,
+      latestMessage: message.content,
+      latestMessageCreatedAt: message.createdAt,
+      latestMessageSender: message.sender._id
+    }))
+    setMessages(prev => [...prev, message])
   }, [])
 
   const startTypingHandler = useCallback((data) => {
@@ -126,7 +132,7 @@ const Chat = ({ }) => {
       return
     setUserTyping(true)
     setUserTypingName(data.username)
-    console.log('--Typing--',data.username)
+    console.log('--Typing--', data.username)
   }, [])
 
   const endTypingHandler = useCallback((data) => {
@@ -173,30 +179,33 @@ const Chat = ({ }) => {
 
   useEffect(() => {
     console.log('-----------Messages Updated-------')
-    console.log({messages})
-    if(bottomRef.current) bottomRef.current.scrollIntoView({
-      behavior : "smooth"
+    console.log({ messages })
+    if (bottomRef.current) bottomRef.current.scrollIntoView({
+      behavior: "smooth"
     })
-  
+
   }, [messages])
-  
 
 
 
-  
+
+
   return (
     <>
-     <div className="bg-white box-border h-[4rem] border-b border-gray-200 px-3 py-2">
+      <div className="bg-white box-border h-[4rem] border-b border-gray-200 px-3 py-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4 relative">
-            <AvatarCard avatar={chatDetails?.groupChat?chatDetails.avatar:[chatDetails?.avatar]}/>
+            <AvatarCard avatar={chatDetails?.groupChat ? chatDetails.avatar : [chatDetails?.avatar]} />
             <div className='relative flex flex-col h-[2rem]'>
               <h3 className="font-semibold text-gray-800">{chatDetails?.name}</h3>
-              <p className={`text-xs text-green-400 ${ userTyping ? 'block':"hidden"}`}>{chatDetails?.groupChat ?`${userTypingName} is `:''}Typing...</p>
+              <p className={`text-xs text-green-400 ${userTyping ? 'block' : "hidden"}`}>{chatDetails?.groupChat ? `${userTypingName} is ` : ''}Typing...</p>
             </div>
-          </div>
-          <Link to={`/group/${chatIdRef.current}`}><EllipsisVertical  size={18}/></Link>
-          
+          </div> 
+          {
+            chatDetails?.groupChat &&           <Link to={`/group/${chatIdRef.current}`}><EllipsisVertical size={18} /></Link>
+
+          }
+
         </div>
       </div>
       <Stack className='bg-slate-100 ' ref={containerRef} height={'calc(100% - 7.5rem)'} sx={{ overflowY: 'auto', overflowX: 'hidden' }} padding={'1rem'} spacing={'1rem'}>

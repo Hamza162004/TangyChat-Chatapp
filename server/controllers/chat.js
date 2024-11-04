@@ -63,7 +63,7 @@ const getMyChats = async (req, res, next) => {
       chats.map(async (chat) => {
         const latestMessage = await Message.findOne({ chat: chat._id })
           .sort({ createdAt: -1 }) // Sort by createdAt in descending order to get the latest message
-          .select("content attachments createdAt");
+          .select("content attachments createdAt sender");
           
         // Process members and other details as before
         const filteredMembers = chat.members.filter(
@@ -73,7 +73,7 @@ const getMyChats = async (req, res, next) => {
 
         return {
           _id: chat._id,
-          members: filteredMembers.map((member) => ({
+          members: chat.members.map((member) => ({
             _id: member._id,
             name: member.username || "No Name",
           })),
@@ -92,8 +92,9 @@ const getMyChats = async (req, res, next) => {
             lastMessage:
             latestMessage && (latestMessage.content || latestMessage.attachments.length > 0)
               ? latestMessage.content || latestMessage.attachments[0] // Return the first attachment if exists
-              : "No messages yet",
+              : "Start Conversation...",
           lastMessageCreatedAt: latestMessage ? latestMessage.createdAt : null,
+          lastMessageSender: latestMessage ? latestMessage.sender : null,
         };
       })
     );
@@ -273,7 +274,7 @@ const leaveGroup = async (req, res, next) => {
   chat.members = remaimingMem;
   await chat.save();
 
-  emitEvent(req, "ALERT", chat.members, `${user.username} has left the group`);
+  // emitEvent(req, "ALERT", chat.members, `${user.username} has left the group`);
 
   return res
     .status(200)
