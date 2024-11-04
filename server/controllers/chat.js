@@ -52,40 +52,54 @@ const getMyChats = async (req, res, next) => {
 
     const userId = req.user;
 
+    // Fetch all chats the user is a part of
     const chats = await Chat.find({ members: userId }).populate(
       "members",
       "username avatar"
     );
 
-    const myChats = chats.map(({ _id, name, members, groupChat, creator }) => {
-      const filteredMembers = members.filter(
-        (member) => member._id.toString() !== userId
-      );
-      const otherMember = getOtherMember(members, userId);
-      
+    // Prepare a promise to fetch the latest message for each chat
+    const chatWithLastMessages = await Promise.all(
+      chats.map(async (chat) => {
+        const latestMessage = await Message.findOne({ chat: chat._id })
+          .sort({ createdAt: -1 }) // Sort by createdAt in descending order to get the latest message
+          .select("content attachments createdAt");
+          
+        // Process members and other details as before
+        const filteredMembers = chat.members.filter(
+          (member) => member._id.toString() !== userId
+        );
+        const otherMember = getOtherMember(chat.members, userId);
 
-      return {
-        _id,
-        members: filteredMembers.map((member) => {
-          return { _id: member._id, name: member.username || "No Name" };
-        }),
-        groupChat,
-        creator,
-        avatar: groupChat
-          ? filteredMembers.slice(0, 3).map((member) => member.avatar || {})
-          : otherMember
+        return {
+          _id: chat._id,
+          members: filteredMembers.map((member) => ({
+            _id: member._id,
+            name: member.username || "No Name",
+          })),
+          groupChat: chat.groupChat,
+          creator: chat.creator,
+          avatar: chat.groupChat
+            ? filteredMembers.slice(0, 3).map((member) => member.avatar || {})
+            : otherMember
             ? otherMember.avatar || ""
             : "",
-        name: groupChat
-          ? name
-          : otherMember
+          name: chat.groupChat
+            ? chat.name
+            : otherMember
             ? otherMember.username || "No Name"
             : "Unknown User",
-      };
-    });
+            lastMessage:
+            latestMessage && (latestMessage.content || latestMessage.attachments.length > 0)
+              ? latestMessage.content || latestMessage.attachments[0] // Return the first attachment if exists
+              : "No messages yet",
+          lastMessageCreatedAt: latestMessage ? latestMessage.createdAt : null,
+        };
+      })
+    );
 
     // Filter chats based on search term
-    const filteredChats = myChats.filter(
+    const filteredChats = chatWithLastMessages.filter(
       (chat) =>
         chat.name.toLowerCase().includes(search.toLowerCase()) ||
         chat.members.some((member) =>
