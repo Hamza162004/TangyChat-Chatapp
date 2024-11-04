@@ -1,4 +1,10 @@
-import React, { useState, useContext, useEffect, useCallback, useRef } from "react";
+import React, {
+  useState,
+  useContext,
+  useEffect,
+  useCallback,
+  useRef,
+} from "react";
 import Title from "../shared/Title";
 import { Grid } from "@mui/material";
 import SideMenu from "./SideMenu";
@@ -12,27 +18,42 @@ import GroupList from "../specifics/GroupList";
 import { AppContext } from "../../context/SideMenuStates";
 import Notifications from "../specifics/Notifications";
 import userService from "../../service/userService";
+import chatService from "../../service/chatService";
 import requestService from "../../service/requestService";
 import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "../../redux/Slice/userSlice";
-import { CURRENT_ONLINE_USERS, NEW_MESSAGE_ALERT, NEW_REQUEST, USER_CONNECTED, USER_DISCONNECTED } from "../../constants/event";
-import { incrementNotificationCount, setIsNotificationLoading, setNotification } from "../../redux/Slice/notificationSlice";
+import {
+  CURRENT_ONLINE_USERS,
+  NEW_MESSAGE_ALERT,
+  NEW_REQUEST,
+  USER_CONNECTED,
+  USER_DISCONNECTED,
+} from "../../constants/event";
+import {
+  incrementNotificationCount,
+  setIsNotificationLoading,
+  setNotification,
+} from "../../redux/Slice/notificationSlice";
+import { setChats, setChatLoading } from "../../redux/Slice/chatSlice";
 import { useSocketEventHandler } from "../../utils/helper";
 import { getSocket } from "../../context/Socket";
 import { setNewMessageAlert } from "../../redux/Slice/chatSlice";
-import { addOnlineUser, removeOnlineUser, setOnlineUsers } from "../../redux/Slice/onlineUsersSlice";
+import {
+  addOnlineUser,
+  removeOnlineUser,
+  setOnlineUsers,
+} from "../../redux/Slice/onlineUsersSlice";
 
 const AppLayout = () => (WrappedComponents) => {
   return (props) => {
     const params = useParams();
     const chatId = params.chatId;
-    const chatIdRef = useRef(chatId)
-    const {notificationCount} = useSelector((state)=>state.notification)
+    const chatIdRef = useRef(chatId);
+    const { notificationCount } = useSelector((state) => state.notification);
 
     useEffect(() => {
       chatIdRef.current = chatId;
     }, [chatId]);
-    
 
     const {
       isProfile,
@@ -54,67 +75,77 @@ const AppLayout = () => (WrappedComponents) => {
       console.log("Delete Chat", _id, groupChat);
     };
 
-    const dispatch = useDispatch()
+    const dispatch = useDispatch();
 
-    useEffect(()=>{
-      const getMyProfile = async ()=>{
-        const res = await userService.getMyProfileAPI()
-        dispatch(setUser(res.user))
-      }
-      getMyProfile()
-    },[])
+    useEffect(() => {
+      const getMyProfile = async () => {
+        const res = await userService.getMyProfileAPI();
+        dispatch(setUser(res.user));
+      };
+      getMyProfile();
+    }, []);
 
-    useEffect(()=>{
-      getNotifications()
-    },[])
+    useEffect(() => {
+      const getMyChats = async (searchTerm = "") => {
+        dispatch(setChatLoading(true));
+        const res = await chatService.getChats(searchTerm);
+        dispatch(setChats(res.groupChats));
+        dispatch(setChatLoading(false));
+      };
+      getMyChats();
+    }, []);
 
-    const getNotifications = async ()=>{
-      dispatch(setIsNotificationLoading(true))
+    useEffect(() => {
+      getNotifications();
+    }, []);
+
+    const getNotifications = async () => {
+      dispatch(setIsNotificationLoading(true));
       const result = await requestService.requestNotification();
       dispatch(setNotification(result.allRequest));
-      dispatch(setIsNotificationLoading(false))
-    }
+      dispatch(setIsNotificationLoading(false));
+    };
 
-    const socket = getSocket()
+    const socket = getSocket();
 
-    const newMessageAlertHandler = useCallback((data)=>{
-      console.log('----Received message Alert-----')
-      if(data.chatId === chatIdRef.current){
-        console.log('ChatId presnt :',chatIdRef.current)
-        return
-      } 
-      dispatch(setNewMessageAlert(data))
-    },[])
+    const newMessageAlertHandler = useCallback((data) => {
+      console.log("----Received message Alert-----");
+      if (data.chatId === chatIdRef.current) {
+        console.log("ChatId presnt :", chatIdRef.current);
+        return;
+      }
+      dispatch(setNewMessageAlert(data));
+    }, []);
 
-    const newRequestHandler = useCallback(()=>{
-      dispatch(incrementNotificationCount())
-      console.log('---New Request---')
-      getNotifications()
-    },[])
+    const newRequestHandler = useCallback(() => {
+      dispatch(incrementNotificationCount());
+      console.log("---New Request---");
+      getNotifications();
+    }, []);
 
-    const onlineUsersInfoHandler = useCallback((data)=>{
-      console.log('Online Users : ',data)
-      dispatch(setOnlineUsers(data))
-    },[])
+    const onlineUsersInfoHandler = useCallback((data) => {
+      console.log("Online Users : ", data);
+      dispatch(setOnlineUsers(data));
+    }, []);
 
-    const newUserOnlineHandler = useCallback((data)=>{
-      console.log('New User : ', data.userId)
-      dispatch(addOnlineUser(data.userId))
-    },[])
+    const newUserOnlineHandler = useCallback((data) => {
+      console.log("New User : ", data.userId);
+      dispatch(addOnlineUser(data.userId));
+    }, []);
 
-    const userDisconnectedHandler = useCallback((data)=>{
-      console.log('User Disconnected : ', data.userId)
-      dispatch(removeOnlineUser(data.userId))
-    },[])
-  
+    const userDisconnectedHandler = useCallback((data) => {
+      console.log("User Disconnected : ", data.userId);
+      dispatch(removeOnlineUser(data.userId));
+    }, []);
+
     const eventHandler = {
       [NEW_MESSAGE_ALERT]: newMessageAlertHandler,
       [NEW_REQUEST]: newRequestHandler,
-      [CURRENT_ONLINE_USERS] : onlineUsersInfoHandler,
-      [USER_CONNECTED]:newUserOnlineHandler,
-      [USER_DISCONNECTED]:userDisconnectedHandler,
-    }
-    useSocketEventHandler(socket,eventHandler)
+      [CURRENT_ONLINE_USERS]: onlineUsersInfoHandler,
+      [USER_CONNECTED]: newUserOnlineHandler,
+      [USER_DISCONNECTED]: userDisconnectedHandler,
+    };
+    useSocketEventHandler(socket, eventHandler);
 
     return (
       <>
@@ -148,9 +179,9 @@ const AppLayout = () => (WrappedComponents) => {
           >
             {isChatList && (
               <ChatList
-                // chats={SampleChat}
-                // chatId={chatId}
-                // handleDeleteChat={handleDeleteChat}
+              // chats={SampleChat}
+              // chatId={chatId}
+              // handleDeleteChat={handleDeleteChat}
               />
             )}
             {isProfile && <Profile />}

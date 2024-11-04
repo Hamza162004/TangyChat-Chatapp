@@ -13,10 +13,36 @@ const ChatItem = ({
     isOnline,
     newMessageAlert,
     index = 0,
-    handleDeleteChatOpen
+    handleDeleteChatOpen,
+    lastMessage, 
+    lastMessageCreatedAt
 }) => {
     const avatarData = groupChat ? avatar : [avatar];
-    console.log({ avatar })
+
+    const formatLastMessageTime = (timestamp) => {
+        const messageDate = new Date(timestamp);
+        const now = new Date();
+
+        if (!timestamp) return "-";
+        
+        // Check if the message is from today
+        if (messageDate.toDateString() === now.toDateString()) {
+            return messageDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+        }
+        
+        // Check if the message is from yesterday
+        const yesterday = new Date(now);
+        yesterday.setDate(now.getDate() - 1);
+        if (messageDate.toDateString() === yesterday.toDateString()) {
+            return 'Yesterday';
+        }
+        
+        // Return date in "dd/mm/yyyy" format
+        return messageDate.toLocaleDateString([], { day: '2-digit', month: '2-digit', year: 'numeric' });
+    };
+    
+
+    const formattedTime = formatLastMessageTime(lastMessageCreatedAt);
 
     return (
         // <Link
@@ -67,11 +93,11 @@ const ChatItem = ({
                 <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-center mb-1">
                         <h3 className="font-semibold text-gray-900 truncate">{name}</h3>
-                        <span className="text-sm text-gray-500 flex-shrink-0">12:40am</span>
+                        <span className="text-sm text-gray-500 flex-shrink-0">{formattedTime}</span>
                     </div>
                     <div className='flex justify-between items-center'>
                         <p className="text-sm text-gray-600 truncate pr-8">
-                            Lorem ipsum dolor sit, amet consectetur adipisicing elit. Animi, officiis.
+                            {typeof lastMessage === "string" ? lastMessage : "File"}
                         </p>
                         {newMessageAlert?.count > 0 && (
                             <span className="flex-shrink-0 inline-flex items-center justify-center px-2 py-1 bg-purple-600 text-white text-xs font-medium rounded-full min-w-[1.25rem] h-5">
