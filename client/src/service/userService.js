@@ -15,7 +15,7 @@ const signupAPI = async (formData) => {
 
 const signInAPI = async (email, password) => {
   try {
-    const response = await instance.post('user/login', { email, password } , {withCredentials: true});
+    const response = await instance.post('user/login', { email, password });
     return response.data;
   } catch (error) {
     throw error;
