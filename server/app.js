@@ -24,8 +24,9 @@ app.use('/',routes)
 
 app.get("/", (req,res) =>
   {
-    res.json("Backend working")}
-    )
+    res.json("Backend working"
+  }
+)
 
 
 app.use(defaultError)
@@ -33,4 +34,3 @@ app.use(defaultError)
 server.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
-module.exports = server;
