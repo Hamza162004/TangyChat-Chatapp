@@ -14,7 +14,7 @@ const getSockets = (users) => {
 }
 
 const initializeSocket = (server) => {
-    const io = new Server(server, {cors:config.cors);
+    const io = new Server(server, {cors:config.cors});
 
     io.use(isSocketAuthenticated)
 

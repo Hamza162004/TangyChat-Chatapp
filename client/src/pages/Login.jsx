@@ -81,7 +81,7 @@ const Login = () => {
       const result = await userService.signInAPI(email.value, password.value);
 
       storageService.addToken(result.token);     
-      console.log(result.token)
+      
       await fetchUserProfile();
 
 
@@ -138,7 +138,7 @@ const Login = () => {
 
   return (
     <>
-      <div className=" flex justify-center items-center  bg-gradient-to-r from-indigo-500 to-indigo-700 min-h-[100vh]">
+      <div className=" flex justify-center items-center  bg-gradient-to-r from-orange-500 to-amber-300 min-h-[100vh]">
         <Paper elevation={7} className="my-14">
           <div className="w-full bg-white rounded-lg shadow  md:mt-0 sm:max-w-md xl:p-0">
             <div className="p-6  space-y-2 md:space-y-2 sm:p-8">

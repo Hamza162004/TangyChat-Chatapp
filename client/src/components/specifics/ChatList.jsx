@@ -118,7 +118,8 @@ const ChatList = () => {
                 groupChat,
                 lastMessage,
                 lastMessageCreatedAt,
-                lastMessageSender
+                lastMessageSender,
+                filteredMembers
               } = data;
               const alertForThisChat = newMessageAlert.find(
                 (alert) => alert?.chatId.toString() === _id.toString()
@@ -129,7 +130,9 @@ const ChatList = () => {
               }
               const isOnline = groupChat
                 ? false
-                : onlineUsers.includes(members.filter((e)=>e?._id != user?._id));
+                : onlineUsers.includes(filteredMembers[0]._id);
+                console.log({onlineUsers})
+          
 
               return (
                 <ChatItem

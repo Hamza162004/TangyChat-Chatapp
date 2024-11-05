@@ -24,7 +24,7 @@ app.use('/',routes)
 
 app.get("/", (req,res) =>
   {
-    res.json("Backend working"
+    res.json("Backend working")
   }
 )
 

@@ -72,6 +72,8 @@ const login = async (req, res, next) => {
     const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "3d",
     });
+
+    user.password = undefined
     res.status(200).json({
       message: "Welcome Back!",
       user,
