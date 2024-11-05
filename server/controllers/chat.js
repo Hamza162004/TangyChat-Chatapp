@@ -77,6 +77,10 @@ const getMyChats = async (req, res, next) => {
             _id: member._id,
             name: member.username || "No Name",
           })),
+          filteredMembers : filteredMembers.map((member)=>({
+            _id: member._id,
+            name: member.username || "No Name",
+          })),
           groupChat: chat.groupChat,
           creator: chat.creator,
           avatar: chat.groupChat
