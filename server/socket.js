@@ -16,8 +16,9 @@ const getSockets = (users) => {
 const initializeSocket = (server) => {
     const io = new Server(server, {cors:{    
     origin: "https://tangy-chat-frontend.vercel.app",
-    allowedHeaders: ["Tangy-token"],
-    credentials: true
+    allowedHeaders: ["tangy-token"],
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE','PATCH'],
     });
 
     io.use(isSocketAuthenticated)
