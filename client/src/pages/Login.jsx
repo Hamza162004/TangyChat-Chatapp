@@ -81,7 +81,7 @@ const Login = () => {
       const result = await userService.signInAPI(email.value, password.value);
 
       storageService.addToken(result.token);     
-      
+      console.log(result.token)
       await fetchUserProfile();
 
 
