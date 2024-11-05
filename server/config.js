@@ -13,7 +13,7 @@ const config = {
   cors:{
     origin: process.env.CLIENT_URL,
     credentials : true,
-    allowedHeaders: ['Content-Type', 'Authorization']
+    allowedHeaders: ['Content-Type', 'Authorization','tangy-token']
   }
 };
 
