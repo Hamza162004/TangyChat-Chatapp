@@ -12,7 +12,7 @@ const config = {
   env: process.env.ENV || 'Development',
   cors:{
     origin: process.env.CLIENT_URL,
-    credentials : true
+    credentials : true,
   }
 };
 

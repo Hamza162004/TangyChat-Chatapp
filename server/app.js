@@ -22,6 +22,13 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use('/',routes)
 
+app.get("/", (req,res) =>
+  {
+    res.json("Backend working"
+  }
+)
+
+
 app.use(defaultError)
 
 server.listen(port, () => {
