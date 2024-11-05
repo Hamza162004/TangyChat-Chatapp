@@ -12,7 +12,6 @@ const SocketProvider = ({ children }) => {
   const navigate = useNavigate()
   const socket = useMemo(() =>{
     const newSocket = io(API_URL, {
-      withCredentials: true,
       extraHeaders: {
         'Tangy-token': storageService.getToken()
       }
