@@ -3,7 +3,6 @@ import { CURRENT_ONLINE_USERS, NEW_MESSAGE, NEW_MESSAGE_ALERT, TYPING_ENDED, TYP
 import { v4 as uuid } from 'uuid'
 import { Message } from "./models/message.js";
 import { isSocketAuthenticated } from "./middlewares/auth.js";
-import { User } from "./models/user.js";
 import config from "./config.js";
 
 const usersocketIDs = new Map()
@@ -47,9 +46,7 @@ const initializeSocket = (server) => {
             const membersSocket = getSockets(members)
             const membersExceptUser = members.filter((member)=>member._id.toString() !== user._id.toString())
             const membersExcludingUserSocket = getSockets(membersExceptUser)
-            console.log('------senDing message and alert-----')
-            console.log({membersSocket})
-            console.log({membersExcludingUserSocket})
+
             io.to(membersSocket).emit(NEW_MESSAGE, {
                 chatId,
                 message: messageRealTime
