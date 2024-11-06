@@ -1,4 +1,5 @@
 import instance from "./interceptor";
+import storageService from "./storageService";
 
 const signupAPI = async (formData) => {
   try {
@@ -40,4 +41,19 @@ const getMyProfileAPI =async () => {
   }
 };
 
-export default { signupAPI, signInAPI , getUsersAPI , getMyProfileAPI };
+const updateProfileAPI = async (formData,IsAvatar=false) => {
+  try {
+    const headers = IsAvatar
+      ? {
+          "Content-Type": "multipart/form-data",
+          "Tangy-token": storageService.getToken(),
+        }
+      : {};
+    const response = await instance.put("user/updateMyProfile", formData, { headers});
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export default { signupAPI, signInAPI , getUsersAPI , getMyProfileAPI,updateProfileAPI };

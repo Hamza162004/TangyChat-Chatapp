@@ -11,7 +11,7 @@ app.post('/login', login)
 // can only be accessed if loggedin
 app.use(isLoggedIn)
 app.get('/profile', getMyProfile)
-app.put('/updateMyProfile', updateMyProfile)
+app.put('/updateMyProfile',SingleAvatar, updateMyProfile)
 app.get('/logout',logout)
 app.get('/search', searchUser)
 
