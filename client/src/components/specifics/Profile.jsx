@@ -1,5 +1,5 @@
 import { Avatar } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import AlternateEmailIcon from "@mui/icons-material/AlternateEmail";
 import { Camera, X, Check } from 'lucide-react';
@@ -7,17 +7,26 @@ import moment from "moment";
 import { useSelector } from "react-redux";
 import { Mail } from "@mui/icons-material";
 import { transformImage } from "../../libs/Features";
+import {useFileHandler} from '6pp'
 
 const Profile = () => {
   const {user} = useSelector((state) => state.user);
   const [profile,setProfile] = useState(user || null)
   const [isEditing,setIsEditing]=useState(false)
   const [editForm, setEditForm] = useState({ ...profile });
+  const fileRef = useRef()
+  const newAvatar = useFileHandler('single')
 
   const handleSave = () => {
     setProfile(editForm);
     setIsEditing(false);
   };
+
+  const selectFile = ()=>{
+    if(fileRef.current){
+      fileRef.current.click()
+    }
+  }
 
   return (
     <>
@@ -79,6 +88,7 @@ const Profile = () => {
                 onClick={() => {
                   setIsEditing(false);
                   setEditForm(profile);
+                  newAvatar.clear()
                 }}
                 className="p-2 text-gray-600 hover:bg-gray-100 rounded-full transition-colors"
               >
@@ -98,14 +108,17 @@ const Profile = () => {
         <div className="space-y-6">
           <div className="relative w-32 h-32 mx-auto">
             <img
-              src={isEditing ? editForm.avatar.url : user?.avatar?.url}
+              src={isEditing ? newAvatar.preview?newAvatar.preview:transformImage(user?.avatar?.url,300) : transformImage(user?.avatar?.url,300)}
               alt="Profile"
               className="w-full h-full rounded-full object-cover"
             />
             {isEditing && (
-              <button className="absolute bottom-0 right-0 p-2 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 transition-colors">
+              <>
+              <button onClick={selectFile} className="absolute bottom-0 right-0 p-2 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 transition-colors">
                 <Camera size={20} />
               </button>
+              <input ref={fileRef}  onChange={newAvatar.changeHandler} type="file" className="hidden" name="" id="" />
+              </>
             )}
           </div>
 
