@@ -37,9 +37,9 @@ const Login = () => {
   useEffect(() => {
     const token = storageService.getToken();
     if (token) {
-      navigate("/home")
+      navigate("/home");
     } else {
-      navigate("/")
+      navigate("/");
     }
   }, []);
 
@@ -75,15 +75,13 @@ const Login = () => {
     }
   };
 
-
   const signIn = async () => {
     try {
       const result = await userService.signInAPI(email.value, password.value);
 
-      storageService.addToken(result.token);     
-      
-      await fetchUserProfile();
+      storageService.addToken(result.token);
 
+      await fetchUserProfile();
 
       navigate("/home");
 
@@ -103,6 +101,10 @@ const Login = () => {
     if (username.value) {
       if (email.value) {
         if (bio.value) {
+          if (password.value.length < 8) {
+            toast.error("Password must be atleast 8 characters long");
+            return;
+          }
           if (password.value !== cpassword.value) {
             toast.error("Password does not match!");
             return;
@@ -187,10 +189,7 @@ const Login = () => {
                           />
                         </div>
                         <div className="ml-3 text-sm">
-                          <label
-                            htmlFor="remember"
-                            className="text-gray-500"
-                          >
+                          <label htmlFor="remember" className="text-gray-500">
                             See password
                           </label>
                         </div>

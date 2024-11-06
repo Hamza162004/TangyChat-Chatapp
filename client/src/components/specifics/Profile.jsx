@@ -130,7 +130,7 @@ const Profile = () => {
         <div className="space-y-6">
           <div className="relative w-32 h-32 mx-auto">
             <img
-              src={isEditing ? newAvatar.preview?newAvatar.preview:transformImage(user?.avatar?.url,300) : transformImage(user?.avatar?.url,300)}
+              src={isEditing ? newAvatar.preview?newAvatar.preview:transformImage(user?.avatar?.url,300) : transformImage(user?.avatar?.url,300) || "https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=mail@ashallendesign.co.uk" }
               alt="Profile"
               className="w-full h-full rounded-full object-cover"
             />
