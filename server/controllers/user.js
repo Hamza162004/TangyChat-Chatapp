@@ -126,7 +126,7 @@ const updateMyProfile = async (req, res, next) => {
       new: true,
     });
 
-    res.json({ success: true });
+    res.status(200).json({ success: true,updatedUser });
   } catch (error) {
     next(error);
   }

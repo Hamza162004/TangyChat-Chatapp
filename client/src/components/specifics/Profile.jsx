@@ -4,22 +4,42 @@ import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import AlternateEmailIcon from "@mui/icons-material/AlternateEmail";
 import { Camera, X, Check } from 'lucide-react';
 import moment from "moment";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Mail } from "@mui/icons-material";
 import { transformImage } from "../../libs/Features";
-import {useFileHandler} from '6pp'
+import {useFileHandler, useInputValidation} from '6pp'
+import userService from "../../service/userService";
+import toast from "react-hot-toast";
+import { setUser } from "../../redux/Slice/userSlice";
 
 const Profile = () => {
   const {user} = useSelector((state) => state.user);
   const [profile,setProfile] = useState(user || null)
+  const dispatch = useDispatch()
   const [isEditing,setIsEditing]=useState(false)
   const [editForm, setEditForm] = useState({ ...profile });
   const fileRef = useRef()
   const newAvatar = useFileHandler('single')
+  const newUsername = useInputValidation('')
+  const newBio = useInputValidation('')
 
-  const handleSave = () => {
-    setProfile(editForm);
+  const handleSave = async() => {
+    const toastId = toast.loading("Updating Profile")
+    const form = new FormData()
+    if(newUsername.value) form.append('username',newUsername.value)
+    if(newBio.value) form.append('bio',newBio.value)
+    if(newAvatar.file) form.append('avatar',newAvatar.file)
+    const res = await userService.updateProfileAPI(form,newAvatar.file?true:false)
+
+    if(res.success){
+      toast.success('Profile Updated successFully',{id:toastId})
+      dispatch(setUser(res.updatedUser))
+      setProfile(res.updatedUser)
+    }
     setIsEditing(false);
+    newAvatar.clear()
+    newUsername.clear()
+    newBio.clear()
   };
 
   const selectFile = ()=>{
@@ -88,7 +108,9 @@ const Profile = () => {
                 onClick={() => {
                   setIsEditing(false);
                   setEditForm(profile);
-                  newAvatar.clear()
+                  newAvatar.clear();
+                  newUsername.clear();
+                  newBio.clear()
                 }}
                 className="p-2 text-gray-600 hover:bg-gray-100 rounded-full transition-colors"
               >
@@ -130,8 +152,8 @@ const Profile = () => {
               {isEditing ? (
                 <input
                   type="text"
-                  value={editForm.username}
-                  onChange={(e) => setEditForm({ ...editForm, username: e.target.value })}
+                  value={newUsername.value?newUsername.value:profile.username}
+                  onChange={newUsername.changeHandler}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white text-gray-900"
                 />
               ) : (
