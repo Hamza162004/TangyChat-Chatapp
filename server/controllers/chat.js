@@ -70,9 +70,10 @@ const getMyChats = async (req, res, next) => {
           .sort({ createdAt: -1 }) // Sort by createdAt in descending order to get the latest message
           .select("content attachments createdAt sender");
         const unreadCount = await Message.countDocuments({
-            chat: chat._id,
-            readBy: { $ne: userId }, // Messages not read by the current user
-        });  
+          chat: chat._id,
+          readBy: { $ne: userId }, // Messages not read by the current user
+        });
+
         // Process members and other details as before
         const filteredMembers = chat.members.filter(
           (member) => member._id.toString() !== userId
@@ -85,7 +86,7 @@ const getMyChats = async (req, res, next) => {
             _id: member._id,
             name: member.username || "No Name",
           })),
-          filteredMembers : filteredMembers.map((member)=>({
+          filteredMembers: filteredMembers.map((member) => ({
             _id: member._id,
             name: member.username || "No Name",
           })),
@@ -101,16 +102,26 @@ const getMyChats = async (req, res, next) => {
             : otherMember
             ? otherMember.username || "No Name"
             : "Unknown User",
-            lastMessage:
+          lastMessage:
             latestMessage && (latestMessage.content || latestMessage.attachments.length > 0)
               ? latestMessage.content || latestMessage.attachments[0] // Return the first attachment if exists
               : "Start Conversation...",
           lastMessageCreatedAt: latestMessage ? latestMessage.createdAt : null,
           lastMessageSender: latestMessage ? latestMessage.sender : null,
-          unreadCount
+          unreadCount,
         };
       })
     );
+
+    // Sort chats based on the most recent message
+    chatWithLastMessages.sort((a, b) => {
+      if (a.lastMessageCreatedAt && b.lastMessageCreatedAt) {
+        return new Date(b.lastMessageCreatedAt) - new Date(a.lastMessageCreatedAt);
+      }
+      if (!a.lastMessageCreatedAt) return 1;
+      if (!b.lastMessageCreatedAt) return -1;
+      return 0;
+    });
 
     // Filter chats based on search term
     const filteredChats = chatWithLastMessages.filter(
@@ -127,6 +138,7 @@ const getMyChats = async (req, res, next) => {
     return res.status(400).json({ success: false, message: error.message });
   }
 };
+
 
 const getGroupChats = async (req, res, next) => {
   try {
