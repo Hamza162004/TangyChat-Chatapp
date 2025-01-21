@@ -34,6 +34,9 @@ const signup = async (req, res) => {
     if (!validator.isEmail(email)) {
       throw Error("Email not valid");
     }
+    if (password.length < 8) {
+      throw Error("Password must be atleast 8 characters long");
+    }
 
     const user = await User.create({
       username,
