@@ -3,7 +3,6 @@ import instance from "./interceptor";
 const getChats = async (search) => {
   try {
     const response = await instance.get(`chat/getMyChats?search=${search}`);
-    console.log(response.data)
     return response.data;
   } catch (error) {
     throw error;

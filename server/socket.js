@@ -34,7 +34,8 @@ const initializeSocket = (server) => {
                     avatar:user.avatar.url
                 },
                 content: message,
-                createdAt: new Date().toISOString()
+                createdAt: new Date().toISOString(),
+                readBy : [user._id]
             }
 
             const messageForDB = {

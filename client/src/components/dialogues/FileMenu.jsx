@@ -40,20 +40,20 @@ const FileMenu = ({ anchor }) => {
     for (let [key, value] of myForm.entries()) {
       console.log(`${key}:`, value);
     }
+    setIsFileMenu(false)
 
     try {
       const res = await messageService.sendAttachments(myForm)
       console.log({ res })
       if (res.success) {
         toast.success(`${key} Sent Successfully`, { id: toastId })
-        // socket.emit(NEW_ATTACHMENT,{chatId})
+        socket.emit(NEW_ATTACHMENT,{chatId})
       } else {
         toast.error(res.message, { id: toastId })
       }
     } catch (error) {
       toast.error(error.message, { id: toastId })
     }
-
   }
 
   const validateFiles = (event, key, allowedTypes) => {

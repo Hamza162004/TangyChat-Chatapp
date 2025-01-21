@@ -35,6 +35,7 @@ const Friends = () => {
     if(notFriends.length===0){
 
       fetchUsers()
+      console.log('Fetched non--------------')
     }
   },[])
 

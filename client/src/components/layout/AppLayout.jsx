@@ -36,7 +36,7 @@ import {
   setIsNotificationLoading,
   setNotification,
 } from "../../redux/Slice/notificationSlice";
-import { setChats, setChatLoading, setChatLastMessage, addUnreadMessages } from "../../redux/Slice/chatSlice";
+import { setChats, setChatLoading, setChatLastMessage, addUnreadMessages, moveChatToTop } from "../../redux/Slice/chatSlice";
 import { useSocketEventHandler } from "../../utils/helper";
 import { getSocket } from "../../context/Socket";
 import { setNewMessageAlert } from "../../redux/Slice/chatSlice";
@@ -51,7 +51,6 @@ const AppLayout = () => (WrappedComponents) => {
     const params = useParams();
     const chatId = params.chatId;
     const chatIdRef = useRef(chatId);
-    const { notificationCount } = useSelector((state) => state.notification);
 
     useEffect(() => {
       chatIdRef.current = chatId;
@@ -72,20 +71,7 @@ const AppLayout = () => (WrappedComponents) => {
       setIsNotification,
     } = useContext(AppContext);
 
-    const handleDeleteChat = (e, _id, groupChat) => {
-      e.preventDefault();
-      console.log("Delete Chat", _id, groupChat);
-    };
-
     const dispatch = useDispatch();
-
-    useEffect(() => {
-      const getMyProfile = async () => {
-        const res = await userService.getMyProfileAPI();
-        dispatch(setUser(res.user));
-      };
-      getMyProfile();
-    }, []);
 
     const getMyChats = async (searchTerm = "") => {
       console.log('App layout-----------------called chatlist')
@@ -100,12 +86,6 @@ const AppLayout = () => (WrappedComponents) => {
       dispatch(setChatLoading(false));
     };
 
-
-    useEffect(() => {
-      getMyChats();
-      getNotifications();
-    }, []);
-
     const getNotifications = async () => {
       dispatch(setIsNotificationLoading(true));
       const result = await requestService.requestNotification();
@@ -117,6 +97,7 @@ const AppLayout = () => (WrappedComponents) => {
 
     const newMessageAlertHandler = useCallback((data) => {
       console.log("----Received message Alert-----");
+      dispatch(moveChatToTop(data.chatId))
       if (data.chatId === chatIdRef.current) {
         console.log("ChatId presnt :", chatIdRef.current);
         return;

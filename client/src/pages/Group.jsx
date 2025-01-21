@@ -225,7 +225,7 @@ const Group = () => {
                 </div>
               ))}
             </div>
-            <div className=" space-x-3  flex items-center justify-center">
+            <div className=" space-x-3  flex items-center justify-center pt-20">
             {currentUser?._id === creatorId && (
               <button
                 onClick={() => setIsDeleteDialog(true)}

@@ -15,11 +15,12 @@ const getMessages = async (req, res, next) => {
 
         const messagesResult = await Message.paginate({ chat: id }, options);
 
-        const transformed = messagesResult.docs.reverse().map(({ sender, _id, createdAt, content, attachments }) => ({
+        const transformed = messagesResult.docs.reverse().map(({ sender, _id, createdAt, content, attachments,readBy }) => ({
             _id,
             createdAt,
             content,
             attachments,
+            readBy,
             sender: {
                 _id: sender._id,
                 username: sender.username,
