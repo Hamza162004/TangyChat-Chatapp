@@ -8,43 +8,54 @@ import { useInputValidation } from '6pp';
 import { toast } from "react-hot-toast";
 import { Smile } from "lucide-react";
 import { ThreeDots } from "react-loader-spinner";
+import { useDispatch, useSelector } from "react-redux";
+import { removeUsersNotFriends, setUsersNotFriends } from "../../redux/Slice/friendSlice";
 
 const Friends = () => {
 
-  const [users, setUsers] = useState([]);
-  const fsearch = useInputValidation("");
+  const {notFriends} = useSelector((state)=>state.users)
+  const fsearch = useInputValidation(null);
   const [searchTimeout, setSearchTimeout] = useState(null);
-  const [isFriendLoading, setIsFriendLoading] = useState(true)
-
+  const [isFriendLoading, setIsFriendLoading] = useState(false)
+  const dispatch = useDispatch()
 
   // Function to fetch users
   const fetchUsers = async (searchTerm = "") => {
     setIsFriendLoading(true)
     try {
       const result = await userService.getUsersAPI(searchTerm);
-      setUsers(result.users);
+      dispatch(setUsersNotFriends(result.users))
     } catch (error) {
       console.log("Error fetching Users:", error);
-      setUsers([]);
     }
     setIsFriendLoading(false)
   };
 
+  useEffect(()=>{
+    if(notFriends.length===0){
+
+      fetchUsers()
+    }
+  },[])
+
   // Call fetchUsers on search input changes
   useEffect(() => {
-    if (searchTimeout) {
-      clearTimeout(searchTimeout);
+    if(fsearch.value===null){
+      return
     }
-
-    const timeoutId = setTimeout(() => {
-      fetchUsers(fsearch.value);
-    }, 100);
-
-    setSearchTimeout(timeoutId);
-
-    return () => {
-      clearTimeout(timeoutId);
-    };
+      if (searchTimeout) {
+        clearTimeout(searchTimeout);
+      }
+  
+      const timeoutId = setTimeout(() => {
+        fetchUsers(fsearch.value);
+      }, 100);
+  
+      setSearchTimeout(timeoutId);
+  
+      return () => {
+        clearTimeout(timeoutId);
+      };
   }, [fsearch.value]);
 
   // Handle sending friend request and then refresh users
@@ -52,8 +63,7 @@ const Friends = () => {
     try {
       const result = await requestService.sendFriendRequestAPI(receiverId);
       toast.success(`Friend Request sent to ${result.receiverUsername}`);
-      // After sending the friend request, refetch the user list
-      fetchUsers(fsearch.value);  // Fetch users with the current search term
+      dispatch(removeUsersNotFriends(receiverId))
     } catch (error) {
       console.error("Error sending friend request:", error);
       toast.error("Error sending friend request");
@@ -77,14 +87,14 @@ const Friends = () => {
             <div className="h-80 flex flex-row items-center justify-center">
             <ThreeDots color={'#4F46E5'} width={100}/> 
             </div>
-            : users.length > 0 ?
+            : notFriends.length > 0 ?
               <Stack
                 width={"100%"}
                 direction={"column"}
                 style={{ height: "calc(100% - 156px)", overflowY:"auto" , overflowX:"hidden" }}
                 >
                 {
-                  users.map((user) => (
+                  notFriends.map((user) => (
                     <UserItem
                       addFriends={true}
                       user={user}

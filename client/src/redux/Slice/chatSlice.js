@@ -24,6 +24,22 @@ export const chatSlice = createSlice({
       }
       state.totalMessagesAlert += 1;
     },
+    addUnreadMessages: (state, action) => {
+
+      action.payload.forEach(({ chatId, count }) => {
+        const index = state.newMessageAlert.findIndex((item) => item.chatId === chatId);
+
+        if (index !== -1) {
+          // Update the unread count by replacing the previous count
+          state.totalMessagesAlert += count - state.newMessageAlert[index].count;
+          state.newMessageAlert[index].count = count;
+        } else {
+          state.newMessageAlert.push({ chatId, count });
+          state.totalMessagesAlert += count;
+        }
+      });
+    }
+    ,
     removeMessageAlert: (state, action) => {
       const alertItem = state.newMessageAlert.find(
         (item) => item.chatId === action.payload
@@ -45,21 +61,21 @@ export const chatSlice = createSlice({
     setNewMessageAlertLoading: (state, action) => {
       state.isNewMessageAlertLoading = action.payload;
     },
-    setChatLastMessage:(state,action)=>{
-        const chat = state.chats.find((chat)=>chat._id === action.payload.chatId)
-        if(chat){
-          state.chats = state.chats.map((chat)=>{
-            if (chat._id === action.payload.chatId) {
-              return {
-                  ...chat,
-                  lastMessage: action.payload.latestMessage,
-                  lastMessageCreatedAt: action.payload.latestMessageCreatedAt,
-                  lastMessageSender: action.payload.latestMessageSender
-              };
+    setChatLastMessage: (state, action) => {
+      const chat = state.chats.find((chat) => chat._id === action.payload.chatId)
+      if (chat) {
+        state.chats = state.chats.map((chat) => {
+          if (chat._id === action.payload.chatId) {
+            return {
+              ...chat,
+              lastMessage: action.payload.latestMessage,
+              lastMessageCreatedAt: action.payload.latestMessageCreatedAt,
+              lastMessageSender: action.payload.latestMessageSender
+            };
           }
           return chat;
-          })
-        }
+        })
+      }
     }
   },
 });
@@ -70,7 +86,8 @@ export const {
   setChats,
   setChatLoading,
   setNewMessageAlertLoading,
-  setChatLastMessage
+  setChatLastMessage,
+  addUnreadMessages
 } = chatSlice.actions;
 
 export default chatSlice.reducer;

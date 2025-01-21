@@ -2,7 +2,7 @@ import React, { useEffect, useState, lazy, Suspense } from "react";
 import AppLayout from "../components/layout/AppLayout";
 import { Done, Edit } from "@mui/icons-material";
 import { Backdrop, TextField, Typography } from "@mui/material";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import UserItem from "../components/shared/UserItem";
 import { orange } from "../constants/color";
 import chatService from "../service/chatService";
@@ -20,13 +20,18 @@ const Group = () => {
   const AddMembersDialogue = lazy(() =>
     import("../components/dialogues/AddMembersDialogue")
   );
+  const LeaveGroupDialogue = lazy(() =>
+    import("../components/dialogues/LeaveGroupDialogue")
+  );
   const [groupNewName, setGroupNewName] = useState("");
   const [isDeleteDialog, setIsDeleteDialog] = useState(false);
+  const [isLeaveDialog, setIsLeaveDialog] = useState(false);
   const [isAddMembers, setIsAddMembers] = useState(false);
   const [groupMembers, setGroupMembers] = useState([]);
   const [isEdit, setIsEdit] = useState(false);
 
   const dispatch = useDispatch();
+  const navigate = useNavigate()
 
   const currentUser = useSelector((state) => state.user.user || {});
   const creatorId = useSelector((state) => state.creator.creator);
@@ -72,17 +77,37 @@ const Group = () => {
   }, [chatId]);
 
   const closeConfirmDeleteDialog = () => {
-    console.log("Please Close naa")
     setIsDeleteDialog(false);
+  };
+
+  const closeleaveDialog = () => {
+    setIsLeaveDialog(false);
+  };
+
+  const leaveHandler = async () => {
+    try {
+      await chatService.leaveGroup(chatId);
+      const result = await chatService.getGroupChats();
+      console.log(result)
+      toast.success("Group left!")
+      dispatch(setGroup(result.groupChats));
+      closeConfirmDeleteDialog();
+      navigate('/home')
+    } catch (error) {
+      console.log("Error leaving Group :", error);
+      toast.error("Error leaving Group");
+    }
   };
 
   const deleteHandler = async () => {
     try {
-      await chatService.leaveGroup(chatId);
+      await chatService.deleteGroup(chatId);
       const result = await chatService.getGroupChats();
-      toast.success("Group left!")
+      console.log(result)
+      toast.success("Group Deleted!")
       dispatch(setGroup(result.groupChats));
-      closeConfirmDeleteDialog();
+      closeleaveDialog();
+      navigate('/home')
     } catch (error) {
       console.log("Error leaving Group :", error);
       toast.error("Error leaving Group");
@@ -102,117 +127,7 @@ const Group = () => {
 
   return (
     <>
-      {/* <div className="flex items-center h-full flex-col w-full  px-5 pt-8">
-        <div className="flex items-center">
-          {isEdit ? (
-            <>
-              <TextField
-                label="GroupName"
-                variant="standard"
-                value={groupNewName}
-                onChange={(e) => setGroupNewName(e.target.value)}
-              />
-              <button
-                className="text-green-500 hover:text-green-400"
-                onClick={updateGroupName}
-              >
-                <Done />
-              </button>
-            </>
-          ) : (
-            <>
-              <h1 className="text-2xl mx-3">{groupNewName}</h1>
-              {currentUser && creatorId === currentUser._id && (
-                <button
-                  className="text-gray-500 hover:text-gray-400"
-                  onClick={() => setIsEdit(true)}
-                >
-                  <Edit />
-                </button>
-              )}
-            </>
-          )}
-        </div>
-        <div className="flex flex-col w-full h-[85%] my-10 sm:px-20 xs:px-10">
-          <Typography
-            sx={{
-              alignSelf: "flex-start",
-              fontSize: "18px",
-              color: orange,
-              fontWeight: "bold",
-            }}
-          >
-            Members
-          </Typography>
-          <div className="flex items-center self-center py-2 overflow-y-auto  flex-col w-[60%] space-y-4  h-[60%]">
-            {groupMembers.map((i) => (
-              <div className="border-[1px] border-gray-600 rounded-xl px-3 py-1 w-full ">
-                <UserItem
-                  key={i._id}
-                  user={i}
-                  handler={removeMemberHandler}
-                  isGroupMember={true}
-                  addMembers={true}
-                />
-              </div>
-            ))}
-          </div>
-
-          <div className="flex flex-col pt-10 items-center">
-            {creatorId === currentUser._id && (
-              <button
-                onClick={() => setIsAddMembers(true)}
-                type="button"
-                className="text-white flex items-center bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  className="size-4 mr-2"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                Add Members
-              </button>
-            )}
-
-            <button
-              onClick={() => setIsDeleteDialog(true)}
-              type="button"
-              className="text-white flex items-center bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                className="size-4 mr-2"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M16.5 4.478v.227a48.816 48.816 0 0 1 3.878.512.75.75 0 1 1-.256 1.478l-.209-.035-1.005 13.07a3 3 0 0 1-2.991 2.77H8.084a3 3 0 0 1-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 0 1-.256-1.478A48.567 48.567 0 0 1 7.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 0 1 3.369 0c1.603.051 2.815 1.387 2.815 2.951Zm-6.136-1.452a51.196 51.196 0 0 1 3.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 0 0-6 0v-.113c0-.794.609-1.428 1.364-1.452Zm-.355 5.945a.75.75 0 1 0-1.5.058l.347 9a.75.75 0 1 0 1.499-.058l-.346-9Zm5.48.058a.75.75 0 1 0-1.498-.058l-.347 9a.75.75 0 0 0 1.5.058l.345-9Z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              Exit Group
-            </button>
-          </div>
-        </div>
-        
-        {isAddMembers && (
-          <Suspense fallback={<Backdrop open />}>
-            <AddMembersDialogue
-              handleClose={() => setIsAddMembers(false)}
-              open={isAddMembers}
-              refreshGroupDetails={refreshGroupDetails}
-            />
-          </Suspense>
-        )}
-      </div> */}
+      
       <div className="h-full w-full bg-white flex flex-col">
         <div className="relative h-64 bg-gradient-to-br from-indigo-600 to-indigo-800 flex items-center justify-center px-6">
           <Link
@@ -259,7 +174,7 @@ const Group = () => {
           </div>
         </div>
 
-        <div className="flex-1 px-6 py-8 justify-between">
+        <div className="flex-1 px-6 py-8">
           <div className="max-w-2xl mx-auto">
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-lg font-semibold text-gray-900">Members</h3>
@@ -310,10 +225,7 @@ const Group = () => {
                 </div>
               ))}
             </div>
-            
-          </div>
-        </div>
-        <div className="mb-20 space-y-3 flex items-center justify-center">
+            <div className=" space-x-3  flex items-center justify-center">
             {currentUser?._id === creatorId && (
               <button
                 onClick={() => setIsDeleteDialog(true)}
@@ -324,6 +236,7 @@ const Group = () => {
               </button>
             ) }
               <button
+              onClick={()=>setIsLeaveDialog(true)}
                 className="w-40 py-3 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition-colors flex items-center justify-center space-x-2"
               >
                 <LogOut size={20} />
@@ -331,6 +244,9 @@ const Group = () => {
               </button>
             
           </div>
+          </div>
+        </div>
+        
       </div>
       {isAddMembers && (
         <Suspense fallback={<Backdrop open />}>
@@ -347,6 +263,15 @@ const Group = () => {
               handleClose={closeConfirmDeleteDialog}
               deleteHandler={deleteHandler}
               open={isDeleteDialog}
+            />
+          </Suspense>
+        )}
+        {isLeaveDialog && (
+          <Suspense fallback={<Backdrop open />}>
+            <LeaveGroupDialogue
+              handleClose={closeleaveDialog}
+              deleteHandler={leaveHandler}
+              open={isLeaveDialog}
             />
           </Suspense>
         )}

@@ -56,8 +56,6 @@ const UserItem = ({
           )}
           {addMembers &&
             (isGroupMember ? (
-              _id !== userNow._id &&
-              creatorId === userNow._id && (
                 <button
                   onClick={() => handler(_id)}
                   type="button"
@@ -76,7 +74,7 @@ const UserItem = ({
                     />
                   </svg>
                 </button>
-              )
+              
             ) : (
               <button
                 onClick={() => handler(_id)}

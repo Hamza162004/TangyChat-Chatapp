@@ -24,8 +24,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "../../redux/Slice/userSlice";
 import {
   CURRENT_ONLINE_USERS,
+  NEW_MESSAGE,
   NEW_MESSAGE_ALERT,
   NEW_REQUEST,
+  REFRESH_CHATLIST,
   USER_CONNECTED,
   USER_DISCONNECTED,
 } from "../../constants/event";
@@ -34,7 +36,7 @@ import {
   setIsNotificationLoading,
   setNotification,
 } from "../../redux/Slice/notificationSlice";
-import { setChats, setChatLoading } from "../../redux/Slice/chatSlice";
+import { setChats, setChatLoading, setChatLastMessage, addUnreadMessages } from "../../redux/Slice/chatSlice";
 import { useSocketEventHandler } from "../../utils/helper";
 import { getSocket } from "../../context/Socket";
 import { setNewMessageAlert } from "../../redux/Slice/chatSlice";
@@ -85,17 +87,22 @@ const AppLayout = () => (WrappedComponents) => {
       getMyProfile();
     }, []);
 
-    useEffect(() => {
-      const getMyChats = async (searchTerm = "") => {
-        dispatch(setChatLoading(true));
-        const res = await chatService.getChats(searchTerm);
-        dispatch(setChats(res.groupChats));
-        dispatch(setChatLoading(false));
-      };
-      getMyChats();
-    }, []);
+    const getMyChats = async (searchTerm = "") => {
+      console.log('App layout-----------------called chatlist')
+      dispatch(setChatLoading(true));
+      const res = await chatService.getChats(searchTerm);
+      dispatch(setChats(res.groupChats));
+      const unreadMessages = res.groupChats.map((chat) => ({
+        chatId: chat._id,
+        count: chat.unreadCount || 0,  // Ensure count defaults to 0 if not provided
+      }));
+      dispatch(addUnreadMessages(unreadMessages))
+      dispatch(setChatLoading(false));
+    };
+
 
     useEffect(() => {
+      getMyChats();
       getNotifications();
     }, []);
 
@@ -117,14 +124,18 @@ const AppLayout = () => (WrappedComponents) => {
       dispatch(setNewMessageAlert(data));
     }, []);
 
+    
+
     const newRequestHandler = useCallback(() => {
       dispatch(incrementNotificationCount());
-      console.log("---New Request---");
       getNotifications();
     }, []);
 
+    const refreshChatListHandler = useCallback(() => {
+      getMyChats();
+    }, []);
+
     const onlineUsersInfoHandler = useCallback((data) => {
-      console.log("Online Users : ", data);
       dispatch(setOnlineUsers(data));
     }, []);
 
@@ -144,6 +155,7 @@ const AppLayout = () => (WrappedComponents) => {
       [CURRENT_ONLINE_USERS]: onlineUsersInfoHandler,
       [USER_CONNECTED]: newUserOnlineHandler,
       [USER_DISCONNECTED]: userDisconnectedHandler,
+      [REFRESH_CHATLIST]: refreshChatListHandler,
     };
     useSocketEventHandler(socket, eventHandler);
 
@@ -214,7 +226,7 @@ const AppLayout = () => (WrappedComponents) => {
             )}
             {isNotification && <Notifications />}
           </Grid>
-          <Grid item xs={10} sm={8} bgcolor={"white"} height={"100%"}>
+          <Grid item xs={10} sm={8} bgcolor={"white"} height={"100%"} width={'100%'}>
             <WrappedComponents {...props} />
           </Grid>
         </Grid>

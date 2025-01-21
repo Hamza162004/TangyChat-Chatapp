@@ -46,29 +46,6 @@ const ChatItem = ({
     const formattedTime = formatLastMessageTime(lastMessageCreatedAt);
 
     return (
-        // <Link
-        //     to={`/chat/${_id}`}
-        //     className='hover:bg-gray-200 border-b-black border-b'
-        //     onContextMenu={(e) => handleDeleteChatOpen(e, _id, groupChat)}
-        // >
-        //     <div className={`flex items-center justify-between relative p-4 ${sameSender ? 'bg-black text-white' : ''}`}>
-        //         <div className='flex flex-row items-center'>
-        //         <AvatarCard avatar={avatarData} /> {/* Pass the prepared avatar data */}
-        //         <div className='flex flex-col'>
-        //             <Typography>{name}</Typography>
-        //             {newMessageAlert && (
-        //                 <Typography>{newMessageAlert.count} New Messages</Typography>
-        //             )}
-        //         </div>
-
-        //         </div>
-        //         {isOnline && (
-        //             <span className="bg-green-200 text-green-700 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full ">
-        //                 Online
-        //             </span>
-        //         )}
-        //     </div>
-        // </Link>
         <Link
             to={`/chat/${_id}`}
             onContextMenu={(e) => handleDeleteChatOpen(e, _id, groupChat)}

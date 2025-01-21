@@ -138,7 +138,7 @@ const Login = () => {
 
   return (
     <>
-      <div className=" flex justify-center items-center  bg-gradient-to-r from-purple-600 to-purple-400 min-h-screen">
+      <div className=" flex justify-center items-center  bg-gradient-to-r from-purple-600 to-indigo-400 min-h-screen">
         <Paper elevation={7} className="my-14">
           <div className="w-full bg-white rounded-lg shadow  md:mt-0 sm:max-w-md xl:p-0">
             <div className="p-6  space-y-2 md:space-y-2 sm:p-8">
@@ -148,7 +148,7 @@ const Login = () => {
                     <img src={logo} className="w-20" alt="" />
                   </div>
                   <h1 className="text-xl text-center font-bold leading-tight tracking-tight text-gray-900 md:text-2xl ">
-                    Sign in to <span className="text-orange-500">Tangy</span>{" "}
+                    Sign in to <span className="text-indigo-500">Tangy</span>{" "}
                     Talks
                   </h1>
                   <form
@@ -182,7 +182,7 @@ const Login = () => {
                             onChange={togglePassword}
                             aria-describedby="remember"
                             type="checkbox"
-                            className="w-4 h-4 bg-white border rounded focus:ring-3 focus:ring-orange-300 "
+                            className="w-4 h-4 bg-white text-white border rounded focus:ring-3 focus:ring-indigo-300 "
                             required=""
                           />
                         </div>
@@ -197,14 +197,14 @@ const Login = () => {
                       </div>
                       <a
                         href="#"
-                        className="text-sm font-medium text-orange-600 hover:underline"
+                        className="text-sm font-medium text-indigo-600 hover:underline"
                       >
                         Forgot password?
                       </a>
                     </div>
                     <button
                       type="submit"
-                      className="w-full text-white bg-orange-500 hover:bg-orange-700 focus:ring-4 focus:outline-none focus:ring-orange-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center "
+                      className="w-full text-white bg-indigo-500 hover:bg-indigo-700 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center "
                     >
                       Sign in
                     </button>
@@ -213,7 +213,7 @@ const Login = () => {
                       <a
                         href="#"
                         onClick={openSignup}
-                        className="font-medium text-orange-600 hover:underline"
+                        className="font-medium text-indigo-600 hover:underline"
                       >
                         Sign up
                       </a>
@@ -223,7 +223,7 @@ const Login = () => {
               ) : (
                 <>
                   <h1 className="text-xl text-center font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
-                    Create an <span className="text-orange-500">Tangy</span>{" "}
+                    Create an <span className="text-indigo-500">Tangy</span>{" "}
                     Talks acoount
                   </h1>
                   <div className="flex flex-col w-fit relative m-auto items-center">
@@ -368,7 +368,7 @@ const Login = () => {
                           onChange={togglePassword}
                           aria-describedby="remember"
                           type="checkbox"
-                          className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-orange-300"
+                          className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300"
                           required=""
                         />
                       </div>
@@ -380,7 +380,7 @@ const Login = () => {
                     </div>
                     <button
                       type="submit"
-                      className="w-full text-white bg-orange-500 hover:bg-orange-700 focus:ring-4 focus:outline-none focus:ring-orange-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+                      className="w-full text-white bg-indigo-500 hover:bg-indigo-700 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
                     >
                       Create an account
                     </button>
@@ -389,7 +389,7 @@ const Login = () => {
                       <a
                         href="#"
                         onClick={openSignup}
-                        className="font-medium text-orange-600 hover:underline "
+                        className="font-medium text-indigo-600 hover:underline "
                       >
                         Login here
                       </a>

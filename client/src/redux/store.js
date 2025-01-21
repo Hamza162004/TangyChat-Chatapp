@@ -5,6 +5,7 @@ import groupReducer from "./Slice/groupSlice"
 import creatorReducer from "./Slice/creatorSlice"
 import chatReducer from "./Slice/chatSlice";
 import onlineUsersReducer from "./Slice/onlineUsersSlice";
+import notFriendsReduces from './Slice/friendSlice'
 
 const store = configureStore({
   reducer: {
@@ -13,7 +14,8 @@ const store = configureStore({
     group: groupReducer,
     creator: creatorReducer,
     chat: chatReducer,
-    onlineUsers : onlineUsersReducer
+    onlineUsers : onlineUsersReducer,
+    users : notFriendsReduces
   },
 });
 

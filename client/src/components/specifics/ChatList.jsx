@@ -8,15 +8,12 @@ import { useSelector, useDispatch } from "react-redux";
 import { Frown, Plus } from "lucide-react";
 import { AppContext } from "../../context/SideMenuStates";
 import {
-  ColorRing,
-  MagnifyingGlass,
-  Oval,
   ThreeDots,
 } from "react-loader-spinner";
-import { setChats, setChatLoading } from "../../redux/Slice/chatSlice";
+import { setChats, setChatLoading} from "../../redux/Slice/chatSlice";
 
 const ChatList = () => {
-  const csearch = useInputValidation("");
+  const csearch = useInputValidation(null);
   const [searchTimeout, setSearchTimeout] = useState(null);
   const { newMessageAlert,isChatLoading,chats } = useSelector((state) => state.chat);
   const { user } = useSelector((state) => state.user);
@@ -32,11 +29,7 @@ const ChatList = () => {
   };
 
   useEffect(() => {
-
-
-    // Only proceed with fetching if there's a search term
-    if (csearch.value) {
-      // Clear previous timeout if search changes
+    if (csearch.value!==null) {
       if (searchTimeout) {
         clearTimeout(searchTimeout);
       }
@@ -51,8 +44,6 @@ const ChatList = () => {
       return () => {
         clearTimeout(timeoutId);
       };
-    } else {
-      searchChats("")
     }
   }, [csearch.value]);
 
@@ -119,10 +110,10 @@ const ChatList = () => {
                 lastMessage,
                 lastMessageCreatedAt,
                 lastMessageSender,
-                filteredMembers
+                filteredMembers,
               } = data;
               const alertForThisChat = newMessageAlert.find(
-                (alert) => alert?.chatId.toString() === _id.toString()
+                (alert) => alert?.chatId?.toString() === _id?.toString()
               );
               let msgSenderName
               if(lastMessageSender){
@@ -131,7 +122,6 @@ const ChatList = () => {
               const isOnline = groupChat
                 ? false
                 : onlineUsers.includes(filteredMembers[0]._id);
-                console.log({onlineUsers})
           
 
               return (

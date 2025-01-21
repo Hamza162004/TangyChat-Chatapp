@@ -2,6 +2,7 @@ import {
   NEW_ATTACHMENT,
   NEW_MESSAGE,
   NEW_MESSAGE_ALERT,
+  REFRESH_CHATLIST,
 } from "../constants/event.js";
 import { Chat } from "../models/chat.js";
 import { Message } from "../models/message.js";
@@ -31,13 +32,17 @@ const createGroup = async (req, res, next) => {
       groupChat: true,
       members: allMembers,
       creator: req.user,
-    });
+    })
+    const populatedGroup = await Chat.findById(group._id).populate("members");
+    emitEvent(req, REFRESH_CHATLIST, populatedGroup.members);
+
     console.log({ group });
     return res
       .status(200)
       .json({ success: true, message: `Group ${name} created successfully` });
   } catch (error) {
-    return res.status(400).json({ success: false, message: error });
+    console.log(error)
+    return res.status(400).json({ success: false, message: error?.message });
   }
 };
 
@@ -64,7 +69,10 @@ const getMyChats = async (req, res, next) => {
         const latestMessage = await Message.findOne({ chat: chat._id })
           .sort({ createdAt: -1 }) // Sort by createdAt in descending order to get the latest message
           .select("content attachments createdAt sender");
-          
+        const unreadCount = await Message.countDocuments({
+            chat: chat._id,
+            readBy: { $ne: userId }, // Messages not read by the current user
+        });  
         // Process members and other details as before
         const filteredMembers = chat.members.filter(
           (member) => member._id.toString() !== userId
@@ -99,6 +107,7 @@ const getMyChats = async (req, res, next) => {
               : "Start Conversation...",
           lastMessageCreatedAt: latestMessage ? latestMessage.createdAt : null,
           lastMessageSender: latestMessage ? latestMessage.sender : null,
+          unreadCount
         };
       })
     );
@@ -246,6 +255,34 @@ const removeGroupMember = async (req, res, next) => {
     .status(200)
     .json({ success: true, message: "Member removed from the group", removedUser: userToRemove.username });
 };
+
+const deleteGroup = async (req, res, next) => {
+  const { id } = req.params;
+  const [chat, user] = await Promise.all([
+    Chat.findById(id).populate('members'),
+    User.findById(req.user),
+  ]);
+
+  if (!chat) {
+    return next(new ErrorHandler(`No Chat with Id ${id} exists`, 400));
+  }
+
+  if (!chat.groupChat) {
+    return next(new ErrorHandler(`Not a group chat`, 400));
+  }
+
+  if (chat.creator.toString() !== user._id.toString()) {
+    return next(new ErrorHandler('Only admin can delete', 403));
+  }
+
+  // If the user is the creator, delete the group chat entirely
+  await Chat.findByIdAndDelete(id);
+  emitEvent(req, REFRESH_CHATLIST, chat.members);
+
+
+  return res.status(200).json({ success: true, message: "Group has been deleted successfully" });
+};
+
 
 const leaveGroup = async (req, res, next) => {
   const { id } = req.params;
@@ -494,4 +531,5 @@ export {
   deleteChat,
   getMyFriends,
   getMyNonGroupFriends,
+  deleteGroup
 };

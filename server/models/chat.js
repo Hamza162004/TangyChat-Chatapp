@@ -16,7 +16,7 @@ const schema = new Schema({
     members: [{
         type: Types.ObjectId,
         ref : 'User'
-    }],
+    }]
     
 }, { timestamps: true });
 

@@ -3,6 +3,7 @@ import instance from "./interceptor";
 const getChats = async (search) => {
   try {
     const response = await instance.get(`chat/getMyChats?search=${search}`);
+    console.log(response.data)
     return response.data;
   } catch (error) {
     throw error;
@@ -91,4 +92,13 @@ const leaveGroup = async (groupId) => {
   }
 };
 
-export default { getChats, getChatDetails, createGroup, getGroupChats, getMyFriends, updateChatDetails, addGroupMember, removeGroupMember, getMyNonGroupFriends, leaveGroup };
+const deleteGroup = async (groupId) => {
+  try {
+    const response = await instance.delete(`chat/deleteGroup/${groupId}`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export default { getChats,deleteGroup, getChatDetails, createGroup, getGroupChats, getMyFriends, updateChatDetails, addGroupMember, removeGroupMember, getMyNonGroupFriends, leaveGroup };

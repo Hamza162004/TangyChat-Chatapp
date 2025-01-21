@@ -42,12 +42,16 @@ const Chat = ({ }) => {
   const [filteredMembers, setFilteredMembers] = useState([])
 
   useEffect(() => {
-    chatIdRef.current = chatId;
-  }, [chatId]);
+    if(user?._id){
+      socket.emit('MESSAGES_READ', { chatId, userId :user._id })
+    }
+  }, [chatId,user]);
 
 
   useEffect(() => {
     console.log('Chat opened with id : ', chatId)
+    chatIdRef.current = chatId;
+
     const fetchChatDetails = async () => {
       try {
         const [chatData, messageData] = await Promise.all([
@@ -67,6 +71,7 @@ const Chat = ({ }) => {
     };
     dispatch(removeMessageAlert(chatId))
     fetchChatDetails();
+
     return (() => {
       setMessages([])
       setOldMessages([])
@@ -101,6 +106,7 @@ const Chat = ({ }) => {
 
 
   const sendMessageHandler = () => {
+    console.log('message wrote by',user)
     if (!message.trim()) returns
     socket.emit(NEW_MESSAGE, { chatId, members: chatDetails.members, message })
     if (typingTimeout.current) clearTimeout(typingTimeout.current)
@@ -110,20 +116,23 @@ const Chat = ({ }) => {
   }
 
   const newMessageHandler = useCallback(({ chatId, message }) => {
-    // console.log("New message received----------")
-    // console.log({data})
-    // if (data.chatId.toString() !== chatIdRef.current.toString()){
-    //   console.log('ChatId not same-------')
-    //   return
-    // }
-    // console.log({messages})
+    console.log("New message received----------")
+    console.log({chatId,message})
+    
     dispatch(setChatLastMessage({
       chatId,
       latestMessage: message.content,
       latestMessageCreatedAt: message.createdAt,
       latestMessageSender: message.sender._id
     }))
-    setMessages(prev => [...prev, message])
+
+    if (chatId.toString() === chatIdRef.current.toString()){
+      setMessages(prev => [...prev, message])
+      console.log(user,'-----------------')
+      socket.emit('MESSAGES_READ', { chatId, userId :user._id })
+      return
+    }
+    console.log('ChatId not same-------')
   }, [])
 
   const startTypingHandler = useCallback((data) => {
@@ -216,7 +225,7 @@ const Chat = ({ }) => {
         }
         <div ref={bottomRef} ></div>
       </Stack>
-      <div className='h-[3.5rem] px-10 w-full flex justify-between space-x-5 items-center flex-row'>
+      <div className='h-[3.5rem] border-t border-gray-200 px-10 w-full flex justify-between space-x-5 items-center flex-row'>
         <IconButton onClick={handleFileMenu} style={{ cursor: 'pointer' }} >
           <AttachFile sx={{ width: '1.3rem', height: '1.3rem' }} />
         </IconButton>
