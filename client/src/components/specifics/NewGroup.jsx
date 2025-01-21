@@ -65,7 +65,7 @@ const NewGroup = ({
   };
 
   return (
-    <div className="w-full h-full flex flex-col">
+    <div className="w-full h-full flex flex-col border-r border-gray-200">
       <div className="flex items-center mt-6">
         <button
           onClick={openChat}

@@ -1,5 +1,5 @@
 import { Server } from "socket.io";
-import { CURRENT_ONLINE_USERS, NEW_MESSAGE, NEW_MESSAGE_ALERT, TYPING_ENDED, TYPING_STARTED, USER_CONNECTED, USER_DISCONNECTED } from "./constants/event.js";
+import { CURRENT_ONLINE_USERS, MESSAGES_READ, NEW_MESSAGE, NEW_MESSAGE_ALERT, TYPING_ENDED, TYPING_STARTED, USER_CONNECTED, USER_DISCONNECTED } from "./constants/event.js";
 import { v4 as uuid } from 'uuid'
 import { Message } from "./models/message.js";
 import { isSocketAuthenticated } from "./middlewares/auth.js";
@@ -40,7 +40,8 @@ const initializeSocket = (server) => {
             const messageForDB = {
                 chat: chatId,
                 sender: user._id,
-                content: message
+                content: message,
+                readBy:[user._id]
             }
 
             const membersSocket = getSockets(members)
@@ -71,6 +72,17 @@ const initializeSocket = (server) => {
             socket.broadcast.emit(USER_DISCONNECTED,{ userId: user._id })
             console.log({usersocketIDs})
         })
+
+        socket.on(MESSAGES_READ, async ({ chatId, userId }) => {
+            console.log('Message read------------by ',userId)
+            await Message.updateMany(
+                { chat: chatId, readBy: { $ne: userId } },  // Add only if user hasn't read it
+                { $push: { readBy: userId } }
+            );
+        
+            // // Notify all members in the chat that the user has read messages
+            // io.to(chatId).emit('messagesRead', { chatId, userId });
+        });
     });
     return io
 }

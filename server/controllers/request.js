@@ -1,4 +1,4 @@
-import { NEW_REQUEST } from "../constants/event.js";
+import { NEW_REQUEST, REFRESH_CHATLIST} from "../constants/event.js";
 import { Chat } from "../models/chat.js";
 import { Message } from "../models/message.js";
 import { Request } from "../models/request.js";
@@ -76,7 +76,8 @@ const acceptRequest = async (req, res, next) => {
     await Chat.create({
       members: members,
       name: `${request.sender.username}-${request.receiver.username}`,
-    });
+    })
+    emitEvent(req, REFRESH_CHATLIST, [request.receiver,request.sender]);
   } else {
     request.status = "rejected";
   }

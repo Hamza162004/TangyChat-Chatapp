@@ -26,6 +26,13 @@ const schema = new Schema({
                 required: true
             }
         }
+    ],
+    readBy: [
+        {
+            type: Types.ObjectId,
+            ref: 'User',
+            required : true
+        }
     ]
     
 }, { timestamps: true });
