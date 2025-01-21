@@ -15,9 +15,10 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useInfiniteScrollTop } from '6pp'
 import { AppContext } from '../context/SideMenuStates'
 import toast from 'react-hot-toast'
-import { removeMessageAlert, setChatLastMessage } from '../redux/Slice/chatSlice'
+import { moveChatToTop, removeMessageAlert, setChatLastMessage } from '../redux/Slice/chatSlice'
 import AvatarCard from '../components/shared/AvatarCard'
 import { EllipsisVertical } from 'lucide-react'
+import { ThreeDots } from 'react-loader-spinner'
 
 const Chat = ({ }) => {
   let chatId
@@ -40,12 +41,13 @@ const Chat = ({ }) => {
   const typingTimeout = useRef(null)
   const bottomRef = useRef(null)
   const [filteredMembers, setFilteredMembers] = useState([])
+  const [isLoadingMessages, setIsLoadingMessages] = useState(false)
 
   useEffect(() => {
-    if(user?._id){
-      socket.emit('MESSAGES_READ', { chatId, userId :user._id })
+    if (user?._id) {
+      socket.emit('MESSAGES_READ', { chatId, userId: user._id })
     }
-  }, [chatId,user]);
+  }, [chatId, user]);
 
 
   useEffect(() => {
@@ -94,7 +96,9 @@ const Chat = ({ }) => {
 
   useEffect(() => {
     if (page > 1) {
+      setIsLoadingMessages(true)
       fetchChatMessages(chatId, page)
+      setIsLoadingMessages(false)
     }
   }, [page])
 
@@ -106,7 +110,7 @@ const Chat = ({ }) => {
 
 
   const sendMessageHandler = () => {
-    console.log('message wrote by',user)
+    console.log('message wrote by', user)
     if (!message.trim()) returns
     socket.emit(NEW_MESSAGE, { chatId, members: chatDetails.members, message })
     if (typingTimeout.current) clearTimeout(typingTimeout.current)
@@ -117,8 +121,8 @@ const Chat = ({ }) => {
 
   const newMessageHandler = useCallback(({ chatId, message }) => {
     console.log("New message received----------")
-    console.log({chatId,message})
-    
+    console.log({ chatId, message })
+
     dispatch(setChatLastMessage({
       chatId,
       latestMessage: message.content,
@@ -126,10 +130,13 @@ const Chat = ({ }) => {
       latestMessageSender: message.sender._id
     }))
 
-    if (chatId.toString() === chatIdRef.current.toString()){
+    dispatch(moveChatToTop(chatId))
+
+    if (chatId.toString() === chatIdRef.current.toString()) {
+      message?.readBy.push(user._id)
       setMessages(prev => [...prev, message])
-      console.log(user,'-----------------')
-      socket.emit('MESSAGES_READ', { chatId, userId :user._id })
+      console.log(user, '-----------------')
+      socket.emit('MESSAGES_READ', { chatId, userId: user._id })
       return
     }
     console.log('ChatId not same-------')
@@ -187,12 +194,9 @@ const Chat = ({ }) => {
   }
 
   useEffect(() => {
-    console.log('-----------Messages Updated-------')
-    console.log({ messages })
     if (bottomRef.current) bottomRef.current.scrollIntoView({
       behavior: "smooth"
     })
-
   }, [messages])
 
 
@@ -209,22 +213,41 @@ const Chat = ({ }) => {
               <h3 className="font-semibold text-gray-800">{chatDetails?.name}</h3>
               <p className={`text-xs text-green-400 ${userTyping ? 'block' : "hidden"}`}>{chatDetails?.groupChat ? `${userTypingName} is ` : ''}Typing...</p>
             </div>
-          </div> 
+          </div>
           {
-            chatDetails?.groupChat &&           <Link to={`/group/${chatIdRef.current}`}><EllipsisVertical size={18} /></Link>
+            chatDetails?.groupChat && <Link to={`/group/${chatIdRef.current}`}><EllipsisVertical size={18} /></Link>
 
           }
 
         </div>
       </div>
-      <Stack className='bg-slate-100 ' ref={containerRef} height={'calc(100% - 7.5rem)'} sx={{ overflowY: 'auto', overflowX: 'hidden' }} padding={'1rem'} spacing={'1rem'}>
-        {
-          allMessages.length > 0 && allMessages.map((message) => (
-            <MessageComponent key={message._id} message={message} user={user} />
-          ))
-        }
-        <div ref={bottomRef} ></div>
-      </Stack>
+      {
+        isLoadingMessages ? <div style={{ height: 'calc(100% - 7.5rem)' }} className="h-80 flex flex-row items-center justify-center">
+          <ThreeDots color={'#4F46E5'} width={120} />
+        </div> :
+          <Stack className='bg-slate-100 ' ref={containerRef} height={'calc(100% - 7.5rem)'} sx={{ overflowY: 'auto', overflowX: 'hidden' }} padding={'1rem'} spacing={'1rem'}>
+            {
+              allMessages.length > 0 && allMessages.map((message,index) => {
+                // Check if the message is unread for the current user
+                const isUnreadMessage = message.readBy && !message?.readBy.includes(user._id);
+                const previousMessageReadStatus = index > 0 ? allMessages[index - 1].readBy.includes(user._id) : true;
+
+                return (
+                  <React.Fragment key={message._id}>
+                    {/* Display "Unread Messages" heading before the first unread message */}
+                    {isUnreadMessage && previousMessageReadStatus && (
+                      <div className="text-center bg-gray-500 text-white rounded-3xl w-52 font-semibold self-center">
+                        Unread Messages
+                      </div>
+                    )}
+                    <MessageComponent message={message} user={user} />
+                  </React.Fragment>
+                );
+              })
+            }
+            <div ref={bottomRef} ></div>
+          </Stack>
+      }
       <div className='h-[3.5rem] border-t border-gray-200 px-10 w-full flex justify-between space-x-5 items-center flex-row'>
         <IconButton onClick={handleFileMenu} style={{ cursor: 'pointer' }} >
           <AttachFile sx={{ width: '1.3rem', height: '1.3rem' }} />

@@ -46,6 +46,7 @@ const SideMenu = ({
     setIsGroup(false);
     setIsNewGroup(false);
     setIsNotification(false);
+    navigate('/home')
   };
   const openFriends = () => {
     setIsChatList(false);
@@ -54,15 +55,10 @@ const SideMenu = ({
     setIsGroup(false);
     setIsNewGroup(false);
     setIsNotification(false);
+    navigate('/home')
+
   };
-  const openGroup = () => {
-    setIsChatList(false);
-    setIsProfile(false);
-    setIsFriends(false);
-    setIsGroup(true);
-    setIsNewGroup(false);
-    setIsNotification(false);
-  };
+  
   const openNotification = () => {
     setIsChatList(false);
     setIsProfile(false);
@@ -70,6 +66,8 @@ const SideMenu = ({
     setIsGroup(false);
     setIsNewGroup(false);
     setIsNotification(true);
+    navigate('/home')
+
   };
 
   const socket = getSocket()
@@ -89,7 +87,7 @@ const SideMenu = ({
     }
   };
 
-
+  
   return (
     <>
       {/* <Grid item xs={2} sm={0.8} sx={{ bgcolor: orange }} height={"100%"}>

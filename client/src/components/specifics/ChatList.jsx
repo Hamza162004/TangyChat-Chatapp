@@ -10,7 +10,7 @@ import { AppContext } from "../../context/SideMenuStates";
 import {
   ThreeDots,
 } from "react-loader-spinner";
-import { setChats, setChatLoading} from "../../redux/Slice/chatSlice";
+import { setChats, setChatLoading, addUnreadMessages} from "../../redux/Slice/chatSlice";
 
 const ChatList = () => {
   const csearch = useInputValidation(null);
@@ -27,6 +27,23 @@ const ChatList = () => {
     dispatch(setChats(res.groupChats));
     dispatch(setChatLoading(false));
   };
+
+  //  const getMyChats = async (searchTerm = "") => {
+  //       console.log('chatlist---------------------got chats')
+  //       dispatch(setChatLoading(true));
+  //       const res = await chatService.getChats(searchTerm);
+  //       dispatch(setChats(res.groupChats));
+  //       const unreadMessages = res.groupChats.map((chat) => ({
+  //         chatId: chat._id,
+  //         count: chat.unreadCount || 0,  // Ensure count defaults to 0 if not provided
+  //       }));
+  //       dispatch(addUnreadMessages(unreadMessages))
+  //       dispatch(setChatLoading(false));
+  //   };
+
+    // useEffect(()=>{
+    //   getMyChats()
+    // },[])
 
   useEffect(() => {
     if (csearch.value!==null) {
@@ -49,29 +66,6 @@ const ChatList = () => {
 
   return (
     <>
-      {/* <Searchbar search={csearch} placeholder={"Search a conversation"} />  
-      <Stack
-        width={"100%"}
-        direction={"column"}
-        borderTop={"black 1px solid"}
-        overflow={"auto"}
-        style={{ height: "calc(100% - 100px)" }}
-      >
-        {chats.length > 0 ? (
-          chats.map((data) => {
-            const { _id, name, avatar,members,groupChat } = data;
-            const alertForThisChat = newMessageAlert.find(
-              (alert) => alert?.chatId.toString() === _id.toString()
-            );
-            const isOnline = groupChat?false:onlineUsers.includes(members[0]._id)
-            return (
-              <ChatItem key={_id} _id={_id} isOnline={isOnline} groupChat={groupChat} name={name || "Unnamed Chat"} avatar={avatar} newMessageAlert={alertForThisChat} />
-            );
-          })
-        ) : (
-          <Typography>No chats found.</Typography>
-        )}
-      </Stack> */}
       <div className="w-full h-full bg-white border-r border-gray-200">
         <div className="p-4 pb-2">
           <div className="flex justify-between items-center mb-6">

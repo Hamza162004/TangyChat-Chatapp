@@ -77,6 +77,7 @@ const Login = () => {
 
   const signIn = async () => {
     try {
+      const signintoastId = toast.loading('Logging in....')
       const result = await userService.signInAPI(email.value, password.value);
 
       storageService.addToken(result.token);
@@ -85,10 +86,10 @@ const Login = () => {
 
       navigate("/home");
 
-      toast.success("Logged In Successful");
+      toast.success("Logged In Successful",{id:signintoastId});
     } catch (error) {
       console.log(error);
-      toast.error(error.response.data.error);
+      toast.error(error.response.data.error,{id:signintoastId});
     }
   };
 

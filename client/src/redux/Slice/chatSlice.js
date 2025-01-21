@@ -76,6 +76,13 @@ export const chatSlice = createSlice({
           return chat;
         })
       }
+    },
+    moveChatToTop: (state, action) => {
+      const index = state.chats.findIndex(chat => chat._id === action.payload);
+      if (index !== -1) {
+        const [movedChat] = state.chats.splice(index, 1);
+        state.chats.unshift(movedChat);
+      }
     }
   },
 });
@@ -87,7 +94,8 @@ export const {
   setChatLoading,
   setNewMessageAlertLoading,
   setChatLastMessage,
-  addUnreadMessages
+  addUnreadMessages,
+  moveChatToTop
 } = chatSlice.actions;
 
 export default chatSlice.reducer;
